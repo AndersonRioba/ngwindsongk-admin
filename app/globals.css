@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * ============================================================
+ * Windsong Design System — CSS Variables
+ * These are hydrated at runtime by ThemeContext from the DB.
+ * Fallback values match the compiled Tailwind theme.
+ * ============================================================
+ */
+:root {
+  --color-primary:    #6D31ED;
+  --color-secondary:  #15ABFF;
+  --color-accent:     #15ABFF;
+  --color-background: #ffffff;
+  --color-text:       #1a1a2e;
+  --color-success:    #8fc5a1;
+  --color-warning:    #efb034;
+  --color-error:      #df4247;
+  --font-family:      'Lato', sans-serif;
+}
+
+/* Style scroll bar */
+.large-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
+  scroll-margin: 2.75rem;
+}
+.no-scroll {
+  scrollbar-width: none;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+}
+input {
+  background: none;
+}
+option, option:focus, option:hover, select, select:focus, select:hover, select::-ms-expand {
+  background: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+input[type=file] {
+  display: none;
+}
