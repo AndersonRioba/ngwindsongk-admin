@@ -7,7 +7,6 @@ import TestimonialSettings from './TestimonialSettings'
 import FooterSettings from './FooterSettings'
 import ContactSettings from './ContactSettings'
 import RunningBannerSettings from './RunningBannerSettings'
-import SalesSettings from './SalesSettings'
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState('about')
@@ -19,7 +18,6 @@ export default function SettingsPage() {
         { id: 'testimonials', name: 'Testimonials', icon: 'icon-[fluent--chat-16-regular]' },
         { id: 'footer', name: 'Footer', icon: 'icon-[fluent--layout-footer-24-regular]' },
         { id: 'contact', name: 'Contact Page', icon: 'icon-[fluent--contact-card-24-regular]' },
-        { id: 'sales', name: 'Sales & Delivery', icon: 'icon-[fluent--shopping-bag-24-regular]' },
     ]
 
     return (
@@ -55,8 +53,7 @@ export default function SettingsPage() {
                     {activeTab === 'running_banner' && <RunningBannerSettings />}
                     {activeTab === 'testimonials' && <TestimonialSettings />}
                     {activeTab === 'footer' && <FooterSettings />}
-                    {activeTab === 'contact' && <ContactSettings />}
-                    {activeTab === 'sales' && <SalesSettings />}
+                    { activeTab === 'contact' && <ContactSettings /> }
                 </div>
             </div>
         </div>

@@ -110,6 +110,14 @@ export function MobileSideMenu(){
                     <div className="mx-3"><span className={`icon-[carbon--settings] w-8 h-8`}/></div >
                     <span className="truncate text-xs font-bold text-center">Settings</span>
                 </Link>
+                <Link href={'/admin/delivery-zones'} className={`flex items-center my-4 ${pathname.includes('/admin/delivery-zones')?'text-primary':''} `}>
+                    <div className="mx-3"><span className={`icon-[fluent--vehicle-truck-24-regular] w-8 h-8`}/></div >
+                    <span className="truncate text-xs font-bold text-center">Delivery Zones</span>
+                </Link>
+                <Link href={'/admin/sales-settings'} className={`flex items-center my-4 ${pathname.includes('/admin/sales-settings')?'text-primary':''} `}>
+                    <div className="mx-3"><span className={`icon-[fluent--shopping-bag-24-regular] w-8 h-8`}/></div >
+                    <span className="truncate text-xs font-bold text-center">Sales Settings</span>
+                </Link>
             </div>
             
             
@@ -248,6 +256,8 @@ export function DesktopSidebar(){
         { href: '/admin/brands', icon: 'icon-[fluent--tag-24-regular]', label: 'Brands' },
         { href: '/admin/vouchers', icon: 'icon-[solar--ticket-sale-bold-duotone]', label: 'Vouchers' },
         { href: '/admin/navigation', icon: 'icon-[material-symbols--map-outline]', label: 'Navigation' },
+        { href: '/admin/delivery-zones', icon: 'icon-[fluent--vehicle-truck-24-regular]', label: 'Delivery Zones' },
+        { href: '/admin/sales-settings', icon: 'icon-[fluent--shopping-bag-24-regular]', label: 'Sales Settings' },
         { href: '/admin/recipes', icon: 'icon-[arcticons--reciper]', label: 'Recipes' },
         { href: '/admin/blogs', icon: 'icon-[mdi--post-outline]', label: 'Blogs' },
         { href: '/admin/comments', icon: 'icon-[mdi--comment-outline]', label: 'Comments' },
