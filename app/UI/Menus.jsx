@@ -49,6 +49,14 @@ export function MobileSideMenu(){
                     <div className="mx-3"><span className={`icon-[carbon--dashboard] w-8 h-8`}/></div>
                     <span className="truncate text-xs font-bold text-center">Dashboard</span>
                 </Link>
+                <Link href={'/admin/analytics'} className={`flex items-center my-4 ${pathname==='/admin/analytics'?'text-primary':''} `}>
+                    <div className="mx-3"><span className={`icon-[solar--chart-bold-duotone] w-8 h-8`}/></div>
+                    <span className="truncate text-xs font-bold text-center">Analytics</span>
+                </Link>
+                <Link href={'/admin/activity'} className={`flex items-center my-4 ${pathname==='/admin/activity'?'text-primary':''} `}>
+                    <div className="mx-3"><span className={`icon-[solar--pulse-bold-duotone] w-8 h-8`}/></div>
+                    <span className="truncate text-xs font-bold text-center">Recent Activity</span>
+                </Link>
                 <a target="blank" href={`${process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000'}/`} className={`flex items-center my-4 ${pathname==='/'?'text-primary-light':''} `}>
                     <div className="mx-3"><span className={`icon-[ic--baseline-shopify] w-8 h-8`}/></div>
                     <span className="truncate text-xs font-bold text-center">Shop</span>
@@ -251,6 +259,9 @@ export function DesktopSidebar(){
     if (!token || isLoading) return null;
 
     const navItems = [
+        { href: '/admin/dashboard', icon: 'icon-[carbon--dashboard]', label: 'Dashboard' },
+        { href: '/admin/analytics', icon: 'icon-[solar--chart-bold-duotone]', label: 'Analytics' },
+        { href: '/admin/activity', icon: 'icon-[solar--pulse-bold-duotone]', label: 'Recent Activity' },
         { href: '/admin/sales', icon: 'icon-[carbon--sales-ops]', label: 'Sales' },
         { href: '/admin/partners', icon: 'icon-[solar--users-group-two-rounded-bold-duotone]', label: 'Partners' },
         { href: '/admin/brands', icon: 'icon-[fluent--tag-24-regular]', label: 'Brands' },
@@ -301,6 +312,7 @@ export function TopMenu(){
                     <Logo/>
                     <div className="flex gap-8">
                         <Link className={`${pathname==='/admin/dashboard'?'text-primary font-bold':'text-gray-600 font-semibold hover:text-primary'} transition-colors`} href="/admin/dashboard">Dashboard</Link>
+                        <Link className={`${pathname.includes('/admin/analytics')?'text-primary font-bold':'text-gray-600 font-semibold hover:text-primary'} transition-colors`} href="/admin/analytics">Analytics</Link>
                         <Link className={`${pathname.includes('/admin/sales')?'text-primary font-bold':'text-gray-600 font-semibold hover:text-primary'} transition-colors`} href="/admin/sales">Sales</Link>
                         <Link className={`${pathname.includes('/admin/deliveries')?'text-primary font-bold':'text-gray-600 font-semibold hover:text-primary'} transition-colors`} href="/admin/deliveries">Deliveries</Link>
                         <Link className={`${pathname.includes('/admin/users')?'text-primary font-bold':'text-gray-600 font-semibold hover:text-primary'} transition-colors`} href="/admin/users">Users</Link>

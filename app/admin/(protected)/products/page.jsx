@@ -109,7 +109,7 @@ export default function Page(){
 
         const result = Object.values(groups).sort((a, b) => a.name.localeCompare(b.name));
         return search ? result.filter(g => g.products.length > 0) : result;
-    }, [data, brandsData, groupBy, search, activeBrand]);
+    }, [data, brandsData, search, activeBrand]);
 
     return(
         <main className="mx-2 lg:mx-10 2xl:mx-20 ">

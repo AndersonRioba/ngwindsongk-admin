@@ -21,7 +21,7 @@ export default function AdminPrivateRoute({ children }) {
                 window.location.href = `${storeUrl}/login?token=${token}`;
             }
         }
-    }, [isAdmin, token, isLoading, isVerifyingToken, router]);
+    }, [isAdmin, token, isLoading, isVerifyingToken, router, user]);
 
     if (isLoading || isVerifyingToken) {
         return <Spinner full={true} />;
