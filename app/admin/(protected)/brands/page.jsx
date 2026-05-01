@@ -383,7 +383,7 @@ export default function Page(){
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Purchase Snippet</label>
                                     <textarea 
-                                        className="w-full bg-gray-50 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-primary/20 transition-all font-mono text-gray-800 placeholder:text-gray-300 shadow-inner text-xs min-h-[120px]" 
+                                        className="w-full bg-gray-50 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-primary/20 transition-all font-mono text-gray-800 text-xs min-h-[120px] placeholder:text-gray-300 shadow-inner" 
                                         placeholder="gtag('event', 'conversion', ...);" 
                                         value={newBrandPurchaseSnippet} 
                                         onChange={e => setNewBrandPurchaseSnippet(e.target.value)}
@@ -444,8 +444,11 @@ export default function Page(){
                                                             value={brand.name}
                                                             onChange={e => {
                                                                 const updated = [...brands];
-                                                                updated[i].name = e.target.value;
-                                                                mutateBrands(updated, false);
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], name: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
                                                             }}
                                                         />
                                                     </div>
@@ -457,8 +460,11 @@ export default function Page(){
                                                             value={brand.description || ''}
                                                             onChange={e => {
                                                                 const updated = [...brands];
-                                                                updated[i].description = e.target.value;
-                                                                mutateBrands(updated, false);
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], description: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
                                                             }}
                                                         />
                                                     </div>
@@ -472,8 +478,11 @@ export default function Page(){
                                                                 value={brand.color_hex || '#111111'}
                                                                 onChange={e => {
                                                                     const updated = [...brands];
-                                                                    updated[i].color_hex = e.target.value;
-                                                                    mutateBrands(updated, false);
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], color_hex: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
                                                                 }}
                                                             />
                                                         </div>
@@ -492,8 +501,11 @@ export default function Page(){
                                                                 checked={Boolean(brand.is_active)}
                                                                 onChange={e => {
                                                                     const updated = [...brands];
-                                                                    updated[i].is_active = e.target.checked;
-                                                                    mutateBrands(updated, false);
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], is_active: e.target.checked };
+                                                                        mutateBrands(updated, false);
+                                                                    }
                                                                 }}
                                                             />
                                                         </div>
@@ -507,8 +519,11 @@ export default function Page(){
                                                                 value={brand.facebook_url || ''}
                                                                 onChange={e => {
                                                                     const updated = [...brands];
-                                                                    updated[i].facebook_url = e.target.value;
-                                                                    mutateBrands(updated, false);
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], facebook_url: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
                                                                 }}
                                                             />
                                                         </div>
@@ -519,8 +534,11 @@ export default function Page(){
                                                                 value={brand.instagram_url || ''}
                                                                 onChange={e => {
                                                                     const updated = [...brands];
-                                                                    updated[i].instagram_url = e.target.value;
-                                                                    mutateBrands(updated, false);
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], instagram_url: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
                                                                 }}
                                                             />
                                                         </div>
@@ -535,8 +553,11 @@ export default function Page(){
                                                                 value={brand.min_order_amount || 0}
                                                                 onChange={e => {
                                                                     const updated = [...brands];
-                                                                    updated[i].min_order_amount = e.target.value;
-                                                                    mutateBrands(updated, false);
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], min_order_amount: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
                                                                 }}
                                                             />
                                                         </div>
@@ -548,8 +569,11 @@ export default function Page(){
                                                                 value={brand.max_order_amount || ''}
                                                                 onChange={e => {
                                                                     const updated = [...brands];
-                                                                    updated[i].max_order_amount = e.target.value;
-                                                                    mutateBrands(updated, false);
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], max_order_amount: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
                                                                 }}
                                                             />
                                                         </div>
@@ -563,8 +587,11 @@ export default function Page(){
                                                                 value={brand.tracking_snippet || ''}
                                                                 onChange={e => {
                                                                     const updated = [...brands];
-                                                                    updated[i].tracking_snippet = e.target.value;
-                                                                    mutateBrands(updated, false);
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], tracking_snippet: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
                                                                 }}
                                                             />
                                                         </div>
@@ -575,8 +602,11 @@ export default function Page(){
                                                                 value={brand.purchase_snippet || ''}
                                                                 onChange={e => {
                                                                     const updated = [...brands];
-                                                                    updated[i].purchase_snippet = e.target.value;
-                                                                    mutateBrands(updated, false);
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], purchase_snippet: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
                                                                 }}
                                                             />
                                                         </div>
