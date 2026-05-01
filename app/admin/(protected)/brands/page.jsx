@@ -373,7 +373,7 @@ export default function Page(){
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Page View Snippet</label>
                                     <textarea 
-                                        className="w-full bg-gray-50 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-primary/20 transition-all font-mono text-gray-800 placeholder:text-gray-300 shadow-inner text-[10px] min-h-[80px]" 
+                                        className="w-full bg-gray-50 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-primary/20 transition-all font-mono text-gray-800 placeholder:text-gray-300 shadow-inner text-xs min-h-[120px]" 
                                         placeholder="gtag('event', 'page_view', ...);" 
                                         value={newBrandTrackingSnippet} 
                                         onChange={e => setNewBrandTrackingSnippet(e.target.value)}
@@ -383,7 +383,7 @@ export default function Page(){
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Purchase Snippet</label>
                                     <textarea 
-                                        className="w-full bg-gray-50 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-primary/20 transition-all font-mono text-gray-800 placeholder:text-gray-300 shadow-inner text-[10px] min-h-[80px]" 
+                                        className="w-full bg-gray-50 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-primary/20 transition-all font-mono text-gray-800 placeholder:text-gray-300 shadow-inner text-xs min-h-[120px]" 
                                         placeholder="gtag('event', 'conversion', ...);" 
                                         value={newBrandPurchaseSnippet} 
                                         onChange={e => setNewBrandPurchaseSnippet(e.target.value)}
@@ -559,7 +559,7 @@ export default function Page(){
                                                         <div className="space-y-1">
                                                             <label className="text-[8px] font-black text-gray-400 uppercase">View Snippet</label>
                                                             <textarea 
-                                                                className="w-full text-[9px] font-mono bg-white border border-primary/20 px-3 py-1.5 rounded-lg outline-none min-h-[50px]" 
+                                                                className="w-full text-xs font-mono text-gray-800 bg-white border border-primary/20 px-3 py-1.5 rounded-lg outline-none min-h-[120px]" 
                                                                 value={brand.tracking_snippet || ''}
                                                                 onChange={e => {
                                                                     const updated = [...brands];
@@ -571,7 +571,7 @@ export default function Page(){
                                                         <div className="space-y-1">
                                                             <label className="text-[8px] font-black text-gray-400 uppercase">Purchase Snippet</label>
                                                             <textarea 
-                                                                className="w-full text-[9px] font-mono bg-white border border-primary/20 px-3 py-1.5 rounded-lg outline-none min-h-[50px]" 
+                                                                className="w-full text-xs font-mono text-gray-800 bg-white border border-primary/20 px-3 py-1.5 rounded-lg outline-none min-h-[120px]" 
                                                                 value={brand.purchase_snippet || ''}
                                                                 onChange={e => {
                                                                     const updated = [...brands];
