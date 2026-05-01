@@ -21,6 +21,10 @@ export default function Page(){
     let [newBrandInstagram, setNewBrandInstagram] = useState('');
     let [newBrandMinOrder, setNewBrandMinOrder] = useState(0);
     let [newBrandMaxOrder, setNewBrandMaxOrder] = useState('');
+    let [newBrandTrackingSnippet, setNewBrandTrackingSnippet] = useState('');
+    let [newBrandPurchaseSnippet, setNewBrandPurchaseSnippet] = useState('');
+
+
 
     // Edit states
     let [editBrandLogo, setEditBrandLogo] = useState(null);
@@ -117,8 +121,12 @@ export default function Page(){
                 facebook_url: newBrandFacebook,
                 instagram_url: newBrandInstagram,
                 min_order_amount: newBrandMinOrder,
-                max_order_amount: newBrandMaxOrder
+                max_order_amount: newBrandMaxOrder,
+                tracking_snippet: newBrandTrackingSnippet,
+                purchase_snippet: newBrandPurchaseSnippet
             };
+
+
             
             const { postFile } = await import('@/app/lib/data');
             
@@ -135,7 +143,11 @@ export default function Page(){
                         setNewBrandInstagram('');
                         setNewBrandMinOrder(0);
                         setNewBrandMaxOrder('');
+                        setNewBrandTrackingSnippet('');
+                        setNewBrandPurchaseSnippet('');
                         popupE('success', 'Brand created successfully');
+
+
                     }
                 },
                 newBrandLogo,
@@ -160,8 +172,12 @@ export default function Page(){
                 facebook_url: brand.facebook_url,
                 instagram_url: brand.instagram_url,
                 min_order_amount: brand.min_order_amount,
-                max_order_amount: brand.max_order_amount
+                max_order_amount: brand.max_order_amount,
+                tracking_snippet: brand.tracking_snippet,
+                purchase_snippet: brand.purchase_snippet
             };
+
+
             
             const { postFile } = await import('@/app/lib/data');
 
@@ -352,6 +368,31 @@ export default function Page(){
                                     />
                                 </div>
                             </div>
+
+                            <div className="pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Page View Snippet</label>
+                                    <textarea 
+                                        className="w-full bg-gray-50 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-primary/20 transition-all font-mono text-gray-800 placeholder:text-gray-300 shadow-inner text-[10px] min-h-[80px]" 
+                                        placeholder="gtag('event', 'page_view', ...);" 
+                                        value={newBrandTrackingSnippet} 
+                                        onChange={e => setNewBrandTrackingSnippet(e.target.value)}
+                                    />
+                                    <p className="text-[9px] text-gray-400 italic">Executed when viewing this brand&apos;s products.</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Purchase Snippet</label>
+                                    <textarea 
+                                        className="w-full bg-gray-50 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-primary/20 transition-all font-mono text-gray-800 placeholder:text-gray-300 shadow-inner text-[10px] min-h-[80px]" 
+                                        placeholder="gtag('event', 'conversion', ...);" 
+                                        value={newBrandPurchaseSnippet} 
+                                        onChange={e => setNewBrandPurchaseSnippet(e.target.value)}
+                                    />
+                                    <p className="text-[9px] text-gray-400 italic">Executed on order success page.</p>
+                                </div>
+                            </div>
+
+
                         </div>
                     </div>
                     <div className="flex gap-4 mt-12 pt-8 border-t border-gray-100">
@@ -513,6 +554,35 @@ export default function Page(){
                                                             />
                                                         </div>
                                                     </div>
+
+                                                    <div className="grid grid-cols-2 gap-2 pt-2">
+                                                        <div className="space-y-1">
+                                                            <label className="text-[8px] font-black text-gray-400 uppercase">View Snippet</label>
+                                                            <textarea 
+                                                                className="w-full text-[9px] font-mono bg-white border border-primary/20 px-3 py-1.5 rounded-lg outline-none min-h-[50px]" 
+                                                                value={brand.tracking_snippet || ''}
+                                                                onChange={e => {
+                                                                    const updated = [...brands];
+                                                                    updated[i].tracking_snippet = e.target.value;
+                                                                    mutateBrands(updated, false);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[8px] font-black text-gray-400 uppercase">Purchase Snippet</label>
+                                                            <textarea 
+                                                                className="w-full text-[9px] font-mono bg-white border border-primary/20 px-3 py-1.5 rounded-lg outline-none min-h-[50px]" 
+                                                                value={brand.purchase_snippet || ''}
+                                                                onChange={e => {
+                                                                    const updated = [...brands];
+                                                                    updated[i].purchase_snippet = e.target.value;
+                                                                    mutateBrands(updated, false);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+
 
                                                     {editBrandLogo && (
                                                         <p className="text-[8px] text-primary font-bold">New logo ready: {editBrandLogo.name}</p>

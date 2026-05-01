@@ -167,6 +167,7 @@ export default function PublishPage() {
             });
 
             setIsPublished(true);
+            popupE('Hide', '');
             setOverlay('success'); // Show the success modal
         } catch (error) {
             popupE('Error', error?.message || 'Failed to publish product. Please try again.');
