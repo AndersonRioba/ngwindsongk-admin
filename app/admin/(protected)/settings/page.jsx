@@ -8,6 +8,7 @@ import FooterSettings from './FooterSettings'
 import ContactSettings from './ContactSettings'
 import RunningBannerSettings from './RunningBannerSettings'
 import TrackingSettings from './TrackingSettings'
+import DeliverySettings from './DeliverySettings'
 
 
 export default function SettingsPage() {
@@ -16,6 +17,7 @@ export default function SettingsPage() {
     const tabs = [
         { id: 'about', name: 'About Us', icon: 'icon-[fluent--info-16-regular]' },
         { id: 'banners', name: 'Banners', icon: 'icon-[fluent--image-16-regular]' },
+        { id: 'delivery', name: 'Delivery & Shipping', icon: 'icon-[fluent--truck-24-regular]' },
         { id: 'running_banner', name: 'Running Banner', icon: 'icon-[fluent--text-effects-24-regular]' },
         { id: 'testimonials', name: 'Testimonials', icon: 'icon-[fluent--chat-16-regular]' },
         { id: 'footer', name: 'Footer', icon: 'icon-[fluent--layout-footer-24-regular]' },
@@ -54,6 +56,7 @@ export default function SettingsPage() {
                 <div className="bg-white/50 backdrop-blur-sm rounded-3xl">
                     {activeTab === 'about' && <AboutSettings />}
                     {activeTab === 'banners' && <BannerSettings />}
+                    {activeTab === 'delivery' && <DeliverySettings />}
                     {activeTab === 'running_banner' && <RunningBannerSettings />}
                     {activeTab === 'testimonials' && <TestimonialSettings />}
                     {activeTab === 'footer' && <FooterSettings />}
