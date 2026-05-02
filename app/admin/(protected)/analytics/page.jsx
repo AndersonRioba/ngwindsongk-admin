@@ -98,6 +98,18 @@ export default function AnalyticsPage() {
         ],
     };
 
+    // 5. Country Data
+    const countryData = {
+        labels: stats.top_countries?.map(c => c.country) || [],
+        datasets: [
+            {
+                label: 'Views',
+                data: stats.top_countries?.map(c => c.count) || [],
+                backgroundColor: 'rgba(245, 158, 11, 0.8)',
+            },
+        ],
+    };
+
     return (
         <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -163,6 +175,14 @@ export default function AnalyticsPage() {
                         <Bar data={browserData} options={{ maintainAspectRatio: false }} />
                     </div>
                 </div>
+
+                {/* Country Breakdown */}
+                <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
+                    <h3 className="text-lg font-bold mb-6">Top Countries</h3>
+                    <div className="h-[300px]">
+                        <Bar data={countryData} options={{ maintainAspectRatio: false }} />
+                    </div>
+                </div>
             </div>
 
             {/* Top Referrers */}
@@ -210,6 +230,7 @@ export default function AnalyticsPage() {
                             <tr className="border-b border-gray-50 text-[10px] uppercase tracking-widest text-gray-400 font-bold">
                                 <th className="pb-4">Time</th>
                                 <th className="pb-4">Page Path</th>
+                                <th className="pb-4">Location</th>
                                 <th className="pb-4">Device</th>
                                 <th className="pb-4">Browser</th>
                                 <th className="pb-4 text-right">IP Address</th>
@@ -225,6 +246,12 @@ export default function AnalyticsPage() {
                                         <div className="flex flex-col">
                                             <span className="text-sm font-bold text-gray-800 truncate max-w-xs">{hit.path}</span>
                                             <span className="text-[10px] text-gray-400 truncate max-w-xs">{hit.referrer || 'Direct'}</span>
+                                        </div>
+                                    </td>
+                                    <td className="py-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-medium text-gray-700">{hit.country || 'Unknown'}</span>
+                                            <span className="text-[10px] text-gray-400">{hit.city}</span>
                                         </div>
                                     </td>
                                     <td className="py-4">
