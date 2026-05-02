@@ -2,11 +2,11 @@
 import MonitoringFrame from "@/app/UI/MonitoringFrame";
 
 export default function PulsePage() {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, '') || '';
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/pulse`;
     return (
         <div className="p-4 lg:p-8">
             <MonitoringFrame 
-                url={`${apiBaseUrl}/pulse`} 
+                url={url} 
                 title="Laravel Pulse" 
             />
         </div>
