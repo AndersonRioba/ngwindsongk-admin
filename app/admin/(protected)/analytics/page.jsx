@@ -233,7 +233,6 @@ export default function AnalyticsPage() {
                                 <th className="pb-4">Location</th>
                                 <th className="pb-4">Device</th>
                                 <th className="pb-4">Browser</th>
-                                <th className="pb-4 text-right">IP Address</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -263,7 +262,6 @@ export default function AnalyticsPage() {
                                         </span>
                                     </td>
                                     <td className="py-4 text-xs text-gray-600">{hit.browser}</td>
-                                    <td className="py-4 text-right text-xs font-mono text-gray-400">{hit.ip_address}</td>
                                 </tr>
                             )) : (
                                 <tr>
