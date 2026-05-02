@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import useSWR, { mutate } from 'swr'
 import { fetcher, postRequest } from '@/app/lib/data'
-import Editor from '@/app/UI/WYSIWYG/Editor'
 import Spinner from '@/app/UI/Spinner'
+import dynamic from 'next/dynamic'
+const Editor = dynamic(() => import('@/app/UI/WYSIWYG/Editor'), { ssr: false })
 
 export default function AboutSettings() {
     const { data: response, isLoading } = useSWR(['/settings', { group: 'about' }], fetcher)

@@ -39,8 +39,6 @@ export default function RootPage() {
                 <p className="text-gray-700 mb-6">Explore our shop and manage your profile.</p>
                 <a 
                     href={`${process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000'}/`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
                     className="inline-block bg-primary text-white font-bold py-3 px-8 rounded-lg uppercase tracking-widest hover:bg-[#b5952f] transition-colors"
                 >
                     Visit Shop

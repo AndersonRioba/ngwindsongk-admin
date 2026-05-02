@@ -8,6 +8,8 @@ import useAuth from "@/app/hooks/useAuth";
 import useSWR from "swr";
 import { fetcher } from "@/app/lib/data";
 
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, '') || '';
+
 export function MobileTopMenu(){
     return(
         <div className="block md:hidden">
@@ -54,10 +56,10 @@ export function MobileSideMenu(){
                     <span className="truncate text-xs font-bold text-center">Analytics</span>
                 </Link>
                 <Link href={'/admin/activity'} className={`flex items-center my-4 ${pathname==='/admin/activity'?'text-primary':''} `}>
-                    <div className="mx-3"><span className={`icon-[solar--pulse-bold-duotone] w-8 h-8`}/></div>
+                    <div className="mx-3"><span className={`icon-[solar--history-bold-duotone] w-8 h-8`}/></div>
                     <span className="truncate text-xs font-bold text-center">Recent Activity</span>
                 </Link>
-                <a target="blank" href={`${process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000'}/`} className={`flex items-center my-4 ${pathname==='/'?'text-primary-light':''} `}>
+                <a href={`${process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000'}/`} className={`flex items-center my-4 ${pathname==='/'?'text-primary-light':''} `}>
                     <div className="mx-3"><span className={`icon-[ic--baseline-shopify] w-8 h-8`}/></div>
                     <span className="truncate text-xs font-bold text-center">Shop</span>
                 </a>
@@ -126,6 +128,16 @@ export function MobileSideMenu(){
                     <div className="mx-3"><span className={`icon-[fluent--shopping-bag-24-regular] w-8 h-8`}/></div >
                     <span className="truncate text-xs font-bold text-center">Sales Settings</span>
                 </Link>
+                <div className="border-t border-gray-200 my-4 mx-4"></div>
+                <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold px-4 mb-2">Monitoring</div>
+                <Link href="/admin/monitoring/pulse" className={`flex items-center my-4 ${pathname==='/admin/monitoring/pulse'?'text-primary':'text-gray-600'} hover:text-primary transition-colors`}>
+                    <div className="mx-3"><span className="icon-[solar--pulse-bold-duotone] w-8 h-8"/></div>
+                    <span className="truncate text-xs font-bold text-center">Laravel Pulse</span>
+                </Link>
+                <Link href="/admin/monitoring/telescope" className={`flex items-center my-4 ${pathname==='/admin/monitoring/telescope'?'text-primary':'text-gray-600'} hover:text-primary transition-colors`}>
+                    <div className="mx-3"><span className="icon-[solar--telescope-bold-duotone] w-8 h-8"/></div>
+                    <span className="truncate text-xs font-bold text-center">Laravel Telescope</span>
+                </Link>
             </div>
             
             
@@ -154,7 +166,7 @@ export function SidebarItem({href, icon, label, pathname, isExternal=false}){
         </div>
     );
 
-    if (isExternal) return <a href={href} target="_blank" rel="noopener noreferrer">{content}</a>;
+    if (isExternal) return <a href={href}>{content}</a>;
     return <Link href={href}>{content}</Link>;
 }
 
@@ -261,7 +273,7 @@ export function DesktopSidebar(){
     const navItems = [
         { href: '/admin/dashboard', icon: 'icon-[carbon--dashboard]', label: 'Dashboard' },
         { href: '/admin/analytics', icon: 'icon-[solar--chart-bold-duotone]', label: 'Analytics' },
-        { href: '/admin/activity', icon: 'icon-[solar--pulse-bold-duotone]', label: 'Recent Activity' },
+        { href: '/admin/activity', icon: 'icon-[solar--history-bold-duotone]', label: 'Recent Activity' },
         { href: '/admin/sales', icon: 'icon-[carbon--sales-ops]', label: 'Sales' },
         { href: '/admin/partners', icon: 'icon-[solar--users-group-two-rounded-bold-duotone]', label: 'Partners' },
         { href: '/admin/brands', icon: 'icon-[fluent--tag-24-regular]', label: 'Brands' },
@@ -278,6 +290,8 @@ export function DesktopSidebar(){
         { href: '/admin/access-control', icon: 'icon-[solar--shield-keyhole-bold-duotone]', label: 'Access Control' },
         { href: '/admin/inventory', icon: 'icon-[material-symbols--inventory-rounded]', label: 'Inventory' },
         { href: '/admin/settings', icon: 'icon-[carbon--settings]', label: 'Settings' },
+        { href: '/admin/monitoring/pulse', icon: 'icon-[solar--pulse-bold-duotone]', label: 'Laravel Pulse' },
+        { href: '/admin/monitoring/telescope', icon: 'icon-[solar--telescope-bold-duotone]', label: 'Laravel Telescope' },
     ];
 
     return (
@@ -292,7 +306,7 @@ export function DesktopSidebar(){
             </div>
             
             <div className="p-4 border-t">
-                <a target="_blank" href={`${process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000'}/`} className="flex items-center px-4 py-3 text-gray-500 hover:text-primary transition-colors font-bold text-sm bg-gray-50 rounded-xl group">
+                <a href={`${process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000'}/`} className="flex items-center px-4 py-3 text-gray-500 hover:text-primary transition-colors font-bold text-sm bg-gray-50 rounded-xl group">
                     <span className="icon-[ic--baseline-shopify] w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
                     View Live Shop
                 </a>

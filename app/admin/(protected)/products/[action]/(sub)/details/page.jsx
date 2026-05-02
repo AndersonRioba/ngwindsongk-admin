@@ -5,7 +5,8 @@ import { useParams, useSearchParams, useRouter } from "next/navigation"
 import { useContext, useState, useEffect } from "react"
 import Image from "next/image"
 import { CreateProductContext } from "@/app/lib/providers/CreateProductProvider"
-import Editor from "@/app/UI/WYSIWYG/Editor"
+import dynamic from 'next/dynamic'
+const Editor = dynamic(() => import("@/app/UI/WYSIWYG/Editor"), { ssr: false })
 import FileInput from "@/app/UI/FileInput";
 import { postFetcher, postFileFetcher, fetcher } from "@/app/lib/data";
 

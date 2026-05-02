@@ -3,6 +3,8 @@ import "./globals.css";
 import ContextProvider from "@/app/lib/ContextProvider";
 import Popup from "@/app/UI/Popup";
 import Overlays from "@/app/UI/Overlays";
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const lato = Lato({ 
   subsets: ["latin"], 
@@ -22,6 +24,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body suppressHydrationWarning className={`${lato.className} bg-gray-100/70`}>
         <>
+          <Analytics />
+          <SpeedInsights />
           <AuthProvider>
             <ContextProvider>
               {children}

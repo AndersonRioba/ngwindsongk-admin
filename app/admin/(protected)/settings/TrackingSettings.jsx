@@ -58,7 +58,7 @@ export default function TrackingSettings() {
             )}
 
             <div className="grid gap-8">
-                {/* Google Analytics / Ads Section */}
+                {/* Google Tracking Section */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border">
                     <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                         <span className="icon-[logos--google-tag-manager] w-6 h-6" />
@@ -71,10 +71,10 @@ export default function TrackingSettings() {
                                 type="text"
                                 value={settings.google_tag_id || ''}
                                 onChange={(e) => updateSetting('google_tag_id', e.target.value)}
-                                placeholder="e.g. G-XXXXXXXXXX or AW-XXXXXXXXXX"
+                                placeholder="e.g. GT-XXXXXXXX or G-XXXXXXXX"
                                 className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
-                            <p className="text-[10px] text-gray-500 mt-2 italic">The global site tag (gtag.js) will be automatically injected into all pages using this ID.</p>
+                            <p className="text-[10px] text-gray-500 mt-2 italic">A single Google Tag ID (starting with GT-, G-, or AW-) can often be used to track both Analytics and Ads. Enter your primary ID here.</p>
                         </div>
                     </div>
                 </div>

@@ -2,7 +2,16 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import useSWR from "swr";
-import { Doughnut, Bar, Line } from 'react-chartjs-2';
+import dynamic from 'next/dynamic';
+import { fetcher } from "@/app/lib/data";
+import Overlay from "@/app/UI/Overlay";
+import { CalenderRange } from "@/app/UI/Calender";
+import Spinner from "@/app/UI/Spinner";
+
+const Doughnut = dynamic(() => import('react-chartjs-2').then((mod) => mod.Doughnut), { ssr: false });
+const Bar = dynamic(() => import('react-chartjs-2').then((mod) => mod.Bar), { ssr: false });
+const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), { ssr: false });
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,10 +24,6 @@ import {
   PointElement,
   LineElement,
 } from 'chart.js';
-import { fetcher } from "@/app/lib/data";
-import Overlay from "@/app/UI/Overlay";
-import { CalenderRange } from "@/app/UI/Calender";
-import Spinner from "@/app/UI/Spinner";
 
 ChartJS.register(
   ArcElement,

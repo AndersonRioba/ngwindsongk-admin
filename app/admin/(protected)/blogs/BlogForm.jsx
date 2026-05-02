@@ -4,7 +4,8 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import useSWR from "swr"
 import { fetcher } from "@/app/lib/data"
-import Editor from "@/app/UI/WYSIWYG/Editor"
+import dynamic from 'next/dynamic'
+const Editor = dynamic(() => import("@/app/UI/WYSIWYG/Editor"), { ssr: false })
 
 export default function BlogForm({ initialData = null, isEdit = false }) {
     const router = useRouter();
