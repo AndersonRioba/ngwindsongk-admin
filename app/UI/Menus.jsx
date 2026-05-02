@@ -55,10 +55,7 @@ export function MobileSideMenu(){
                     <div className="mx-3"><span className={`icon-[solar--chart-bold-duotone] w-8 h-8`}/></div>
                     <span className="truncate text-xs font-bold text-center">Analytics</span>
                 </Link>
-                <Link href={'/admin/activity'} className={`flex items-center my-4 ${pathname==='/admin/activity'?'text-primary':''} `}>
-                    <div className="mx-3"><span className={`icon-[solar--history-bold-duotone] w-8 h-8`}/></div>
-                    <span className="truncate text-xs font-bold text-center">Recent Activity</span>
-                </Link>
+
                 <a href={`${process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000'}/`} className={`flex items-center my-4 ${pathname==='/'?'text-primary-light':''} `}>
                     <div className="mx-3"><span className={`icon-[ic--baseline-shopify] w-8 h-8`}/></div>
                     <span className="truncate text-xs font-bold text-center">Shop</span>
@@ -273,7 +270,7 @@ export function DesktopSidebar(){
     const navItems = [
         { href: '/admin/dashboard', icon: 'icon-[carbon--dashboard]', label: 'Dashboard' },
         { href: '/admin/analytics', icon: 'icon-[solar--chart-bold-duotone]', label: 'Analytics' },
-        { href: '/admin/activity', icon: 'icon-[solar--history-bold-duotone]', label: 'Recent Activity' },
+
         { href: '/admin/sales', icon: 'icon-[carbon--sales-ops]', label: 'Sales' },
         { href: '/admin/partners', icon: 'icon-[solar--users-group-two-rounded-bold-duotone]', label: 'Partners' },
         { href: '/admin/brands', icon: 'icon-[fluent--tag-24-regular]', label: 'Brands' },
