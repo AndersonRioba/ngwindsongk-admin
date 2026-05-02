@@ -120,9 +120,9 @@ export default function Page() {
 
     function getTotalStock(product) {
         if (product.product_variations?.length > 0) {
-            return product.product_variations.reduce((sum, v) => sum + (v.stock || 0), 0)
+            return product.product_variations.reduce((sum, v) => Number(sum) + Number(v.stock || 0), 0)
         }
-        return product.stock || 0
+        return Number(product.stock || 0)
     }
 
     const toggleExpand = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }))
