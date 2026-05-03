@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { fetcher, postData, putData, deleteData } from '@/app/lib/data'
 import { popupE } from '@/app/lib/trigger'
 import useSWR from 'swr'
@@ -12,6 +12,7 @@ export default function DeliveryZonesSettings() {
     const [isEditing, setIsEditing] = useState(false)
     const [currentZone, setCurrentZone] = useState({ id: null, name: '', parent_id: '', delivery_fee: '', sacco_rider: '' })
     const [search, setSearch] = useState('')
+    const fileInputRef = useRef(null)
 
     const { data, mutate } = useSWR(['/admin/locations', { search }], fetcher)
 
@@ -87,6 +88,52 @@ export default function DeliveryZonesSettings() {
         }
     }
 
+    const handleExport = () => {
+        const token = localStorage.getItem('token')
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/admin/locations/export?token=${token}`
+        window.open(url, '_blank')
+    }
+
+    const handleDownloadTemplate = () => {
+        const token = localStorage.getItem('token')
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/admin/locations/template?token=${token}`
+        window.open(url, '_blank')
+    }
+
+    const handleImport = async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const token = localStorage.getItem('token')
+        
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/locations/import`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            
+            const result = await response.json()
+            if (result.success) {
+                popupE('Success', result.message)
+                mutate()
+            } else {
+                popupE('Error', result.message || 'Import failed')
+            }
+        } catch (err) {
+            popupE('Error', 'An error occurred during import')
+        }
+        
+        // Clear the input
+        e.target.value = null
+    }
+
     const startEdit = (zone) => {
         setCurrentZone({
             id: zone.id,
@@ -110,15 +157,45 @@ export default function DeliveryZonesSettings() {
                     <h2 className="text-xl font-bold text-gray-800">Delivery Zones & Rates</h2>
                     <p className="text-sm text-gray-500 mt-1">Manage delivery locations, SACCO/Rider preferences, and their respective fees.</p>
                 </div>
-                <button 
-                    onClick={() => {
-                        setCurrentZone({ id: null, name: '', parent_id: '', delivery_fee: '', sacco_rider: '' })
-                        setIsEditing(true)
-                    }}
-                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors"
-                >
-                    + Add New Zone
-                </button>
+                <div className="flex gap-3">
+                    <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        onChange={handleImport} 
+                        className="hidden" 
+                        accept=".xlsx,.xls,.csv"
+                    />
+                    <button 
+                        onClick={handleDownloadTemplate}
+                        className="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2"
+                    >
+                        <span className="icon-[fluent--document-search-16-regular] w-4 h-4 text-blue-500" />
+                        Sample Template
+                    </button>
+                    <button 
+                        onClick={() => fileInputRef.current.click()}
+                        className="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2"
+                    >
+                        <span className="icon-[fluent--arrow-upload-16-regular] w-4 h-4 text-primary" />
+                        Import Excel
+                    </button>
+                    <button 
+                        onClick={handleExport}
+                        className="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2"
+                    >
+                        <span className="icon-[fluent--arrow-download-16-regular] w-4 h-4 text-gray-400" />
+                        Download Excel
+                    </button>
+                    <button 
+                        onClick={() => {
+                            setCurrentZone({ id: null, name: '', parent_id: '', delivery_fee: '', sacco_rider: '' })
+                            setIsEditing(true)
+                        }}
+                        className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors"
+                    >
+                        + Add New Zone
+                    </button>
+                </div>
             </div>
 
             {isEditing && (
