@@ -74,7 +74,7 @@ export default function Page() {
             } else {
                 popupE('error', res.message || 'Deletion failed')
             }
-        }, `/admin/nav-menus/${id}`)
+        }, {}, `/admin/nav-menus/${id}`)
     }
 
     const handleToggleActive = async (item) => {

@@ -84,6 +84,7 @@ export default function VouchersPage() {
                     toast.error(res.message || 'Failed to delete voucher');
                 }
             },
+            {},
             `/vouchers/${id}`
         );
     };
