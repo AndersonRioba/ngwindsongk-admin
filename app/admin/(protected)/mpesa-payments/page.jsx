@@ -7,12 +7,13 @@ import { fetcher } from "@/app/lib/data";
 export default function MpesaPaymentsPage() {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
+    const [perPage, setPerPage] = useState(20);
     
-    const { data, error, isLoading } = useSWR(['/admin/mpesa-payments', { page, search }], fetcher);
+    const { data, error, isLoading } = useSWR(['/admin/mpesa-payments', { page, search, per_page: perPage }], fetcher);
     
     useEffect(() => {
         setPage(1);
-    }, [search]);
+    }, [search, perPage]);
 
     const payments = data?.data || [];
     const pagination = data || {};
@@ -21,8 +22,8 @@ export default function MpesaPaymentsPage() {
         <main className="p-6">
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[#5cb85c]/10 rounded-2xl flex items-center justify-center border border-[#5cb85c]/20">
-                        <span className="icon-[simple-icons--mpesa] w-7 h-7 text-[#5cb85c]" />
+                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20">
+                        <span className="icon-[solar--wallet-money-linear] w-7 h-7 text-primary" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-gray-800">M-Pesa Payments</h1>
@@ -30,7 +31,20 @@ export default function MpesaPaymentsPage() {
                     </div>
                 </div>
                 
-                <div className="flex gap-4">
+                <div className="flex gap-4 items-center">
+                    <div className="flex items-center gap-2 bg-white border rounded-lg px-3 py-1.5 shadow-sm">
+                        <span className="text-xs font-bold text-gray-500 uppercase">Per Page:</span>
+                        <select 
+                            value={perPage} 
+                            onChange={e => setPerPage(parseInt(e.target.value))}
+                            className="text-sm font-bold text-gray-700 bg-transparent focus:outline-none cursor-pointer"
+                        >
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
                     <div className="relative">
                         <span className="icon-[solar--magnifer-linear] w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input 
