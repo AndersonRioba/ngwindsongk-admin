@@ -40,9 +40,9 @@ export default function MpesaPaymentsPage() {
                     <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-bold">
                         <tr>
                             <th className="px-6 py-4">Date</th>
-                            <th className="px-6 py-4">Phone</th>
+                            <th className="px-6 py-4">Time</th>
+                            <th className="px-6 py-4">Transaction Code</th>
                             <th className="px-6 py-4">Amount (KES)</th>
-                            <th className="px-6 py-4">Receipt Number</th>
                             <th className="px-6 py-4">Order Ref</th>
                             <th className="px-6 py-4">Status</th>
                         </tr>
@@ -58,20 +58,31 @@ export default function MpesaPaymentsPage() {
                             </tr>
                         ) : payments.map((payment) => (
                             <tr key={payment.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 text-gray-600">
-                                    {new Date(payment.created_at).toLocaleDateString()} {new Date(payment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                <td className="px-6 py-4 text-gray-600 font-medium">
+                                    {new Date(payment.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                 </td>
-                                <td className="px-6 py-4 font-medium text-gray-800">{payment.phone}</td>
-                                <td className="px-6 py-4 font-bold text-gray-900">{parseFloat(payment.amount).toLocaleString()}</td>
-                                <td className="px-6 py-4 font-mono text-xs text-primary">{payment.mpesa_receipt_number || 'N/A'}</td>
-                                <td className="px-6 py-4">
-                                    <span className="text-gray-500">#{payment.account_reference}</span>
+                                <td className="px-6 py-4 text-gray-500">
+                                    {new Date(payment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                                 </td>
                                 <td className="px-6 py-4">
-                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
-                                        payment.status === 'success' ? 'bg-green-100 text-green-700' :
-                                        payment.status === 'failed' ? 'bg-red-100 text-red-700' :
-                                        'bg-yellow-100 text-yellow-700'
+                                    <div className="flex flex-col">
+                                        <span className="font-mono text-sm font-bold text-primary tracking-wider">{payment.mpesa_receipt_number || 'PENDING'}</span>
+                                        <span className="text-[10px] text-gray-400 uppercase font-bold mt-1">Ref: {payment.checkout_request_id?.slice(-8)}</span>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 font-black text-gray-900">
+                                    {parseFloat(payment.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </td>
+                                <td className="px-6 py-4">
+                                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-bold border border-gray-200">
+                                        {payment.account_reference}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider ${
+                                        payment.status === 'success' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                        payment.status === 'failed' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                        'bg-yellow-100 text-yellow-700 border border-yellow-200 animate-pulse'
                                     }`}>
                                         {payment.status}
                                     </span>
