@@ -8,7 +8,7 @@ export default function MpesaPaymentsPage() {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
     
-    const { data, error, isLoading } = useSWR([`/admin/mpesa-payments?page=${page}&search=${search}`, {}], fetcher);
+    const { data, error, isLoading } = useSWR(['/admin/mpesa-payments', { page, search }], fetcher);
 
     const payments = data?.data || [];
     const pagination = data || {};

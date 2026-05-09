@@ -19,8 +19,9 @@ export default function SalesSettings() {
         const loadSettings = async () => {
             try {
                 // Fetch settings for both delivery and sales group
-                const deliveryRes = await fetcher(['/settings?group=delivery', {}]);
-                const salesRes = await fetcher(['/settings?group=sales', {}]);
+                // Passing parameters in the second element of the fetcher array to avoid double question marks
+                const deliveryRes = await fetcher(['/settings', { group: 'delivery' }]);
+                const salesRes = await fetcher(['/settings', { group: 'sales' }]);
                 
                 setSettings({
                     free_delivery_threshold_amount: deliveryRes.data?.free_delivery_threshold_amount || '5000',
