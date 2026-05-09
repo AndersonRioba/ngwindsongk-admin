@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/app/lib/data";
 
@@ -9,6 +9,10 @@ export default function MpesaPaymentsPage() {
     const [search, setSearch] = useState('');
     
     const { data, error, isLoading } = useSWR(['/admin/mpesa-payments', { page, search }], fetcher);
+    
+    useEffect(() => {
+        setPage(1);
+    }, [search]);
 
     const payments = data?.data || [];
     const pagination = data || {};
@@ -16,9 +20,14 @@ export default function MpesaPaymentsPage() {
     return (
         <main className="p-6">
             <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-800">M-Pesa Payments</h1>
-                    <p className="text-gray-500 text-sm">View all M-Pesa STK push transactions</p>
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-[#5cb85c]/10 rounded-2xl flex items-center justify-center border border-[#5cb85c]/20">
+                        <span className="icon-[simple-icons--mpesa] w-7 h-7 text-[#5cb85c]" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-800">M-Pesa Payments</h1>
+                        <p className="text-gray-500 text-sm">View all M-Pesa STK push transactions</p>
+                    </div>
                 </div>
                 
                 <div className="flex gap-4">
@@ -96,22 +105,53 @@ export default function MpesaPaymentsPage() {
                 {pagination.last_page > 1 && (
                     <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-between">
                         <p className="text-xs text-gray-500">
-                            Showing page {pagination.current_page} of {pagination.last_page}
+                            Showing page <span className="font-bold text-gray-700">{pagination.current_page}</span> of <span className="font-bold text-gray-700">{pagination.last_page}</span>
+                            {pagination.total && <span className="ml-2">({pagination.total} total records)</span>}
                         </p>
-                        <div className="flex gap-2">
+                        <div className="flex gap-1.5">
                             <button 
                                 disabled={pagination.current_page === 1}
                                 onClick={() => setPage(p => p - 1)}
-                                className="px-3 py-1 border rounded bg-white text-sm disabled:opacity-50"
+                                className="w-8 h-8 flex items-center justify-center border rounded-lg bg-white text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-white transition-colors"
                             >
-                                Previous
+                                <span className="icon-[solar--alt-arrow-left-linear] w-4 h-4" />
                             </button>
+                            
+                            {/* Dynamic Page Numbers */}
+                            {Array.from({ length: Math.min(5, pagination.last_page) }, (_, i) => {
+                                let pageNum = i + 1;
+                                if (pagination.last_page > 5) {
+                                    if (pagination.current_page > 3) {
+                                        pageNum = pagination.current_page - 2 + i;
+                                        if (pageNum + (4-i) > pagination.last_page) {
+                                            pageNum = pagination.last_page - 4 + i;
+                                        }
+                                    }
+                                }
+                                if (pageNum < 1) pageNum = i + 1;
+                                if (pageNum > pagination.last_page) return null;
+
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setPage(pageNum)}
+                                        className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold transition-all ${
+                                            pagination.current_page === pageNum 
+                                            ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105' 
+                                            : 'bg-white border text-gray-600 hover:bg-gray-100'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
+
                             <button 
                                 disabled={pagination.current_page === pagination.last_page}
                                 onClick={() => setPage(p => p + 1)}
-                                className="px-3 py-1 border rounded bg-white text-sm disabled:opacity-50"
+                                className="w-8 h-8 flex items-center justify-center border rounded-lg bg-white text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-white transition-colors"
                             >
-                                Next
+                                <span className="icon-[solar--alt-arrow-right-linear] w-4 h-4" />
                             </button>
                         </div>
                     </div>
