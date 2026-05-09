@@ -7,6 +7,7 @@ import { hide, show, nowYouDont, nowYouSee} from "@/app/lib/controlls";
 import useAuth from "@/app/hooks/useAuth";
 import useSWR from "swr";
 import { fetcher } from "@/app/lib/data";
+import { getStoreUrl } from "@/app/lib/urls";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, '') || '';
 
@@ -58,7 +59,7 @@ export function MobileSideMenu(){
                     <span className="truncate text-xs font-bold text-center">Analytics</span>
                 </Link>
 
-                <a href={`${process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000'}/`} className={`flex items-center my-4 ${pathname==='/'?'text-primary-light':''} `}>
+                <a href={`${getStoreUrl()}/`} className={`flex items-center my-4 ${pathname==='/'?'text-primary-light':''} `}>
                     <div className="mx-3"><span className={`icon-[ic--baseline-shopify] w-8 h-8`}/></div>
                     <span className="truncate text-xs font-bold text-center">Shop</span>
                 </a>
@@ -310,7 +311,7 @@ export function DesktopSidebar(){
             </div>
             
             <div className="p-4 border-t">
-                <a href={`${process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000'}/`} className="flex items-center px-4 py-3 text-gray-500 hover:text-primary transition-colors font-bold text-sm bg-gray-50 rounded-xl group">
+                <a href={`${getStoreUrl()}/`} className="flex items-center px-4 py-3 text-gray-500 hover:text-primary transition-colors font-bold text-sm bg-gray-50 rounded-xl group">
                     <span className="icon-[ic--baseline-shopify] w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
                     View Live Shop
                 </a>

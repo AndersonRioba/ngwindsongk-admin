@@ -4,6 +4,7 @@ import useAuth from "@/app/hooks/useAuth";
 import { useRouter, useSearchParams } from "next/navigation";
 import Logo from "@/app/UI/Logo";
 import Spinner from "@/app/UI/Spinner";
+import { getStoreUrl } from "@/app/lib/urls";
 
 export default function LoginPage() {
     return (
@@ -42,18 +43,7 @@ function LoginContent() {
                 router.push('/admin/dashboard');
             } else {
                 console.log('Regular user on admin login, redirecting to shop');
-                let storeUrl = process.env.NEXT_PUBLIC_STORE_URL;
-                
-                // Smart fallback for production
-                if (!storeUrl) {
-                    if (typeof window !== 'undefined' && window.location.hostname.includes('ngwindsongk.com')) {
-                        storeUrl = 'https://ngwindsongk.com';
-                    } else {
-                        storeUrl = 'http://localhost:3000';
-                    }
-                }
-                
-                window.location.href = `${storeUrl}/login?token=${token}`;
+                window.location.href = `${getStoreUrl()}/login?token=${token}`;
             }
         }
     }, [user, token, isAdmin, isLoading, router]);
@@ -79,18 +69,7 @@ function LoginContent() {
             if (isResultAdmin) {
                 router.push('/admin/dashboard');
             } else {
-                let storeUrl = process.env.NEXT_PUBLIC_STORE_URL;
-
-                // Smart fallback for production
-                if (!storeUrl) {
-                    if (typeof window !== 'undefined' && window.location.hostname.includes('ngwindsongk.com')) {
-                        storeUrl = 'https://ngwindsongk.com';
-                    } else {
-                        storeUrl = 'http://localhost:3000';
-                    }
-                }
-
-                window.location.href = `${storeUrl}/login?token=${result.token}`;
+                window.location.href = `${getStoreUrl()}/login?token=${result.token}`;
             }
         } else {
             console.error('Login failed:', result.message);

@@ -3,25 +3,25 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useAuth from "@/app/hooks/useAuth";
 import Spinner from "@/app/UI/Spinner";
+import { getStoreUrl } from "@/app/lib/urls";
 
 export default function RootPage() {
-    const { user, token, isLoading } = useAuth();
+    const { user, token, isAdmin, isLoading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        console.log('Admin Root redirection check:', { isLoading, token, role: user?.role });
+        console.log('Admin Root redirection check:', { isLoading, token, isAdmin, role: user?.role });
         if (!isLoading && token && user) {
-            if (user?.role === 'admin' || user?.role === 'super_admin') {
+            if (isAdmin) {
                 router.push('/admin/dashboard');
             } else {
                 console.log('Regular user on admin root, redirecting to shop');
-                const storeUrl = process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000';
-                window.location.href = `${storeUrl}/login?token=${token}`;
+                window.location.href = `${getStoreUrl()}/login?token=${token}`;
             }
         } else if (!isLoading && !token) {
             router.push('/login');
         }
-    }, [user, token, isLoading, router]);
+    }, [user, token, isAdmin, isLoading, router]);
 
     if (isLoading) {
         return <Spinner full={true} />;
@@ -38,7 +38,7 @@ export default function RootPage() {
             <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 max-w-md w-full">
                 <p className="text-gray-700 mb-6">Explore our shop and manage your profile.</p>
                 <a 
-                    href={`${process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000'}/`} 
+                    href={`${getStoreUrl()}/`} 
                     className="inline-block bg-primary text-white font-bold py-3 px-8 rounded-lg uppercase tracking-widest hover:bg-[#b5952f] transition-colors"
                 >
                     Visit Shop

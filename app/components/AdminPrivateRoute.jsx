@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useAuth from "@/app/hooks/useAuth";
 import Spinner from "@/app/UI/Spinner";
+import { getStoreUrl } from "@/app/lib/urls";
 
 export default function AdminPrivateRoute({ children }) {
     const { user, token, isAdmin, isLoading, isVerifyingToken } = useAuth();
@@ -17,8 +18,7 @@ export default function AdminPrivateRoute({ children }) {
             } else if (user && !isAdmin) {
                 // Only redirect to shop if we have a user object and confirmed they are NOT an admin
                 console.log('User identified as non-admin, redirecting to shop');
-                const storeUrl = process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000';
-                window.location.href = `${storeUrl}/login?token=${token}`;
+                window.location.href = `${getStoreUrl()}/login?token=${token}`;
             }
         }
     }, [isAdmin, token, isLoading, isVerifyingToken, router, user]);
