@@ -1,4 +1,4 @@
-import { Lato } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import ContextProvider from "@/app/lib/ContextProvider";
 import Popup from "@/app/UI/Popup";
@@ -6,10 +6,11 @@ import Overlays from "@/app/UI/Overlays";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
-const lato = Lato({ 
+const outfit = Outfit({ 
   subsets: ["latin"], 
-  weight: ["100", "300", "400", "700", "900"],
-  style: ["normal", "italic"] 
+  weight: ['300', '400', '500', '600', '700'], 
+  style: 'normal',
+  display: 'swap' 
 });
 
 export const metadata = {
@@ -22,7 +23,7 @@ import AuthProvider from "@/app/context/AuthContext";
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning className={`${lato.className} bg-gray-100/70`}>
+      <body suppressHydrationWarning className={`${outfit.className} bg-gray-100/70`}>
         <>
           <Analytics />
           <SpeedInsights />
