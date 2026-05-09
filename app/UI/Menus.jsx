@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation";
 import Logo from "@/app/UI/Logo";
-import { hide, show} from "@/app/lib/controlls";
+import { hide, show, nowYouDont, nowYouSee} from "@/app/lib/controlls";
 import useAuth from "@/app/hooks/useAuth";
 import useSWR from "swr";
 import { fetcher } from "@/app/lib/data";
@@ -12,15 +12,15 @@ const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, '') || '';
 
 export function MobileTopMenu(){
     return(
-        <div className="block md:hidden">
-            <div className="flex justify-between items-center px-3 py-3  mb-1">
+        <div className="block md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b shadow-sm">
+            <div className="flex justify-between items-center px-4 py-3">
                 <Logo/>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
                     <button className="relative">
-                        <span className="icon-[octicon--bell-16] w-6 h-6"></span>
-                        <div className="absolute -right-2 md:-right-3 bottom-0 md:-bottom-1 flex items-center justify-center rounded-full bg-primary text-white w-4 md:w-5 h-4 md:h-5 p-1 text-xs">{0}</div>
+                        <span className="icon-[octicon--bell-16] w-6 h-6 text-gray-700"></span>
+                        <div className="absolute -right-2 bottom-0 flex items-center justify-center rounded-full bg-primary text-white w-4 h-4 p-1 text-[10px] font-bold">{0}</div>
                     </button>
-                    <button onClick={e=>show('mobile_side_menu')} className="icon-[solar--hamburger-menu-outline] w-8 h-8"/>
+                    <button onClick={e=>{show('mobile_side_menu'); nowYouSee('mobile_menu_backdrop');}} className="icon-[solar--hamburger-menu-outline] w-8 h-8 text-gray-800"/>
                 </div>
             </div>
         </div>
@@ -32,12 +32,14 @@ export function MobileSideMenu(){
     let pathname = usePathname();
     useEffect(()=>{
         hide('mobile_side_menu');
+        nowYouDont('mobile_menu_backdrop');
     },[pathname])
 
     return(
         <>
-        <div id="mobile_side_menu" className="block fixed z-40 top-0 md:top-10 2xl:top-24 right-0 w-[60vw] translate-x-[60vw] md:w-[20vw] md:h-[80vh] md:overflow-y-scroll md:rounded-lg pt-4 h-[100vh] bg-gray-50 md:hidden px-2 md:px-4 md:large-scroll">
-            <button onClick={e=>hide('mobile_side_menu')} className="w-full text-right pr-4 mt-2 absolute"><span className="icon-[material-symbols-light--close] w-8 h-8"/></button>
+        <div id="mobile_menu_backdrop" onClick={() => {hide('mobile_side_menu'); nowYouDont('mobile_menu_backdrop');}} className="fixed inset-0 bg-black/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+        <div id="mobile_side_menu" className="block fixed z-50 top-0 right-0 w-[80vw] translate-x-[80vw] h-[100vh] bg-white md:hidden px-2 pt-4 pb-20 shadow-2xl border-l overflow-y-auto">
+            <button onClick={e=>{hide('mobile_side_menu'); nowYouDont('mobile_menu_backdrop');}} className="w-full text-right pr-4 mt-2 absolute top-4 right-2"><span className="icon-[material-symbols-light--close] w-8 h-8 text-gray-500"/></button>
             <div className="my-12"></div>
             {
                 token && !isLoading &&

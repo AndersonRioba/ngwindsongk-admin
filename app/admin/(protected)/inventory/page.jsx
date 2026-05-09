@@ -194,7 +194,7 @@ export default function Page() {
 
             {/* Products Table */}
             <section className="bg-white rounded-xl shadow-sm overflow-x-auto">
-                <table className="w-full text-left">
+                <table className="w-full text-left whitespace-nowrap">
                     <thead className="border-b bg-gray-50">
                         <tr>
                             <th className="p-4 text-sm font-semibold text-gray-600 w-8"></th>

@@ -36,8 +36,8 @@ function OrderDetail({ order, onClose }) {
     }
 
     return (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-2 md:p-4" onClick={onClose}>
+            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-4 md:p-6 mx-2 md:mx-0" onClick={e => e.stopPropagation()}>
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-semibold flex items-center gap-2">
                         Order #{order.id}
@@ -301,7 +301,7 @@ export default function Page() {
 
             {/* Orders Table */}
             <section className="bg-white rounded-xl shadow-sm overflow-x-auto">
-                <table className="w-full text-left">
+                <table className="w-full text-left whitespace-nowrap">
                     <thead className="border-b bg-gray-50">
                         <tr>
                             <th className="p-4 text-sm font-semibold text-gray-600">Order</th>

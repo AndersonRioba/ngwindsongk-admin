@@ -5,7 +5,7 @@ export default function AdminLayout({ children }) {
     return (
         <AdminPrivateRoute>
             <Header />
-            <main className="md:pl-64 md:pt-28 2xl:pt-32 transition-all duration-300 min-h-screen">
+            <main className="pt-16 md:pl-64 md:pt-28 2xl:pt-32 transition-all duration-300 min-h-screen">
                 <div className="relative">
                     {children}
                 </div>
