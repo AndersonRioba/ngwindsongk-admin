@@ -125,7 +125,7 @@ export function MobileSideMenu(){
                     <span className="truncate text-xs font-bold text-center">Delivery Zones</span>
                 </Link>
                 <Link href={'/admin/mpesa-payments'} className={`flex items-center my-4 ${pathname==='/admin/mpesa-payments'?'text-primary':''} `}>
-                    <div className="mx-3"><span className={`icon-[simple-icons--mpesa] w-8 h-8 text-[#5cb85c]`}/></div>
+                    <div className="mx-3"><span className={`icon-[solar--wallet-money-linear] w-8 h-8`}/></div>
                     <span className="truncate text-xs font-bold text-center">M-Pesa Payments</span>
                 </Link>
                 <Link href={'/admin/sales-settings'} className={`flex items-center my-4 ${pathname.includes('/admin/sales-settings')?'text-primary':''} `}>
@@ -284,7 +284,7 @@ export function DesktopSidebar(){
         { href: '/admin/vouchers', icon: 'icon-[solar--ticket-sale-bold-duotone]', label: 'Vouchers' },
         { href: '/admin/navigation', icon: 'icon-[material-symbols--map-outline]', label: 'Navigation' },
         { href: '/admin/delivery-zones', icon: 'icon-[fluent--vehicle-truck-24-regular]', label: 'Delivery Zones' },
-        { href: '/admin/mpesa-payments', icon: 'icon-[simple-icons--mpesa]', label: 'M-Pesa Payments' },
+        { href: '/admin/mpesa-payments', icon: 'icon-[solar--wallet-money-linear]', label: 'M-Pesa Payments' },
         { href: '/admin/sales-settings', icon: 'icon-[fluent--shopping-bag-24-regular]', label: 'Sales Settings' },
         { href: '/admin/recipes', icon: 'icon-[arcticons--reciper]', label: 'Recipes' },
         { href: '/admin/blogs', icon: 'icon-[mdi--post-outline]', label: 'Blogs' },
