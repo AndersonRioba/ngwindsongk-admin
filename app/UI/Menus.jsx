@@ -60,9 +60,10 @@ export function MobileSideMenu({ menuOpen, setMenuOpen }){
         
         <div 
             id="mobile_side_menu" 
-            className={`fixed z-[80] top-0 right-0 w-[85vw] h-[100vh] bg-white md:hidden shadow-2xl border-l flex flex-col transition-transform duration-300 ease-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+            className={`fixed z-[80] top-0 right-0 w-[85vw] h-full bg-white md:hidden shadow-2xl border-l flex flex-col transition-transform duration-300 ease-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+            style={{ height: '100dvh' }}
         >
-            <div className="flex justify-between items-center p-6 border-b border-gray-50">
+            <div className="flex justify-between items-center p-6 border-b border-gray-50 flex-shrink-0">
                 <div className="flex flex-col">
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Administrative Terminal</span>
                     <Logo />
@@ -72,7 +73,7 @@ export function MobileSideMenu({ menuOpen, setMenuOpen }){
                 </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto px-4 py-8">
+            <div className="flex-1 overflow-y-auto px-4 py-8 custom-scrollbar">
                 {
                     token && !isLoading &&
                     <div className="mb-10 px-4">
@@ -97,7 +98,6 @@ export function MobileSideMenu({ menuOpen, setMenuOpen }){
                         View Live Shop
                     </a>
 
-                    {/* We pass setMenuOpen to SubMenu to allow closing on link click */}
                     <MobileBrandSubMenu pathname={pathname} setMenuOpen={setMenuOpen} />
 
                     <div className="pt-4 pb-2">
@@ -130,21 +130,22 @@ export function MobileSideMenu({ menuOpen, setMenuOpen }){
                         <SidebarItem href="/admin/monitoring/telescope" icon="icon-[solar--telescope-bold-duotone]" label="Deep Telescope" pathname={pathname} />
                         <SidebarItem href="/admin/settings" icon="icon-[carbon--settings]" label="Core Settings" pathname={pathname} />
                     </div>
+
+                    {/* Moved Sign Out inside scrollable area for better mobile reliability */}
+                    <div className="pt-8 pb-12">
+                        {
+                            (token && !isLoading) ?
+                            <button onClick={e=>{ logout(); setMenuOpen(false); }} className="w-full flex items-center justify-center gap-3 py-5 text-Error font-black uppercase tracking-widest text-[10px] bg-red-50/50 rounded-2xl border border-Error/10 hover:bg-Error hover:text-white transition-all active:scale-95">
+                                <span className="icon-[solar--logout-bold-duotone] w-6 h-6"/>
+                                Sign Out Terminal
+                            </button>
+                            :
+                            <Link href={'/login'} className="w-full flex items-center justify-center py-5 bg-primary text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all" >
+                                Log In
+                            </Link>
+                        }
+                    </div>
                 </div>
-            </div>
-            
-            <div className="p-6 border-t bg-gray-50/50">
-                {
-                    (token && !isLoading) ?
-                    <button onClick={e=>{ logout(); setMenuOpen(false); }} className="w-full flex items-center justify-center gap-3 py-5 text-Error font-black uppercase tracking-widest text-[10px] bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-Error/10 hover:bg-Error hover:text-white transition-all active:scale-95">
-                        <span className="icon-[solar--logout-bold-duotone] w-6 h-6"/>
-                        Sign Out Terminal
-                    </button>
-                    :
-                    <Link href={'/login'} className="w-full flex items-center justify-center py-5 bg-primary text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all" >
-                        Log In
-                    </Link>
-                }
             </div>
         </div>
         </>
