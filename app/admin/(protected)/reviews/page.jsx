@@ -131,8 +131,8 @@ export default function ReviewManagementPage() {
             </div>
 
             <section className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden mb-10">
-                <div className="overflow-x-auto scrollbar-hide">
-                    <table className="w-full text-left border-collapse whitespace-nowrap">
+                <div className="admin-table-wrapper scrollbar-hide">
+                    <table className="admin-table text-left">
                         <thead>
                             <tr className="bg-gray-50/50 border-b border-gray-100">
                                 <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Reviewer</th>

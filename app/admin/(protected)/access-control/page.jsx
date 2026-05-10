@@ -45,8 +45,8 @@ const PermissionsMatrix = ({ roles, allPermissions, onUpdate }) => {
                 </div>
             </div>
 
-            <div className="overflow-x-auto custom-scrollbar relative z-10 pb-4">
-                <table className="w-full text-left border-separate border-spacing-0">
+            <div className="admin-table-wrapper custom-scrollbar relative z-10 pb-4">
+                <table className="min-w-full text-left border-separate border-spacing-0">
                     <thead>
                         <tr>
                             <th className="sticky left-0 z-20 bg-white/80 backdrop-blur-md px-6 py-8 border-b border-gray-100 min-w-[200px]">

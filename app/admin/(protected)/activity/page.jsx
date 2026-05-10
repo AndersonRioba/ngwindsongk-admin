@@ -29,8 +29,8 @@ export default function RecentActivityPage() {
             </div>
 
             <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-100 border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                <div className="admin-table-wrapper scrollbar-hide">
+                    <table className="admin-table text-left">
                         <thead>
                             <tr className="bg-gray-50/50 border-b border-gray-100 text-[10px] uppercase tracking-widest text-gray-400 font-black">
                                 <th className="px-8 py-5">Timestamp</th>

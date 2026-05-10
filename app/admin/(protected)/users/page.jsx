@@ -387,8 +387,8 @@ export default function UsersPage() {
                     </div>
 
                     <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100">
-                        <div className="overflow-x-auto scrollbar-hide">
-                            <table className="w-full text-left whitespace-nowrap">
+                        <div className="admin-table-wrapper scrollbar-hide">
+                            <table className="admin-table text-left">
                                 <thead className="bg-[#0a0a0a] text-primary uppercase text-[10px] font-black tracking-widest border-b border-white/5">
                                     <tr>
                                         <th className="px-8 py-6">Identity</th>
@@ -479,8 +479,8 @@ export default function UsersPage() {
                     </div>
 
                     <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100">
-                        <div className="overflow-x-auto scrollbar-hide">
-                            <table className="w-full text-left whitespace-nowrap">
+                        <div className="admin-table-wrapper scrollbar-hide">
+                            <table className="admin-table text-left">
                                 <thead className="bg-[#0a0a0a] text-white">
                                     <tr>
                                         <th className="px-8 py-6 font-black uppercase tracking-[0.2em] text-[10px]">Administrative Identity</th>

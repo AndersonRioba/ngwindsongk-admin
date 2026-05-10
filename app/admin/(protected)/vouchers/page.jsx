@@ -130,8 +130,8 @@ export default function VouchersPage() {
                 <VoucherStats vouchers={vouchers} />
 
                 <div className="bg-white rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl shadow-gray-200/40 overflow-hidden border border-gray-50">
-                    <div className="overflow-x-auto scrollbar-hide">
-                        <table className="w-full text-left whitespace-nowrap">
+                    <div className="admin-table-wrapper scrollbar-hide">
+                        <table className="admin-table text-left">
                             <thead className="bg-[#0f172a] text-white">
                                 <tr>
                                     <th className="px-10 py-8 text-[10px] font-black tracking-[0.2em] uppercase">Voucher Code</th>

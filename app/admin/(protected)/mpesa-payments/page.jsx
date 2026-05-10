@@ -59,8 +59,8 @@ export default function MpesaPaymentsPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-sm border overflow-hidden">
-                <div className="overflow-x-auto scrollbar-hide">
-                    <table className="w-full text-left border-collapse whitespace-nowrap">
+                <div className="admin-table-wrapper scrollbar-hide">
+                    <table className="admin-table text-left">
                         <thead className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest border-b">
                             <tr>
                                 <th className="px-8 py-5">Timestamp</th>

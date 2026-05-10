@@ -192,9 +192,9 @@ export default function Page() {
                 </div>
             </div>
 
-            {/* Products Table */}
-            <section className="bg-white rounded-xl shadow-sm overflow-x-auto">
-                <table className="w-full text-left whitespace-nowrap">
+            <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-10">
+                <div className="admin-table-wrapper scrollbar-hide">
+                    <table className="admin-table text-left">
                     <thead className="border-b bg-gray-50">
                         <tr>
                             <th className="p-4 text-sm font-semibold text-gray-600 w-8"></th>
@@ -350,6 +350,7 @@ export default function Page() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </section>
 
             {/* Pagination */}

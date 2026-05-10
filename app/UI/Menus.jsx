@@ -223,7 +223,7 @@ function ProductsAccordion({ pathname }) {
     );
 }
 
-/** Mobile version — simpler, inline brand links */** Mobile version — simpler, inline brand links */
+/** Mobile version — simpler, inline brand links */
 function MobileBrandSubMenu({ pathname, setMenuOpen }) {
     const searchParams = useSearchParams();
     const activeBrand = searchParams.get('brand') || '';
