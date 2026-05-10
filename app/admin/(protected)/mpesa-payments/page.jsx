@@ -19,21 +19,21 @@ export default function MpesaPaymentsPage() {
     const pagination = data || {};
 
     return (
-        <main className="p-6">
-            <div className="flex justify-between items-center mb-6">
+        <main className="p-4 md:p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20">
+                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 shrink-0">
                         <span className="icon-[solar--wallet-money-linear] w-7 h-7 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-800">M-Pesa Payments</h1>
-                        <p className="text-gray-500 text-sm">View all M-Pesa STK push transactions</p>
+                        <h1 className="text-2xl font-black text-gray-800 tracking-tight">M-Pesa Payments</h1>
+                        <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-0.5">STK Push Transaction Ledger</p>
                     </div>
                 </div>
                 
-                <div className="flex gap-4 items-center">
-                    <div className="flex items-center gap-2 bg-white border rounded-lg px-3 py-1.5 shadow-sm">
-                        <span className="text-xs font-bold text-gray-500 uppercase">Per Page:</span>
+                <div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
+                    <div className="flex items-center gap-2 bg-white border rounded-xl px-4 py-2 shadow-sm">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Show</span>
                         <select 
                             value={perPage} 
                             onChange={e => setPerPage(parseInt(e.target.value))}
@@ -45,12 +45,12 @@ export default function MpesaPaymentsPage() {
                             <option value="100">100</option>
                         </select>
                     </div>
-                    <div className="relative">
-                        <span className="icon-[solar--magnifer-linear] w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <div className="relative flex-1 md:flex-none md:w-72">
+                        <span className="icon-[solar--magnifer-linear] w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input 
                             type="text" 
-                            placeholder="Search phone, receipt, or order..." 
-                            className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 w-64"
+                            placeholder="Query by phone, receipt..." 
+                            className="w-full pl-12 pr-4 py-3 bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all text-sm font-medium"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                         />
@@ -58,70 +58,74 @@ export default function MpesaPaymentsPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                    <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-bold">
-                        <tr>
-                            <th className="px-6 py-4">Date</th>
-                            <th className="px-6 py-4">Time</th>
-                            <th className="px-6 py-4">Transaction Code</th>
-                            <th className="px-6 py-4">Amount (KES)</th>
-                            <th className="px-6 py-4">Order Ref</th>
-                            <th className="px-6 py-4">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y text-sm">
-                        {isLoading ? (
+            <div className="bg-white rounded-3xl shadow-sm border overflow-hidden">
+                <div className="overflow-x-auto scrollbar-hide">
+                    <table className="w-full text-left border-collapse whitespace-nowrap">
+                        <thead className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest border-b">
                             <tr>
-                                <td colSpan="6" className="px-6 py-10 text-center text-gray-400">Loading payments...</td>
+                                <th className="px-8 py-5">Timestamp</th>
+                                <th className="px-8 py-5">Transaction Code</th>
+                                <th className="px-8 py-5">Amount (KES)</th>
+                                <th className="px-8 py-5">Order Reference</th>
+                                <th className="px-8 py-5 text-center">Execution Status</th>
                             </tr>
-                        ) : payments.length === 0 ? (
-                            <tr>
-                                <td colSpan="6" className="px-6 py-10 text-center text-gray-400">No payments found.</td>
-                            </tr>
-                        ) : payments.map((payment) => (
-                            <tr key={payment.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 text-gray-600 font-medium">
-                                    {new Date(payment.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
-                                </td>
-                                <td className="px-6 py-4 text-gray-500">
-                                    {new Date(payment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="flex flex-col">
-                                        <span className="font-mono text-sm font-bold text-primary tracking-wider">{payment.mpesa_receipt_number || 'PENDING'}</span>
-                                        <span className="text-[10px] text-gray-400 uppercase font-bold mt-1">Ref: {payment.checkout_request_id?.slice(-8)}</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 font-black text-gray-900">
-                                    {parseFloat(payment.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-bold border border-gray-200">
-                                        {payment.account_reference}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider ${
-                                        payment.status === 'success' ? 'bg-green-100 text-green-700 border border-green-200' :
-                                        payment.status === 'failed' ? 'bg-red-100 text-red-700 border border-red-200' :
-                                        'bg-yellow-100 text-yellow-700 border border-yellow-200 animate-pulse'
-                                    }`}>
-                                        {payment.status}
-                                    </span>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y text-sm">
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan="5" className="px-8 py-20 text-center text-gray-400 font-medium italic">Synchronizing payment data...</td>
+                                </tr>
+                            ) : payments.length === 0 ? (
+                                <tr>
+                                    <td colSpan="5" className="px-8 py-20 text-center text-gray-400 font-medium italic">No transaction records found.</td>
+                                </tr>
+                            ) : payments.map((payment) => (
+                                <tr key={payment.id} className="hover:bg-gray-50/50 transition-colors">
+                                    <td className="px-8 py-5">
+                                        <div className="font-bold text-gray-800">
+                                            {new Date(payment.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                        </div>
+                                        <div className="text-[10px] text-gray-400 font-bold mt-1">
+                                            {new Date(payment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-5">
+                                        <div className="flex flex-col">
+                                            <span className="font-mono text-sm font-black text-primary tracking-widest">{payment.mpesa_receipt_number || 'PENDING'}</span>
+                                            <span className="text-[9px] text-gray-400 uppercase font-black mt-1">Request: {payment.checkout_request_id?.slice(-12)}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-5 font-black text-gray-900 text-lg">
+                                        {parseFloat(payment.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    </td>
+                                    <td className="px-8 py-5">
+                                        <span className="bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border border-gray-200 shadow-sm">
+                                            {payment.account_reference}
+                                        </span>
+                                    </td>
+                                    <td className="px-8 py-5 text-center">
+                                        <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                                            payment.status === 'success' ? 'bg-green-50 text-green-600 border-green-100' :
+                                            payment.status === 'failed' ? 'bg-red-50 text-red-600 border-red-100' :
+                                            'bg-yellow-50 text-yellow-600 border-yellow-100 animate-pulse'
+                                        }`}>
+                                            {payment.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
 
                 {/* Pagination */}
                 {pagination.last_page > 1 && (
-                    <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-between">
-                        <p className="text-xs text-gray-500">
-                            Showing page <span className="font-bold text-gray-700">{pagination.current_page}</span> of <span className="font-bold text-gray-700">{pagination.last_page}</span>
-                            {pagination.total && <span className="ml-2">({pagination.total} total records)</span>}
+                    <div className="px-8 py-6 bg-gray-50/50 border-t flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                            Page <span className="text-gray-900">{pagination.current_page}</span> of <span className="text-gray-900">{pagination.last_page}</span>
+                            {pagination.total && <span className="ml-3 border-l pl-3 text-gray-400">{pagination.total} Total Ledger Entries</span>}
                         </p>
+
                         <div className="flex gap-1.5">
                             <button 
                                 disabled={pagination.current_page === 1}

@@ -55,9 +55,9 @@ export default function DeliveriesPage() {
     }
 
     return (
-        <main className="mx-2 lg:mx-10 2xl:mx-20 pb-20">
+        <main className="mx-4 lg:mx-10 2xl:mx-20 pb-20">
             <BreadCrumbs />
-            <div className="flex mt-8 justify-between items-center">
+            <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center gap-6">
                 <h2 className="text-3xl font-black text-gray-800 tracking-tight lowercase capitalize">Fulfillment Manifest</h2>
             </div>
 
@@ -114,19 +114,21 @@ export default function DeliveriesPage() {
             </div>
 
             {/* Deliveries Table */}
-            <section className="bg-white rounded-xl shadow-sm overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead className="border-b bg-gray-50">
-                        <tr>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Ship Date</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Order</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Customer</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Method</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Station / Address</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Status</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600 text-right">Invoice</th>
-                        </tr>
-                    </thead>
+            <section className="bg-white rounded-3xl shadow-sm border overflow-hidden mb-10">
+                <div className="overflow-x-auto scrollbar-hide">
+                    <table className="w-full text-left whitespace-nowrap">
+                        <thead className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest border-b">
+                            <tr>
+                                <th className="px-8 py-5">Ship Date</th>
+                                <th className="px-8 py-5">Order</th>
+                                <th className="px-8 py-5">Customer</th>
+                                <th className="px-8 py-5">Method</th>
+                                <th className="px-8 py-5">Station / Address</th>
+                                <th className="px-8 py-5">Status</th>
+                                <th className="px-8 py-5 text-right">Invoice</th>
+                            </tr>
+                        </thead>
+
                     <tbody>
                         {isLoading ? (
                             [...new Array(8)].map((_, i) => (
@@ -145,43 +147,43 @@ export default function DeliveriesPage() {
                                 const isPriority = order.expected_shipping_date === new Date().toISOString().split('T')[0];
                                 return (
                                     <tr key={order.id} className={`border-b hover:bg-gray-50 transition-colors ${isPriority ? 'bg-red-50/30' : ''}`}>
-                                        <td className="p-4">
-                                            <span className={`px-2 py-1 rounded-md text-xs font-bold ${isPriority ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                                        <td className="px-8 py-5">
+                                            <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border shadow-sm ${isPriority ? 'bg-red-600 text-white border-red-700' : 'bg-gray-100 text-gray-600 border-gray-200'}`}>
                                                 {order.expected_shipping_date || 'N/A'}
                                             </span>
                                         </td>
-                                        <td className="p-4 font-medium text-primary">#{order.slug}</td>
-                                        <td className="p-4">
-                                            <div className="font-medium text-sm">{order.order_detail?.full_name}</div>
-                                            <div className="text-[10px] text-gray-500">{order.order_detail?.phone}</div>
+                                        <td className="px-8 py-5 font-black text-primary text-sm tracking-widest">#{order.slug}</td>
+                                        <td className="px-8 py-5">
+                                            <div className="font-black text-gray-900 text-sm uppercase tracking-tight italic">{order.order_detail?.full_name}</div>
+                                            <div className="text-[10px] text-gray-500 font-bold mt-1 tracking-widest">{order.order_detail?.phone}</div>
                                         </td>
-                                        <td className="p-4">
-                                            <span className={`capitalize px-2 py-1 rounded-full text-[10px] font-bold ${methodColors[order.delivery_method] || 'bg-gray-100'}`}>
+                                        <td className="px-8 py-5 text-center">
+                                            <span className={`inline-block px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border shadow-sm ${methodColors[order.delivery_method] || 'bg-gray-100 text-gray-600'}`}>
                                                 {order.delivery_method}
                                             </span>
                                         </td>
-                                        <td className="p-4 text-xs font-medium max-w-xs truncate">
+                                        <td className="px-8 py-5 text-xs font-black text-gray-600 uppercase tracking-tight">
                                             {order.delivery_method === 'pickup' ? (
-                                                <span className="text-purple-600 flex items-center gap-1">
-                                                    <span className="icon-[mdi--store-marker] w-4 h-4" />
+                                                <span className="text-purple-600 flex items-center gap-2">
+                                                    <span className="icon-[mdi--store-marker] w-5 h-5" />
                                                     {order.pickup_station || 'N/A'}
                                                 </span>
                                             ) : (
-                                                <span className="text-gray-600 flex items-center gap-1">
-                                                    <span className="icon-[mdi--home-map-marker] w-4 h-4" />
-                                                    {order.order_detail?.address}
+                                                <span className="text-gray-600 flex items-center gap-2">
+                                                    <span className="icon-[mdi--home-map-marker] w-5 h-5" />
+                                                    <span className="line-clamp-1 max-w-[200px]">{order.order_detail?.address}</span>
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="p-4">
-                                            <span className={`capitalize px-2 py-1 rounded-full text-[10px] font-bold ${statusColors[order.shipment?.status] || statusColors.pending}`}>
+                                        <td className="px-8 py-5 text-center">
+                                            <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border shadow-sm ${statusColors[order.shipment?.status] || statusColors.pending}`}>
                                                 {order.shipment?.status || 'pending'}
                                             </span>
                                         </td>
-                                        <td className="p-4 text-right">
+                                        <td className="px-8 py-5 text-right">
                                             <button 
                                                 onClick={() => getFile(`Invoice-${order.slug}.pdf`, `/orders/${order.slug}/invoice`, {})}
-                                                className="text-primary hover:text-primary/70 transition-colors"
+                                                className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-red-500 hover:bg-red-50 hover:scale-110 transition-all shadow-sm"
                                                 title="Download Invoice"
                                             >
                                                 <span className="icon-[mdi--file-pdf-box] w-6 h-6" />
@@ -193,6 +195,7 @@ export default function DeliveriesPage() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </section>
 
             {/* Pagination Controls */}

@@ -210,9 +210,9 @@ export default function Page() {
     }, [orders, pagination])
 
     return (
-        <main className="mx-2 lg:mx-10 2xl:mx-20 pb-20">
+        <main className="mx-4 lg:mx-10 2xl:mx-20 pb-20">
             <BreadCrumbs />
-            <div className="flex mt-8 justify-between items-center">
+            <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center gap-6">
                 <h2 className="text-3xl font-black text-gray-800 tracking-tight lowercase capitalize">Sales Intelligence</h2>
             </div>
 
@@ -299,22 +299,23 @@ export default function Page() {
                 </div>
             </div>
 
-            {/* Orders Table */}
-            <section className="bg-white rounded-xl shadow-sm overflow-x-auto">
-                <table className="w-full text-left whitespace-nowrap">
-                    <thead className="border-b bg-gray-50">
-                        <tr>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Order</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Type</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Customer</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Phone</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Items</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Total</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Payment</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Shipment</th>
-                            <th className="p-4 text-sm font-semibold text-gray-600">Date</th>
-                        </tr>
-                    </thead>
+            <section className="bg-white rounded-3xl shadow-sm border overflow-hidden mb-10">
+                <div className="overflow-x-auto scrollbar-hide">
+                    <table className="w-full text-left whitespace-nowrap">
+                        <thead className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest border-b">
+                            <tr>
+                                <th className="px-8 py-5">Order ID</th>
+                                <th className="px-8 py-5">Type</th>
+                                <th className="px-8 py-5">Customer</th>
+                                <th className="px-8 py-5">Phone</th>
+                                <th className="px-8 py-5">Volume</th>
+                                <th className="px-8 py-5">Total (KES)</th>
+                                <th className="px-8 py-5">Payment Status</th>
+                                <th className="px-8 py-5">Logistics</th>
+                                <th className="px-8 py-5 text-right">Date</th>
+                            </tr>
+                        </thead>
+
                     <tbody>
                         {isLoading || error ? (
                             [...new Array(10)].map((_, i) => <SaleRowSkeleton key={i} />)
@@ -332,40 +333,49 @@ export default function Page() {
                                     className="border-b hover:bg-gray-50 cursor-pointer transition-colors"
                                     onClick={() => setSelectedOrder(order)}
                                 >
-                                    <td className="p-4 font-medium">#{order.id}</td>
-                                    <td className="p-4">
+                                    <td className="px-8 py-5 font-bold text-gray-800">#{order.id}</td>
+                                    <td className="px-8 py-5">
                                         {order.order_type === 'b2b' ? (
-                                            <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">B2B</span>
+                                            <span className="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border border-purple-200 shadow-sm">B2B</span>
                                         ) : (
-                                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">B2C</span>
+                                            <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border border-blue-200 shadow-sm">B2C</span>
                                         )}
                                     </td>
-                                    <td className="p-4">{order.order_detail?.full_name || '—'}</td>
-                                    <td className="p-4 text-sm">{order.order_detail?.phone || '—'}</td>
-                                    <td className="p-4">
-                                        <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium">
-                                            {order.sales?.length || 0} items
+                                    <td className="px-8 py-5 font-bold text-gray-700">{order.order_detail?.full_name || '—'}</td>
+                                    <td className="px-8 py-5 text-sm font-medium text-gray-500">{order.order_detail?.phone || '—'}</td>
+                                    <td className="px-8 py-5">
+                                        <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20">
+                                            {order.sales?.length || 0} ITEMS
                                         </span>
                                     </td>
-                                    <td className="p-4 font-semibold">KES {Number(order.total).toLocaleString()}</td>
-                                    <td className="p-4">
-                                        <span className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${statusColors[order.payment_status] || statusColors.pending}`}>
+                                    <td className="px-8 py-5 font-black text-gray-900 text-base">KES {Number(order.total).toLocaleString()}</td>
+                                    <td className="px-8 py-5">
+                                        <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                                            order.payment_status === 'success' ? 'bg-green-50 text-green-600 border-green-100' :
+                                            order.payment_status === 'failed' ? 'bg-red-50 text-red-600 border-red-100' :
+                                            'bg-yellow-50 text-yellow-600 border-yellow-100 animate-pulse'
+                                        }`}>
                                             {order.payment_status || 'pending'}
                                         </span>
                                     </td>
-                                    <td className="p-4">
-                                        <span className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${statusColors[order.shipment?.status] || statusColors.pending}`}>
+                                    <td className="px-8 py-5">
+                                        <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                                            order.shipment?.status === 'completed' || order.shipment?.status === 'success' ? 'bg-green-50 text-green-600 border-green-100' :
+                                            order.shipment?.status === 'cancelled' ? 'bg-red-50 text-red-600 border-red-100' :
+                                            'bg-blue-50 text-blue-600 border-blue-100'
+                                        }`}>
                                             {order.shipment?.status || 'pending'}
                                         </span>
                                     </td>
-                                    <td className="p-4 text-sm text-gray-500">
-                                        {new Date(order.created_at).toLocaleDateString()}
+                                    <td className="px-8 py-5 text-[11px] font-black text-gray-400 uppercase text-right">
+                                        {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
                                     </td>
                                 </tr>
                             ))
                         )}
                     </tbody>
                 </table>
+                </div>
             </section>
 
             {/* Pagination */}

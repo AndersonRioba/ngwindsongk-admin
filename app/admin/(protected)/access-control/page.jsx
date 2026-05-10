@@ -248,7 +248,7 @@ export default function AccessControlPage() {
     if (isLoading && roles.length === 0) return <div className="h-[70vh]"><Spinner /></div>;
 
     return (
-        <main className="px-6 md:px-12 pb-20 bg-[#fafafa] min-h-screen">
+        <main className="mx-4 lg:mx-10 2xl:mx-20 pb-20 bg-[#fafafa] min-h-screen">
             <div className="2xl:w-11/12 2xl:mx-auto">
                 {isCreating && (
                     <RoleCreationModal 
@@ -260,53 +260,53 @@ export default function AccessControlPage() {
 
                 {/* Security Terminal Status Banner */}
                 <div className="flex flex-wrap gap-4 mb-10 pt-8 animate-in slide-in-from-top duration-700">
-                    <div className="flex-1 min-w-[200px] bg-white border border-gray-100 rounded-3xl p-5 shadow-sm flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${isValidating ? 'bg-indigo-500 animate-pulse' : 'bg-green-500'} text-white`}>
+                    <div className="flex-1 min-w-[240px] bg-white border border-gray-100 rounded-3xl p-6 shadow-sm flex items-center gap-4">
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isValidating ? 'bg-indigo-500 animate-pulse' : 'bg-green-500'} text-white shadow-lg`}>
                             <span className={`icon-[solar--shield-check-bold] w-6 h-6`} />
                         </div>
                         <div>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Terminal Link</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-2">Terminal Link</p>
                             <p className={`text-sm font-black uppercase italic leading-none ${error ? 'text-red-500' : 'text-gray-900'}`}>
                                 {isValidating ? 'Syncing...' : error ? 'Signal Lost' : 'Connected'}
                             </p>
                         </div>
                     </div>
 
-                    <div className="flex-1 min-w-[200px] bg-white border border-gray-100 rounded-3xl p-5 shadow-sm flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 border border-indigo-100">
+                    <div className="flex-1 min-w-[240px] bg-white border border-gray-100 rounded-3xl p-6 shadow-sm flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 border border-indigo-100 shadow-sm">
                             <span className="icon-[solar--high-definition-bold] w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Operational Permits</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-2">Operational Permits</p>
                             <p className="text-sm font-black text-gray-900 uppercase italic leading-none">{allPermissions.length} Active</p>
                         </div>
                     </div>
 
-                    <div className="flex-1 min-w-[200px] bg-white border border-gray-100 rounded-3xl p-5 shadow-sm flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-100">
+                    <div className="flex-1 min-w-[240px] bg-white border border-gray-100 rounded-3xl p-6 shadow-sm flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-100 shadow-sm">
                             <span className="icon-[solar--history-bold] w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Last Synchronization</p>
-                            <p className="text-sm font-bold text-gray-900 uppercase italic leading-none">{lastSync || 'Initializing...'}</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-2">Synchronization</p>
+                            <p className="text-sm font-black text-gray-900 uppercase italic leading-none">{lastSync || 'Initializing...'}</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 py-10 border-b border-gray-200">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12 py-10 border-b border-gray-200">
                     <div>
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="flex items-center gap-3 mb-3">
                             <div className={`w-2 h-2 rounded-full ${isValidating ? 'bg-indigo-500 animate-ping' : 'bg-green-500'}`}></div>
                             <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em]">Administrative Oversight</span>
                         </div>
                         <h2 className="text-4xl font-black tracking-tight text-gray-900 uppercase italic leading-none">Access Control</h2>
-                        <p className="text-gray-500 text-sm mt-3 max-w-md">Manage hierarchies and operational permits across the ecosystem.</p>
+                        <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mt-4">Security Hierarchies & Operational Permits</p>
                     </div>
                     
-                    <div className="flex gap-3">
+                    <div className="flex flex-wrap gap-3 w-full md:w-auto">
                         <button
                             onClick={handleForceSync}
-                            className="bg-white text-gray-900 border border-gray-200 font-extrabold uppercase tracking-widest text-[9px] py-5 px-6 rounded-[2rem] hover:bg-gray-50 transition-all flex items-center justify-center gap-3 active:scale-95"
+                            className="flex-1 md:flex-none bg-white text-gray-900 border border-gray-200 font-black uppercase tracking-widest text-[10px] py-5 px-8 rounded-2xl hover:bg-gray-50 transition-all flex items-center justify-center gap-3 active:scale-95 shadow-sm"
                             title="Force Refresh Terminals"
                         >
                             <span className={`icon-[solar--restart-bold] w-4 h-4 ${isValidating ? 'animate-spin' : ''}`} />
@@ -315,10 +315,10 @@ export default function AccessControlPage() {
                         
                         <button
                             onClick={() => setIsCreating(true)}
-                            className="bg-[#0f172a] text-white font-black uppercase tracking-widest text-[9px] py-5 px-10 rounded-[2rem] hover:bg-indigo-600 transition-all flex items-center justify-center gap-4 shadow-2xl shadow-indigo-500/10 active:scale-95 group"
+                            className="flex-1 md:flex-none bg-[#0f172a] text-white font-black uppercase tracking-widest text-[10px] py-5 px-10 rounded-2xl hover:bg-indigo-600 transition-all flex items-center justify-center gap-4 shadow-xl shadow-indigo-500/10 active:scale-95 group"
                         >
                             <span className="icon-[solar--shield-plus-bold] w-5 h-5 group-hover:rotate-90 transition-transform duration-500" />
-                            Provision New Role
+                            Provision Role
                         </button>
                     </div>
                 </div>

@@ -48,15 +48,15 @@ export default function BlogsPage() {
     };
 
     return (
-        <main className="mx-2 lg:mx-10 2xl:mx-20">
+        <main className="mx-4 lg:mx-10 2xl:mx-20 pb-20">
             <BreadCrumbs />
             
-            <div className="flex mt-8 justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 gap-6">
                 <div>
-                    <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#8b5cf6]">Blog Posts</h2>
-                    <p className="text-sm text-gray-400 mt-1">Manage your stories and articles</p>
+                    <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#8b5cf6] tracking-tight uppercase italic leading-none">Blog Posts</h2>
+                    <p className="text-[10px] text-gray-400 mt-2 uppercase font-black tracking-[0.2em]">Manage your stories and articles</p>
                 </div>
-                <Link href={'/admin/blogs/create'} className="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center hover:scale-105 transition-all shadow-lg shadow-primary/20">
+                <Link href={'/admin/blogs/create'} className="w-full md:w-auto bg-primary text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center hover:scale-[1.02] transition-all shadow-xl shadow-primary/20">
                     <span className="icon-[rivet-icons--plus] w-5 h-5 mr-2" />
                     Create New Blog
                 </Link>

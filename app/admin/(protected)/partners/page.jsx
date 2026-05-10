@@ -163,13 +163,13 @@ export default function PartnersPage() {
 
                 <div className="2xl:w-11/12 2xl:mx-auto relative z-10">
                     {/* Title row */}
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
                         <div>
                             <div className="flex items-center gap-2 mb-3">
                                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
                                 <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em]">Ecosystem Oversight</span>
                             </div>
-                            <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight uppercase italic leading-none">
+                            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight uppercase italic leading-none">
                                 Partners Hub
                             </h1>
                             <p className="text-indigo-200/60 text-sm mt-3 font-medium">

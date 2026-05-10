@@ -109,13 +109,13 @@ export default function ReviewManagementPage() {
     };
 
     return (
-        <main className="mx-2 lg:mx-10 2xl:mx-20 pb-20">
+        <main className="mx-4 lg:mx-10 2xl:mx-20 pb-20">
             <BreadCrumbs />
             
-            <div className="flex mt-8 justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 gap-6">
                 <div>
-                    <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#8b5cf6]">Reviews & Testimonials</h2>
-                    <p className="text-sm text-gray-400 mt-1 uppercase font-bold tracking-widest text-[10px]">Moderate and manage collective customer feedback</p>
+                    <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#8b5cf6] tracking-tight uppercase italic">Reviews & Testimonials</h2>
+                    <p className="text-[10px] text-gray-400 mt-2 uppercase font-black tracking-[0.2em]">Collective Customer Feedback Ledger</p>
                 </div>
             </div>
 
@@ -124,24 +124,26 @@ export default function ReviewManagementPage() {
                     <span className="icon-[solar--magnifer-linear] absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input 
                         type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search reviewer, product, or review..."
-                        className="w-full bg-white border border-gray-100 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm"
+                        placeholder="Search reviewer, product..."
+                        className="w-full bg-white border border-gray-100 rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all shadow-sm font-medium text-sm"
                     />
                 </div>
             </div>
 
-            <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-10">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-gray-50 border-b border-gray-100">
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Reviewer</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Product</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-center">Status</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-center">Rating</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Comment</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Actions</th>
-                        </tr>
-                    </thead>
+            <section className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden mb-10">
+                <div className="overflow-x-auto scrollbar-hide">
+                    <table className="w-full text-left border-collapse whitespace-nowrap">
+                        <thead>
+                            <tr className="bg-gray-50/50 border-b border-gray-100">
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Reviewer</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Subject</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Status</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Rating</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Commentary</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                            </tr>
+                        </thead>
+
                     <tbody>
                         {isLoading ? (
                             [...new Array(5)].map((_, i) => (
@@ -161,50 +163,50 @@ export default function ReviewManagementPage() {
                         ) : (
                             filteredReviews.map((review) => (
                                 <tr key={review.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors text-sm">
-                                    <td className="px-6 py-4">
-                                        <div className="font-bold text-gray-900">{review.reviewer_name || 'Anonymous'}</div>
-                                        <div className="text-[10px] text-primary font-black uppercase tracking-tight mt-1">{review.role || 'Verified Customer'}</div>
-                                        <div className="text-[10px] text-gray-400 font-medium mt-0.5">{new Date(review.created_at).toLocaleDateString()}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            {review.product_id ? (
-                                                <>
-                                                    {review.product?.image && (
-                                                        <Image src={review.product.image} width={32} height={32} className="w-8 h-8 rounded-lg object-cover bg-gray-50 shadow-sm border border-black/5" alt={review.product.name} unoptimized={true} />
-                                                    )}
-                                                    <Link href={`/admin/products/edit/${review.product?.id}`} className="font-bold text-gray-700 hover:text-primary transition-colors line-clamp-1">
-                                                        {review.product?.name || 'Unknown Product'}
-                                                    </Link>
-                                                </>
-                                            ) : (
-                                                <div className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px]">
-                                                    <span className="icon-[solar--star-rainbow-bold-duotone] w-4 h-4" />
-                                                    General Testimonial
-                                                </div>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-center">
-                                        <span className={`inline-flex px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                            review.status === 'approved' 
-                                            ? 'bg-green-50 text-green-600' 
-                                            : 'bg-yellow-50 text-yellow-600'
-                                        }`}>
-                                            {review.status || 'pending'}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-center">
-                                        <div className="flex items-center justify-center gap-1">
-                                            <span className="font-bold text-gray-900">{review.rate}</span>
-                                            <span className="icon-[solar--star-bold] text-yellow-400 w-4 h-4" />
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-gray-600 line-clamp-2 max-w-xs italic font-medium">&quot;{review.review}&quot;</div>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-2">
+                                     <td className="px-8 py-5">
+                                         <div className="font-bold text-gray-900">{review.reviewer_name || 'Anonymous'}</div>
+                                         <div className="text-[10px] text-primary font-black uppercase tracking-tight mt-1">{review.role || 'Verified Customer'}</div>
+                                         <div className="text-[10px] text-gray-400 font-medium mt-0.5">{new Date(review.created_at).toLocaleDateString()}</div>
+                                     </td>
+                                     <td className="px-8 py-5">
+                                         <div className="flex items-center gap-3">
+                                             {review.product_id ? (
+                                                 <>
+                                                     {review.product?.image && (
+                                                         <Image src={review.product.image} width={32} height={32} className="w-8 h-8 rounded-lg object-cover bg-gray-50 shadow-sm border border-black/5" alt={review.product.name} unoptimized={true} />
+                                                     )}
+                                                     <Link href={`/admin/products/edit/${review.product?.id}`} className="font-bold text-gray-700 hover:text-primary transition-colors line-clamp-1">
+                                                         {review.product?.name || 'Unknown Product'}
+                                                     </Link>
+                                                 </>
+                                             ) : (
+                                                 <div className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px]">
+                                                     <span className="icon-[solar--star-rainbow-bold-duotone] w-4 h-4" />
+                                                     General Testimonial
+                                                 </div>
+                                             )}
+                                         </div>
+                                     </td>
+                                     <td className="px-8 py-5 text-center">
+                                         <span className={`inline-flex px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                             review.status === 'approved' 
+                                             ? 'bg-green-50 text-green-600' 
+                                             : 'bg-yellow-50 text-yellow-600'
+                                         }`}>
+                                             {review.status || 'pending'}
+                                         </span>
+                                     </td>
+                                     <td className="px-8 py-5 text-center">
+                                         <div className="flex items-center justify-center gap-1">
+                                             <span className="font-bold text-gray-900">{review.rate}</span>
+                                             <span className="icon-[solar--star-bold] text-yellow-400 w-4 h-4" />
+                                         </div>
+                                     </td>
+                                     <td className="px-8 py-5">
+                                         <div className="text-gray-600 line-clamp-2 max-w-xs italic font-medium">&quot;{review.review}&quot;</div>
+                                     </td>
+                                     <td className="px-8 py-5 text-right">
+                                         <div className="flex justify-end gap-2">
                                             <button 
                                                 onClick={() => {
                                                     setEditingReview({...review});
@@ -241,6 +243,7 @@ export default function ReviewManagementPage() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </section>
 
             {/* Edit Modal */}

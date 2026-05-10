@@ -146,10 +146,10 @@ export default function Page() {
     const pagination = data ? { current: data.current_page, last: data.last_page, total: data.total } : null
 
     return (
-        <main className="mx-2 lg:mx-10 2xl:mx-20">
+        <main className="mx-4 lg:mx-10 2xl:mx-20 pb-20">
             <BreadCrumbs />
-            <div className="flex mt-8 justify-between items-center">
-                <h2 className="text-3xl font-semibold">Inventory</h2>
+            <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center gap-6">
+                <h2 className="text-3xl font-black text-gray-800 tracking-tight uppercase italic">Inventory</h2>
             </div>
 
             {/* Stats */}

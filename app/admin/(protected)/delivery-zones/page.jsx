@@ -151,13 +151,13 @@ export default function DeliveryZonesSettings() {
     }
 
     return (
-        <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
-            <div className="flex justify-between items-center pb-4 border-b">
+        <div className="p-4 md:p-8 space-y-6 pb-20">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center pb-8 border-b gap-6">
                 <div>
-                    <h2 className="text-xl font-bold text-gray-800">Delivery Zones & Rates</h2>
-                    <p className="text-sm text-gray-500 mt-1">Manage delivery locations, SACCO/Rider preferences, and their respective fees.</p>
+                    <h2 className="text-2xl font-black text-gray-800 tracking-tight uppercase italic leading-none">Delivery Zones & Rates</h2>
+                    <p className="text-[10px] text-gray-500 mt-2 font-black uppercase tracking-widest">Manage delivery locations, SACCO/Rider preferences, and fees.</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3 w-full md:w-auto">
                     <input 
                         type="file" 
                         ref={fileInputRef} 
@@ -167,21 +167,21 @@ export default function DeliveryZonesSettings() {
                     />
                     <button 
                         onClick={handleDownloadTemplate}
-                        className="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2"
+                        className="flex-1 md:flex-none bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-sm"
                     >
                         <span className="icon-[fluent--document-search-16-regular] w-4 h-4 text-blue-500" />
                         Sample Template
                     </button>
                     <button 
                         onClick={() => fileInputRef.current.click()}
-                        className="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2"
+                        className="flex-1 md:flex-none bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-sm"
                     >
                         <span className="icon-[fluent--arrow-upload-16-regular] w-4 h-4 text-primary" />
                         Import Excel
                     </button>
                     <button 
                         onClick={handleExport}
-                        className="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2"
+                        className="flex-1 md:flex-none bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-sm"
                     >
                         <span className="icon-[fluent--arrow-download-16-regular] w-4 h-4 text-gray-400" />
                         Download Excel
@@ -191,7 +191,7 @@ export default function DeliveryZonesSettings() {
                             setCurrentZone({ id: null, name: '', parent_id: '', delivery_fee: '', sacco_rider: '' })
                             setIsEditing(true)
                         }}
-                        className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors"
+                        className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/20"
                     >
                         + Add New Zone
                     </button>
@@ -263,43 +263,45 @@ export default function DeliveryZonesSettings() {
                 />
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 text-gray-600 font-semibold border-b">
-                        <tr>
-                            <th className="p-4">County</th>
-                            <th className="p-4">Town/Urban Zone</th>
-                            <th className="p-4">SACCO/Rider</th>
-                            <th className="p-4 text-right">Delivery Fee (KES)</th>
-                            <th className="p-4 text-center">Actions</th>
-                        </tr>
-                    </thead>
+            <div className="bg-white rounded-3xl shadow-sm border overflow-hidden">
+                <div className="overflow-x-auto scrollbar-hide">
+                    <table className="w-full text-left text-sm whitespace-nowrap">
+                        <thead className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest border-b">
+                            <tr>
+                                <th className="px-8 py-5">County</th>
+                                <th className="px-8 py-5">Town/Urban Zone</th>
+                                <th className="px-8 py-5">SACCO/Rider</th>
+                                <th className="px-8 py-5 text-right">Delivery Fee (KES)</th>
+                                <th className="px-8 py-5 text-center">Actions</th>
+                            </tr>
+                        </thead>
+
                     <tbody>
                         {zones.map((zone) => (
                             <tr key={zone.id} className="border-b last:border-0 hover:bg-gray-50/50 transition-colors">
-                                <td className="p-4 font-medium text-gray-600">
+                                <td className="px-8 py-5 font-medium text-gray-600">
                                     {zone.parent?.name || 'N/A'}
                                 </td>
-                                <td className="p-4 font-bold text-gray-800">{zone.name}</td>
-                                <td className="p-4 text-gray-500">
+                                <td className="px-8 py-5 font-bold text-gray-800">{zone.name}</td>
+                                <td className="px-8 py-5 text-gray-500">
                                     {zone.sacco_rider ? (
-                                        <span className="bg-gray-100 px-2 py-1 rounded text-xs">{zone.sacco_rider}</span>
+                                        <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-gray-200 shadow-sm">{zone.sacco_rider}</span>
                                     ) : '-'}
                                 </td>
-                                <td className="p-4 text-right">
+                                <td className="px-8 py-5 text-right">
                                     {zone.delivery_fee !== null ? (
-                                        <span className="font-bold text-primary">{Number(zone.delivery_fee).toLocaleString()}</span>
+                                        <span className="font-black text-primary text-base">{Number(zone.delivery_fee).toLocaleString()}</span>
                                     ) : (
-                                        <span className="text-gray-400 italic text-xs">Fallback (350)</span>
+                                        <span className="text-gray-400 italic text-[10px] font-bold uppercase tracking-widest">Fallback (350)</span>
                                     )}
                                 </td>
-                                <td className="p-4">
+                                <td className="px-8 py-5">
                                     <div className="flex items-center justify-center gap-3">
-                                        <button onClick={() => startEdit(zone)} className="text-gray-400 hover:text-blue-500 transition-colors">
-                                            <span className="icon-[fluent--edit-16-regular] w-5 h-5" />
+                                        <button onClick={() => startEdit(zone)} className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all">
+                                            <span className="icon-[solar--pen-new-square-bold-duotone] w-5 h-5" />
                                         </button>
-                                        <button onClick={() => handleDelete(zone.id)} className="text-gray-400 hover:text-red-500 transition-colors">
-                                            <span className="icon-[fluent--delete-16-regular] w-5 h-5" />
+                                        <button onClick={() => handleDelete(zone.id)} className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-rose-50 hover:text-rose-600 transition-all">
+                                            <span className="icon-[solar--trash-bin-trash-bold-duotone] w-5 h-5" />
                                         </button>
                                     </div>
                                 </td>
@@ -314,6 +316,7 @@ export default function DeliveryZonesSettings() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     )

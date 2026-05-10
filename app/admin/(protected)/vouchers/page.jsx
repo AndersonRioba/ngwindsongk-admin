@@ -129,9 +129,9 @@ export default function VouchersPage() {
 
                 <VoucherStats vouchers={vouchers} />
 
-                <div className="bg-white rounded-[3.5rem] shadow-2xl shadow-gray-200/40 overflow-hidden border border-gray-50">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
+                <div className="bg-white rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl shadow-gray-200/40 overflow-hidden border border-gray-50">
+                    <div className="overflow-x-auto scrollbar-hide">
+                        <table className="w-full text-left whitespace-nowrap">
                             <thead className="bg-[#0f172a] text-white">
                                 <tr>
                                     <th className="px-10 py-8 text-[10px] font-black tracking-[0.2em] uppercase">Voucher Code</th>
@@ -141,6 +141,7 @@ export default function VouchersPage() {
                                     <th className="px-10 py-8 text-[10px] font-black tracking-[0.2em] uppercase text-right">Actions</th>
                                 </tr>
                             </thead>
+
                             <tbody className="divide-y divide-gray-50">
                                 {filteredVouchers.map((voucher) => (
                                     <tr key={voucher.id} className="hover:bg-gray-50/50 transition-colors group">

@@ -244,7 +244,7 @@ export default function UsersPage() {
     const admins = adminsData?.admins || [];
 
     return (
-        <main className="px-4 md:px-10 pb-20 bg-[#fcfcfc] min-h-screen">
+        <main className="mx-4 lg:mx-10 2xl:mx-20 pb-20 bg-[#fcfcfc] min-h-screen">
             <div className="2xl:w-10/12 2xl:mx-auto">
                 {/* Modals */}
                 {editingAdminPassword && (
@@ -263,25 +263,25 @@ export default function UsersPage() {
                     />
                 )}
 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 py-8 border-b border-gray-100">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 py-10 border-b border-gray-100">
                     <div>
-                        <h2 className="text-3xl font-black tracking-tighter text-gray-900 uppercase italic">User Management</h2>
-                        <p className="text-gray-500 text-sm mt-1">Manage customer accounts and administrative access from one place</p>
+                        <h2 className="text-3xl font-black tracking-tighter text-gray-900 uppercase italic leading-none">User Management</h2>
+                        <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em] mt-3">Accounts & Administrative Access Console</p>
                     </div>
-                    <div className="w-full md:w-auto flex flex-col md:flex-row gap-3 md:items-center">
+                    <div className="w-full md:w-auto flex flex-col md:flex-row gap-4 md:items-center">
                         <div className="w-full md:w-96">
-                            <Search setSearch={setSearch} placeholder="Search by name, email or phone..." />
+                            <Search setSearch={setSearch} placeholder="Filter by identity..." />
                         </div>
                         <button
                             onClick={() => setIsAddingAdmin(!isAddingAdmin)}
-                            className={`font-black uppercase tracking-widest text-[10px] py-4 px-8 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl ${
+                            className={`w-full md:w-auto font-black uppercase tracking-widest text-[10px] py-4 px-8 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl ${
                                 isAddingAdmin
-                                ? 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                                : 'bg-[#0a0a0a] text-white hover:bg-primary shadow-[#0a0a0a]/10'
+                                ? 'bg-gray-100 text-gray-500'
+                                : 'bg-primary text-white shadow-primary/20'
                             }`}
                         >
                             <span className={`icon-[ph--${isAddingAdmin ? 'x-bold' : 'plus-bold'}] w-4 h-4`} />
-                            {isAddingAdmin ? 'Dismiss Admin Form' : 'Add New Admin'}
+                            {isAddingAdmin ? 'Dismiss' : 'New Admin'}
                         </button>
                     </div>
                 </div>
@@ -387,32 +387,33 @@ export default function UsersPage() {
                     </div>
 
                     <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-[#0a0a0a] text-primary uppercase text-xs tracking-wider">
+                        <div className="overflow-x-auto scrollbar-hide">
+                            <table className="w-full text-left whitespace-nowrap">
+                                <thead className="bg-[#0a0a0a] text-primary uppercase text-[10px] font-black tracking-widest border-b border-white/5">
                                     <tr>
-                                        <th className="px-6 py-4 font-semibold">Name</th>
-                                        <th className="px-6 py-4 font-semibold">Phone</th>
-                                        <th className="px-6 py-4 font-semibold text-center italic">Roles</th>
-                                        <th className="px-6 py-4 font-semibold">Joined</th>
-                                        <th className="px-6 py-4 font-semibold">Status</th>
-                                        <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                                        <th className="px-8 py-6">Identity</th>
+                                        <th className="px-8 py-6">Communication</th>
+                                        <th className="px-8 py-6 text-center italic">Authorization</th>
+                                        <th className="px-8 py-6">Joined</th>
+                                        <th className="px-8 py-6">Status</th>
+                                        <th className="px-8 py-6 text-right">Actions</th>
                                     </tr>
                                 </thead>
+
                                 <tbody className="divide-y divide-gray-100">
                                     {users.length > 0 ? (
                                         users.map((user) => (
                                             <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-4">
-                                                    <div className="font-semibold text-gray-900">{user.name}</div>
-                                                    <div className="text-[10px] text-gray-400 font-medium">{user.email || 'No email attached'}</div>
+                                                <td className="px-8 py-6">
+                                                    <div className="font-black text-gray-900 uppercase tracking-tight italic">{user.name}</div>
+                                                    <div className="text-[10px] text-gray-400 font-bold mt-1 tracking-widest">{user.email || 'No email attached'}</div>
                                                 </td>
-                                                <td className="px-6 py-4 text-gray-600">{user.phone}</td>
-                                                <td className="px-6 py-4 text-center">
+                                                <td className="px-8 py-6 text-gray-600 font-bold text-sm tracking-widest">{user.phone}</td>
+                                                <td className="px-8 py-6 text-center">
                                                     <div className="flex flex-wrap justify-center gap-1">
                                                         {user.role_names?.length > 0 ? (
                                                             user.role_names.map(rn => (
-                                                                <span key={rn} className="px-2 py-0.5 rounded-lg bg-indigo-50 text-[8px] font-black text-indigo-500 uppercase tracking-tighter">
+                                                                <span key={rn} className="px-3 py-1.5 rounded-lg bg-indigo-50 text-[10px] font-black text-indigo-500 uppercase tracking-widest border border-indigo-100 shadow-sm">
                                                                     {rn}
                                                                 </span>
                                                             ))
@@ -421,33 +422,33 @@ export default function UsersPage() {
                                                         )}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 text-gray-600">
+                                                <td className="px-8 py-6 text-gray-500 text-xs font-bold uppercase tracking-widest">
                                                     {new Date(user.created_at).toLocaleDateString()}
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
+                                                <td className="px-8 py-6">
+                                                    <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border shadow-sm ${
                                                         user.status === 'active'
-                                                            ? 'bg-green-100 text-green-700'
-                                                            : 'bg-red-100 text-red-700'
+                                                            ? 'bg-green-100 text-green-700 border-green-200'
+                                                            : 'bg-red-100 text-red-700 border-red-200'
                                                     }`}>
                                                         {user.status}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <div className="flex items-center justify-end gap-2">
+                                                <td className="px-8 py-6 text-right">
+                                                    <div className="flex items-center justify-end gap-3">
                                                         <button
                                                             onClick={() => setManagingUserRoles(user)}
-                                                            className="p-2 text-gray-300 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                                                            className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-300 hover:bg-indigo-50 hover:text-indigo-600 transition-all shadow-sm"
                                                             title="Assign Roles"
                                                         >
-                                                            <span className="icon-[solar--shield-user-bold] w-4 h-4" />
+                                                            <span className="icon-[solar--shield-user-bold] w-5 h-5" />
                                                         </button>
                                                         <button
                                                             onClick={() => toggleStatus(user.id, user.status)}
-                                                            className={`text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${
+                                                            className={`text-[10px] font-black uppercase tracking-widest px-5 py-2.5 rounded-xl transition-all shadow-sm ${
                                                                 user.status === 'active'
-                                                                    ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'
-                                                                    : 'bg-green-50 text-green-600 hover:bg-green-600 hover:text-white'
+                                                                    ? 'bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white'
+                                                                    : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white'
                                                             }`}
                                                         >
                                                             {user.status === 'active' ? 'Disable' : 'Enable'}
@@ -478,9 +479,9 @@ export default function UsersPage() {
                     </div>
 
                     <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-[#0a0a0a] text-white overflow-hidden">
+                        <div className="overflow-x-auto scrollbar-hide">
+                            <table className="w-full text-left whitespace-nowrap">
+                                <thead className="bg-[#0a0a0a] text-white">
                                     <tr>
                                         <th className="px-8 py-6 font-black uppercase tracking-[0.2em] text-[10px]">Administrative Identity</th>
                                         <th className="px-8 py-6 font-black uppercase tracking-[0.2em] text-[10px]">Contact Channel</th>
@@ -489,28 +490,29 @@ export default function UsersPage() {
                                         <th className="px-8 py-6 font-black uppercase tracking-[0.2em] text-[10px] text-center">Actions</th>
                                     </tr>
                                 </thead>
+
                                 <tbody className="divide-y divide-gray-50">
                                     {admins.map((admin) => (
                                         <tr key={admin.id} className="hover:bg-gray-50/50 transition-colors group">
                                             <td className="px-8 py-6">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 font-black text-xs group-hover:bg-primary/10 group-hover:text-primary transition-colors uppercase">
+                                                    <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 font-black text-xs group-hover:bg-primary/10 group-hover:text-primary transition-all uppercase border border-gray-100 shadow-sm">
                                                         {admin.name.charAt(0)}
                                                     </div>
-                                                    <span className="font-bold text-gray-900">{admin.name}</span>
+                                                    <span className="font-black text-gray-900 uppercase tracking-tight italic">{admin.name}</span>
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6">
                                                 <div className="flex flex-col">
-                                                    <span className="text-gray-700 text-sm font-medium">{admin.email}</span>
-                                                    <span className="text-gray-400 text-[10px] font-bold">{admin.phone}</span>
+                                                    <span className="text-gray-900 text-sm font-black tracking-tight">{admin.email}</span>
+                                                    <span className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-1">{admin.phone}</span>
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6 text-center">
                                                 <div className="flex flex-wrap justify-center gap-1">
                                                     {admin.role_names?.map(rn => (
-                                                        <span key={rn} className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
-                                                            rn.includes('admin') ? 'bg-primary text-white' : 'bg-indigo-50 text-indigo-600'
+                                                        <span key={rn} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border shadow-sm ${
+                                                            rn.includes('admin') ? 'bg-primary text-white border-primary/20' : 'bg-indigo-50 text-indigo-600 border-indigo-100'
                                                         }`}>
                                                             {rn}
                                                         </span>
@@ -518,7 +520,7 @@ export default function UsersPage() {
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6 text-right">
-                                                <span className="text-xs text-gray-500 font-medium">
+                                                <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
                                                     {new Date(admin.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                                 </span>
                                             </td>
