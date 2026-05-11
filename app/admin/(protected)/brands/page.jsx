@@ -118,8 +118,8 @@ export default function Page(){
                 description: newBrandDescription,
                 color_hex: newBrandColor,
                 is_active: newBrandIsActive ? 1 : 0,
-                facebook_url: newBrandFacebook,
-                instagram_url: newBrandInstagram,
+                facebook_url: newBrandFacebook || null,
+                instagram_url: newBrandInstagram || null,
                 min_order_amount: newBrandMinOrder,
                 max_order_amount: newBrandMaxOrder,
                 tracking_snippet: newBrandTrackingSnippet,
@@ -169,8 +169,8 @@ export default function Page(){
                 description: brand.description,
                 color_hex: brand.color_hex,
                 is_active: brand.is_active ? 1 : 0,
-                facebook_url: brand.facebook_url,
-                instagram_url: brand.instagram_url,
+                facebook_url: brand.facebook_url || null,
+                instagram_url: brand.instagram_url || null,
                 min_order_amount: brand.min_order_amount,
                 max_order_amount: brand.max_order_amount,
                 tracking_snippet: brand.tracking_snippet,
@@ -325,7 +325,7 @@ export default function Page(){
 
                             <div className="pt-4 grid grid-cols-1 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Facebook URL</label>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Facebook URL (Optional)</label>
                                     <input 
                                         className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 placeholder:text-gray-300 shadow-inner text-xs" 
                                         placeholder="https://facebook.com/..." 
@@ -335,7 +335,7 @@ export default function Page(){
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Instagram URL</label>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Instagram URL (Optional)</label>
                                     <input 
                                         className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 placeholder:text-gray-300 shadow-inner text-xs" 
                                         placeholder="https://instagram.com/..." 
@@ -513,7 +513,7 @@ export default function Page(){
 
                                                     <div className="grid grid-cols-1 gap-2 pt-2">
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black text-gray-400 uppercase">Facebook</label>
+                                                            <label className="text-[8px] font-black text-gray-400 uppercase">Facebook (Optional)</label>
                                                             <input 
                                                                 className="w-full text-[10px] bg-white border border-primary/20 px-3 py-1.5 rounded-lg outline-none" 
                                                                 value={brand.facebook_url || ''}
@@ -528,7 +528,7 @@ export default function Page(){
                                                             />
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black text-gray-400 uppercase">Instagram</label>
+                                                            <label className="text-[8px] font-black text-gray-400 uppercase">Instagram (Optional)</label>
                                                             <input 
                                                                 className="w-full text-[10px] bg-white border border-primary/20 px-3 py-1.5 rounded-lg outline-none" 
                                                                 value={brand.instagram_url || ''}
