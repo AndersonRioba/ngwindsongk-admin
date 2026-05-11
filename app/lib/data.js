@@ -92,7 +92,9 @@ export function postFile(setData, files, key, data, endpoint, baseURL = process.
         if (Array.isArray(data[key])) {
             data[key].forEach(item => formData.append(`${key}[]`, item));
         } else {
-            formData.append(key, data[key]);
+            if (data[key] !== null && data[key] !== undefined) {
+                formData.append(key, data[key]);
+            }
         }
     });
 
