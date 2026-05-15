@@ -179,7 +179,7 @@ export default function Page() {
     let [dateFrom, setDateFrom] = useState('')
     let [dateTo, setDateTo] = useState('')
 
-    const params = { page, sort }
+    const params = { page, sort, payment_status: 'success' }
     if (statusFilter) params.status = statusFilter
     if (orderTypeFilter) params.order_type = orderTypeFilter
     if (search) params.search = search
@@ -194,12 +194,9 @@ export default function Page() {
     }
 
     const { orders, pagination } = useMemo(() => {
-        const allOrders = data?.data || [];
-        // Only include orders with successful payment status
-        const orders = allOrders.filter(order => order.payment_status === 'success');
-        
-        const pagination = data ? { current: data.current_page, last: data.last_page, total: data.total } : null;
-        return { orders, pagination };
+        const orders = data?.data || []
+        const pagination = data ? { current: data.current_page, last: data.last_page, total: data.total } : null
+        return { orders, pagination }
     }, [data])
 
     const stats = useMemo(() => {
@@ -222,7 +219,7 @@ export default function Page() {
             {/* Stats Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 my-8">
                 <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 luxe-reveal">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Gross Orders</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Successful Orders</p>
                     <p className="text-3xl font-black mt-2 text-gray-900 italic tracking-tighter">{stats.total}</p>
                 </div>
                 <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 luxe-reveal delay-75">

@@ -25,7 +25,7 @@ export default function DeliveriesPage() {
     let [dateTo, setDateTo] = useState('')
     let [page, setPage] = useState(1)
 
-    const params = { page, sort: 'shipping_asc' }
+    const params = { page, sort: 'shipping_asc', payment_status: 'success' }
     if (search) params.search = search
     if (dateFrom) params.date_from = dateFrom
     if (dateTo) params.date_to = dateTo
@@ -33,12 +33,9 @@ export default function DeliveriesPage() {
     let { data, isLoading, error } = useSWR(['/sales', params], fetcher)
 
     const { orders, pagination } = useMemo(() => {
-        const allOrders = data?.data || [];
-        // Only include orders with successful payment status for the manifest
-        const orders = allOrders.filter(order => order.payment_status === 'success');
-        
-        const pagination = data ? { current: data.current_page, last: data.last_page, total: data.total } : null;
-        return { orders, pagination };
+        const orders = data?.data || []
+        const pagination = data ? { current: data.current_page, last: data.last_page, total: data.total } : null
+        return { orders, pagination }
     }, [data])
 
     const stats = useMemo(() => {
@@ -76,7 +73,7 @@ export default function DeliveriesPage() {
                     <p className="text-4xl font-black mt-2 text-secondary italic tracking-tighter">{stats.upcoming}</p>
                 </div>
                 <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100 luxe-reveal delay-150">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Fulfillment Queue</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Fulfillment Queue (Successful)</p>
                     <p className="text-4xl font-black mt-2 text-primary italic tracking-tighter">{stats.total}</p>
                 </div>
             </div>
