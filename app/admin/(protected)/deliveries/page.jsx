@@ -33,9 +33,12 @@ export default function DeliveriesPage() {
     let { data, isLoading, error } = useSWR(['/sales', params], fetcher)
 
     const { orders, pagination } = useMemo(() => {
-        const orders = data?.data || []
-        const pagination = data ? { current: data.current_page, last: data.last_page, total: data.total } : null
-        return { orders, pagination }
+        const allOrders = data?.data || [];
+        // Only include orders with successful payment status for the manifest
+        const orders = allOrders.filter(order => order.payment_status === 'success');
+        
+        const pagination = data ? { current: data.current_page, last: data.last_page, total: data.total } : null;
+        return { orders, pagination };
     }, [data])
 
     const stats = useMemo(() => {
