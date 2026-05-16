@@ -23,6 +23,7 @@ export default function Page(){
     let [newBrandMaxOrder, setNewBrandMaxOrder] = useState('');
     let [newBrandTrackingSnippet, setNewBrandTrackingSnippet] = useState('');
     let [newBrandPurchaseSnippet, setNewBrandPurchaseSnippet] = useState('');
+    let [newBrandSortOrder, setNewBrandSortOrder] = useState(0);
 
 
 
@@ -123,7 +124,8 @@ export default function Page(){
                 min_order_amount: newBrandMinOrder,
                 max_order_amount: newBrandMaxOrder,
                 tracking_snippet: newBrandTrackingSnippet,
-                purchase_snippet: newBrandPurchaseSnippet
+                purchase_snippet: newBrandPurchaseSnippet,
+                sort_order: newBrandSortOrder
             };
 
 
@@ -145,6 +147,7 @@ export default function Page(){
                         setNewBrandMaxOrder('');
                         setNewBrandTrackingSnippet('');
                         setNewBrandPurchaseSnippet('');
+                        setNewBrandSortOrder(0);
                         popupE('success', 'Brand created successfully');
 
 
@@ -174,7 +177,8 @@ export default function Page(){
                 min_order_amount: brand.min_order_amount,
                 max_order_amount: brand.max_order_amount,
                 tracking_snippet: brand.tracking_snippet,
-                purchase_snippet: brand.purchase_snippet
+                purchase_snippet: brand.purchase_snippet,
+                sort_order: brand.sort_order
             };
 
 
@@ -346,7 +350,7 @@ export default function Page(){
                                 </div>
                             </div>
 
-                            <div className="pt-4 grid grid-cols-2 gap-4">
+                            <div className="pt-4 grid grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Min Order Amount (KES)</label>
                                     <input 
@@ -365,6 +369,16 @@ export default function Page(){
                                         type="number" 
                                         value={newBrandMaxOrder} 
                                         onChange={e => setNewBrandMaxOrder(e.target.value)}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Sort Order (Rank)</label>
+                                    <input 
+                                        className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 placeholder:text-gray-300 shadow-inner text-xs" 
+                                        placeholder="0" 
+                                        type="number" 
+                                        value={newBrandSortOrder} 
+                                        onChange={e => setNewBrandSortOrder(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -544,7 +558,7 @@ export default function Page(){
                                                         </div>
                                                     </div>
 
-                                                    <div className="grid grid-cols-2 gap-2 pt-2">
+                                                    <div className="grid grid-cols-3 gap-2 pt-2">
                                                         <div className="space-y-1">
                                                             <label className="text-[8px] font-black text-gray-400 uppercase">Min Order</label>
                                                             <input 
@@ -572,6 +586,22 @@ export default function Page(){
                                                                     const bIdx = brands.findIndex(b => b.id === brand.id);
                                                                     if (bIdx !== -1) {
                                                                         updated[bIdx] = { ...updated[bIdx], max_order_amount: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[8px] font-black text-gray-400 uppercase">Sort Order</label>
+                                                            <input 
+                                                                className="w-full text-[10px] bg-white border border-primary/20 px-3 py-1.5 rounded-lg outline-none" 
+                                                                type="number"
+                                                                value={brand.sort_order || 0}
+                                                                onChange={e => {
+                                                                    const updated = [...brands];
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], sort_order: e.target.value };
                                                                         mutateBrands(updated, false);
                                                                     }
                                                                 }}
