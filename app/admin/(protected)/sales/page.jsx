@@ -29,7 +29,7 @@ function SaleRowSkeleton() {
     )
 }
 
-function OrderDetail({ order, onClose }) {
+function OrderDetail({ order, onClose, mutate }) {
     const primaryImage = (product) => {
         const img = product?.product_images?.find(i => i.is_primary)
         return img?.url || product?.product_images?.[0]?.url || ''
@@ -72,10 +72,16 @@ function OrderDetail({ order, onClose }) {
                     </div>
                     <div>
                         <p className="text-sm text-gray-500">Payment Status</p>
-                        <span className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${statusColors[order.payment_status] || statusColors.pending}`}>
-                            {order.payment_status || 'pending'}
+                        <span className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${order.payment_status === 'pending' && order.payment_reference ? 'bg-orange-100 text-orange-800 animate-pulse' : statusColors[order.payment_status] || statusColors.pending}`}>
+                            {order.payment_status === 'pending' && order.payment_reference ? 'Awaiting Verification' : (order.payment_status || 'pending')}
                         </span>
                     </div>
+                    {order.payment_reference && (
+                        <div>
+                            <p className="text-sm text-gray-500">Receipt Code</p>
+                            <p className="font-bold text-gray-900">{order.payment_reference}</p>
+                        </div>
+                    )}
                     <div>
                         <p className="text-sm text-gray-500">Shipment Status</p>
                         <span className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${statusColors[order.shipment?.status] || statusColors.pending}`}>
@@ -138,12 +144,23 @@ function OrderDetail({ order, onClose }) {
                 {
                     order.shipment &&
                     <button onClick={e => putData(
-                        () => { },
+                        () => { mutate(); onClose(); },
                         {
                             status: 'completed'
                         },
                         `/orders/${order.id}`
                     )} className="block px-5 py-2 text-primary border-primary border-2 rounded-full hover:text-white hover:bg-primary my-7 text-sm">Mark Completed</button>
+                }
+                
+                {
+                    order.payment_status === 'pending' && order.payment_reference &&
+                    <button onClick={e => postData(
+                        () => { mutate(); onClose(); },
+                        {},
+                        `/admin/orders/${order.id}/verify-payment`
+                    )} className="block w-full px-5 py-3 text-white bg-green-600 rounded-xl hover:bg-green-700 font-bold mb-4 shadow-lg shadow-green-600/30 transition-all">
+                        Approve M-Pesa Payment ({order.payment_reference})
+                    </button>
                 }
 
                 <div className="mt-4 pt-4 border-t flex flex-col gap-4">
@@ -184,7 +201,7 @@ export default function Page() {
     if (orderTypeFilter) params.order_type = orderTypeFilter
     if (search) params.search = search
 
-    let { data, isLoading, error } = useSWR(['/sales', params], fetcher)
+    let { data, isLoading, error, mutate } = useSWR(['/sales', params], fetcher)
 
     const handleExport = () => {
         getFile(`sales_report_${new Date().toISOString().split('T')[0]}.xlsx`, '/export/sales', { 
@@ -352,10 +369,11 @@ export default function Page() {
                                     <td className="px-8 py-5">
                                         <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
                                             order.payment_status === 'success' ? 'bg-green-50 text-green-600 border-green-100' :
+                                            order.payment_status === 'pending' && order.payment_reference ? 'bg-orange-50 text-orange-600 border-orange-200 shadow-sm animate-pulse' :
                                             order.payment_status === 'failed' ? 'bg-red-50 text-red-600 border-red-100' :
-                                            'bg-yellow-50 text-yellow-600 border-yellow-100 animate-pulse'
+                                            'bg-yellow-50 text-yellow-600 border-yellow-100'
                                         }`}>
-                                            {order.payment_status || 'pending'}
+                                            {order.payment_status === 'pending' && order.payment_reference ? `Verify: ${order.payment_reference}` : (order.payment_status || 'pending')}
                                         </span>
                                     </td>
                                     <td className="px-8 py-5">
@@ -403,7 +421,7 @@ export default function Page() {
 
             {/* Order Detail Modal */}
             {selectedOrder && (
-                <OrderDetail order={selectedOrder} onClose={() => setSelectedOrder(null)} />
+                <OrderDetail order={selectedOrder} onClose={() => setSelectedOrder(null)} mutate={mutate} />
             )}
         </main>
     )

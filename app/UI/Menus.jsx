@@ -127,7 +127,6 @@ export function MobileSideMenu({ menuOpen, setMenuOpen }){
                     <div className="pt-4 pb-2 border-t border-gray-50 mt-4">
                         <div className="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-black px-4 mb-4 font-serif italic">System Pulse</div>
                         <SidebarItem href="/admin/monitoring/pulse" icon="icon-[solar--pulse-bold-duotone]" label="Terminal Pulse" pathname={pathname} />
-                        <SidebarItem href="/admin/monitoring/telescope" icon="icon-[solar--telescope-bold-duotone]" label="Deep Telescope" pathname={pathname} />
                         <SidebarItem href="/admin/settings" icon="icon-[carbon--settings]" label="Core Settings" pathname={pathname} />
                     </div>
 
@@ -297,7 +296,6 @@ export function DesktopSidebar(){
         { href: '/admin/inventory', icon: 'icon-[material-symbols--inventory-rounded]', label: 'Inventory Engine' },
         { href: '/admin/settings', icon: 'icon-[carbon--settings]', label: 'Core Settings' },
         { href: '/admin/monitoring/pulse', icon: 'icon-[solar--pulse-bold-duotone]', label: 'Terminal Pulse' },
-        { href: '/admin/monitoring/telescope', icon: 'icon-[solar--telescope-bold-duotone]', label: 'Deep Telescope' },
     ];
 
     return (
