@@ -24,6 +24,7 @@ export default function Page(){
     let [newBrandTrackingSnippet, setNewBrandTrackingSnippet] = useState('');
     let [newBrandPurchaseSnippet, setNewBrandPurchaseSnippet] = useState('');
     let [newBrandSortOrder, setNewBrandSortOrder] = useState(0);
+    let [newBrandSlug, setNewBrandSlug] = useState('');
 
 
 
@@ -125,7 +126,8 @@ export default function Page(){
                 max_order_amount: newBrandMaxOrder,
                 tracking_snippet: newBrandTrackingSnippet,
                 purchase_snippet: newBrandPurchaseSnippet,
-                sort_order: newBrandSortOrder
+                sort_order: newBrandSortOrder,
+                slug: newBrandSlug
             };
 
 
@@ -148,6 +150,7 @@ export default function Page(){
                         setNewBrandTrackingSnippet('');
                         setNewBrandPurchaseSnippet('');
                         setNewBrandSortOrder(0);
+                        setNewBrandSlug('');
                         popupE('success', 'Brand created successfully');
 
 
@@ -178,7 +181,8 @@ export default function Page(){
                 max_order_amount: brand.max_order_amount,
                 tracking_snippet: brand.tracking_snippet,
                 purchase_snippet: brand.purchase_snippet,
-                sort_order: brand.sort_order
+                sort_order: brand.sort_order,
+                slug: brand.slug
             };
 
 
@@ -265,6 +269,18 @@ export default function Page(){
                                     value={newBrandName} 
                                     onChange={e => setNewBrandName(e.target.value)}
                                 />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">URL Slug (Optional)</label>
+                                <input 
+                                    className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary/20 transition-all font-medium text-gray-800 placeholder:text-gray-300 shadow-inner text-xs" 
+                                    placeholder="e.g., grainmill-premium" 
+                                    type="text" 
+                                    value={newBrandSlug} 
+                                    onChange={e => setNewBrandSlug(e.target.value)}
+                                />
+                                <p className="text-[9px] text-gray-400 italic ml-1">Leave empty to auto-generate from brand name.</p>
                             </div>
 
                             <div className="space-y-2">
@@ -461,6 +477,22 @@ export default function Page(){
                                                                     const bIdx = brands.findIndex(b => b.id === brand.id);
                                                                     if (bIdx !== -1) {
                                                                         updated[bIdx] = { ...updated[bIdx], name: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
+                                                            }}
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-1">
+                                                        <label className="text-[8px] font-black text-gray-400 uppercase">URL Slug</label>
+                                                        <input 
+                                                            className="w-full text-xs font-mono text-gray-600 bg-white border border-primary/20 px-3 py-2 rounded-xl focus:ring-2 focus:ring-primary/10 outline-none" 
+                                                            value={brand.slug || ''}
+                                                            onChange={e => {
+                                                                const updated = [...brands];
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], slug: e.target.value };
                                                                         mutateBrands(updated, false);
                                                                     }
                                                             }}

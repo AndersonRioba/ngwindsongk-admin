@@ -10,7 +10,8 @@ import ConfirmModal from '@/app/UI/ConfirmModal'
 
 export default function BannerSettings() {
     const [selectedPage, setSelectedPage] = useState('homepage')
-    const { data: response, isLoading } = useSWR(['/admin/banners', { page: selectedPage }], fetcher)
+    const { data: response, isLoading: bannersLoading } = useSWR(['/admin/banners', { page: selectedPage }], fetcher)
+    const { data: brandsResponse, isLoading: brandsLoading } = useSWR(['/admin/brands', {}], fetcher)
     const [isSaving, setIsSaving] = useState(false)
     const [editingBanner, setEditingBanner] = useState(null) // null for new, banner object for edit
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -19,14 +20,20 @@ export default function BannerSettings() {
 
     const banners = response || []
 
-    const pages = [
+    const staticPages = [
         { id: 'homepage', name: 'Homepage', icon: 'icon-[fluent--home-16-regular]' },
         { id: 'about', name: 'About Us', icon: 'icon-[fluent--info-16-regular]' },
         { id: 'recipes', name: 'Recipes', icon: 'icon-[fluent--food-16-regular]' },
-        { id: 'oats', name: 'Oats Category', icon: 'icon-[fluent--drink-coffee-16-regular]' },
-        { id: 'nanacare', name: 'Nanacare Category', icon: 'icon-[fluent--heart-16-regular]' },
-        { id: 'nutmill', name: 'Nutmill Category', icon: 'icon-[fluent--leaf-one-16-regular]' },
     ]
+
+    const brandPages = (brandsResponse?.data || brandsResponse || [])
+        .map(brand => ({
+            id: brand.slug || brand.name.toLowerCase().trim().replaceAll(' ', '-'),
+            name: `${brand.name} Category`,
+            icon: 'icon-[fluent--drink-coffee-16-regular]'
+        }))
+
+    const pages = [...staticPages, ...brandPages]
 
     const handleSave = async (e) => {
         e.preventDefault()
@@ -83,7 +90,7 @@ export default function BannerSettings() {
         }
     }
 
-    if (isLoading) return <div className="flex justify-center p-12"><Spinner /></div>
+    if (bannersLoading || brandsLoading) return <div className="flex justify-center p-12"><Spinner /></div>
 
     const currentPageName = pages.find(p => p.id === selectedPage)?.name
 
