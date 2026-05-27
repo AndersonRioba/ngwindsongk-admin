@@ -19,6 +19,7 @@ export default function Page(){
     let [newBrandIsActive, setNewBrandIsActive] = useState(true);
     let [newBrandFacebook, setNewBrandFacebook] = useState('');
     let [newBrandInstagram, setNewBrandInstagram] = useState('');
+    let [newBrandTiktok, setNewBrandTiktok] = useState('');
     let [newBrandMinOrder, setNewBrandMinOrder] = useState(0);
     let [newBrandMaxOrder, setNewBrandMaxOrder] = useState('');
     let [newBrandTrackingSnippet, setNewBrandTrackingSnippet] = useState('');
@@ -122,6 +123,7 @@ export default function Page(){
                 is_active: newBrandIsActive ? 1 : 0,
                 facebook_url: newBrandFacebook,
                 instagram_url: newBrandInstagram,
+                tiktok_url: newBrandTiktok,
                 min_order_amount: newBrandMinOrder,
                 max_order_amount: newBrandMaxOrder,
                 tracking_snippet: newBrandTrackingSnippet,
@@ -145,6 +147,7 @@ export default function Page(){
                         setNewBrandColor('#111111');
                         setNewBrandIsActive(true);
                         setNewBrandInstagram('');
+                        setNewBrandTiktok('');
                         setNewBrandMinOrder(0);
                         setNewBrandMaxOrder('');
                         setNewBrandTrackingSnippet('');
@@ -177,6 +180,7 @@ export default function Page(){
                 is_active: brand.is_active ? 1 : 0,
                 facebook_url: brand.facebook_url,
                 instagram_url: brand.instagram_url,
+                tiktok_url: brand.tiktok_url,
                 min_order_amount: brand.min_order_amount,
                 max_order_amount: brand.max_order_amount,
                 tracking_snippet: brand.tracking_snippet,
@@ -362,6 +366,16 @@ export default function Page(){
                                         type="url" 
                                         value={newBrandInstagram} 
                                         onChange={e => setNewBrandInstagram(e.target.value)}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">TikTok URL (Optional)</label>
+                                    <input 
+                                        className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 placeholder:text-gray-300 shadow-inner text-xs" 
+                                        placeholder="https://tiktok.com/@..." 
+                                        type="url" 
+                                        value={newBrandTiktok} 
+                                        onChange={e => setNewBrandTiktok(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -583,6 +597,22 @@ export default function Page(){
                                                                     const bIdx = brands.findIndex(b => b.id === brand.id);
                                                                     if (bIdx !== -1) {
                                                                         updated[bIdx] = { ...updated[bIdx], instagram_url: e.target.value };
+                                                                        mutateBrands(updated, false);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[8px] font-black text-gray-400 uppercase">TikTok (Optional)</label>
+                                                            <input 
+                                                                className="w-full text-[10px] bg-white border border-primary/20 px-3 py-1.5 rounded-lg outline-none" 
+                                                                placeholder="https://tiktok.com/@..."
+                                                                value={brand.tiktok_url || ''}
+                                                                onChange={e => {
+                                                                    const updated = [...brands];
+                                                                    const bIdx = brands.findIndex(b => b.id === brand.id);
+                                                                    if (bIdx !== -1) {
+                                                                        updated[bIdx] = { ...updated[bIdx], tiktok_url: e.target.value };
                                                                         mutateBrands(updated, false);
                                                                     }
                                                                 }}
