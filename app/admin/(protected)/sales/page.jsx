@@ -153,7 +153,7 @@ function OrderDetail({ order, onClose, mutate }) {
                 }
                 
                 {
-                    order.payment_status === 'pending' && order.payment_reference &&
+                    order.payment_status !== 'success' && order.payment_reference &&
                     <button onClick={e => postData(
                         () => { mutate(); onClose(); },
                         {},
@@ -188,6 +188,7 @@ export default function Page() {
     let [search, setSearch] = useState('')
     let [statusFilter, setStatusFilter] = useState('')
     let [orderTypeFilter, setOrderTypeFilter] = useState('')
+    let [paymentStatusFilter, setPaymentStatusFilter] = useState('')
     let [sort, setSort] = useState('newest')
     let [selectedOrder, setSelectedOrder] = useState(null)
     let [page, setPage] = useState(1)
@@ -199,6 +200,7 @@ export default function Page() {
     const params = { page, sort }
     if (statusFilter) params.status = statusFilter
     if (orderTypeFilter) params.order_type = orderTypeFilter
+    if (paymentStatusFilter) params.payment_status = paymentStatusFilter
     if (search) params.search = search
 
     let { data, isLoading, error, mutate } = useSWR(['/sales', params], fetcher)
@@ -289,6 +291,19 @@ export default function Page() {
                                 <option value="b2b">Wholesale (B2B)</option>
                             </select>
                         </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Payment Status</label>
+                            <select
+                                value={paymentStatusFilter}
+                                onChange={e => { setPaymentStatusFilter(e.target.value); setPage(1) }}
+                                className="w-full bg-gray-50 hover:bg-gray-100 focus:bg-white border-none rounded-2xl py-4 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 cursor-pointer"
+                            >
+                                <option value="">All Payments</option>
+                                <option value="success">Paid / Success</option>
+                                <option value="pending">Pending Verification</option>
+                                <option value="failed">Failed</option>
+                            </select>
+                        </div>
                     </div>
 
                     {/* Date Intelligence */}
@@ -367,14 +382,33 @@ export default function Page() {
                                     </td>
                                     <td className="px-8 py-5 font-black text-gray-900 text-base">KES {Number(order.total).toLocaleString()}</td>
                                     <td className="px-8 py-5">
-                                        <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
-                                            order.payment_status === 'success' ? 'bg-green-50 text-green-600 border-green-100' :
-                                            order.payment_status === 'pending' && order.payment_reference ? 'bg-orange-50 text-orange-600 border-orange-200 shadow-sm animate-pulse' :
-                                            order.payment_status === 'failed' ? 'bg-red-50 text-red-600 border-red-100' :
-                                            'bg-yellow-50 text-yellow-600 border-yellow-100'
-                                        }`}>
-                                            {order.payment_status === 'pending' && order.payment_reference ? `Verify: ${order.payment_reference}` : (order.payment_status || 'pending')}
-                                        </span>
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                                            <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                                                order.payment_status === 'success' ? 'bg-green-50 text-green-600 border-green-100' :
+                                                order.payment_reference ? 'bg-orange-50 text-orange-600 border-orange-200 shadow-sm animate-pulse' :
+                                                order.payment_status === 'failed' ? 'bg-red-50 text-red-600 border-red-100' :
+                                                'bg-yellow-50 text-yellow-600 border-yellow-100'
+                                            }`}>
+                                                {order.payment_status === 'success' ? 'success' : order.payment_reference ? `Verify: ${order.payment_reference}` : (order.payment_status || 'pending')}
+                                            </span>
+                                            {order.payment_status !== 'success' && order.payment_reference && (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (confirm(`Are you sure you want to approve M-Pesa Payment ${order.payment_reference} for Order #${order.id}?`)) {
+                                                            postData(
+                                                                () => { mutate(); },
+                                                                {},
+                                                                `/admin/orders/${order.id}/verify-payment`
+                                                            );
+                                                        }
+                                                    }}
+                                                    className="bg-green-600 hover:bg-green-700 text-white font-black uppercase tracking-[0.1em] text-[9px] py-1.5 px-3 rounded-lg transition-all shadow-md active:scale-95 whitespace-nowrap"
+                                                >
+                                                    Approve
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-8 py-5">
                                         <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
