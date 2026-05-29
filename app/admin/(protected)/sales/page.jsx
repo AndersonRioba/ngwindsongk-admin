@@ -196,7 +196,7 @@ export default function Page() {
     let [dateFrom, setDateFrom] = useState('')
     let [dateTo, setDateTo] = useState('')
 
-    const params = { page, sort, payment_status: 'success' }
+    const params = { page, sort }
     if (statusFilter) params.status = statusFilter
     if (orderTypeFilter) params.order_type = orderTypeFilter
     if (search) params.search = search
