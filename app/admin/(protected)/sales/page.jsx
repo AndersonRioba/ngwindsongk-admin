@@ -2,7 +2,7 @@
 import { useState, useMemo } from "react"
 import Image from "next/image"
 import useSWR from "swr"
-import { fetcher, postData, putData, getFile } from "@/app/lib/data"
+import { fetcher, postData, putData, getFile, deleteData } from "@/app/lib/data"
 import Search from "@/app/UI/Search"
 import BreadCrumbs from "@/app/UI/BreadCrumbs"
 
@@ -175,6 +175,22 @@ function OrderDetail({ order, onClose, mutate }) {
                     >
                         <span className="icon-[mdi--file-pdf-box] w-5 h-5" />
                         Download Invoice PDF
+                    </button>
+
+                    <button 
+                        onClick={e => {
+                            if (confirm(`CAUTION: Are you absolutely sure you want to permanently delete Order #${order.id}? This action CANNOT be undone.`)) {
+                                deleteData(
+                                    () => { mutate(); onClose(); },
+                                    {},
+                                    `/orders/${order.id}`
+                                );
+                            }
+                        }}
+                        className="flex items-center justify-center gap-2 w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold shadow-lg shadow-red-600/20 transition-all active:scale-[0.98]"
+                    >
+                        <span className="icon-[mdi--trash-can-outline] w-5 h-5" />
+                        Delete Transaction
                     </button>
                 </div>
             </div>
@@ -420,7 +436,27 @@ export default function Page() {
                                         </span>
                                     </td>
                                     <td className="px-8 py-5 text-[11px] font-black text-gray-400 uppercase text-right">
-                                        {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                                        <div className="flex items-center justify-end gap-3">
+                                            <span>
+                                                {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                                            </span>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (confirm(`CAUTION: Are you absolutely sure you want to permanently delete Order #${order.id}?`)) {
+                                                        deleteData(
+                                                            () => { mutate(); },
+                                                            {},
+                                                            `/orders/${order.id}`
+                                                        );
+                                                    }
+                                                }}
+                                                className="text-red-500 hover:text-red-700 transition-colors p-1 rounded-md hover:bg-red-50"
+                                                title="Delete Transaction"
+                                            >
+                                                <span className="icon-[mdi--trash-can-outline] w-5 h-5" />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))
