@@ -177,7 +177,8 @@ function OrderDetail({ order, onClose, mutate }) {
                         Download Invoice PDF
                     </button>
 
-                    <button 
+                    {/* DELETE DISABLED — uncomment to re-enable cascading order deletion */}
+                    {/* <button 
                         onClick={e => {
                             if (confirm(`CAUTION: Are you absolutely sure you want to permanently delete Order #${order.id}? This action CANNOT be undone.`)) {
                                 deleteData(
@@ -191,7 +192,7 @@ function OrderDetail({ order, onClose, mutate }) {
                     >
                         <span className="icon-[mdi--trash-can-outline] w-5 h-5" />
                         Delete Transaction
-                    </button>
+                    </button> */}
                 </div>
             </div>
         </div>
@@ -440,6 +441,7 @@ export default function Page() {
                                             <span>
                                                 {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
                                             </span>
+                                            {/* DELETE DISABLED — uncomment to re-enable row-level order deletion
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -456,6 +458,7 @@ export default function Page() {
                                             >
                                                 <span className="icon-[mdi--trash-can-outline] w-5 h-5" />
                                             </button>
+                                            */}
                                         </div>
                                     </td>
                                 </tr>
