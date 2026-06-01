@@ -171,7 +171,10 @@ export default function DeliveriesPage() {
                                             ) : (
                                                 <span className="text-gray-600 flex items-center gap-2">
                                                     <span className="icon-[mdi--home-map-marker] w-5 h-5" />
-                                                    <span className="line-clamp-1 max-w-[200px]">{order.order_detail?.address}</span>
+                                                    <span className="line-clamp-1 max-w-[200px]">
+                                                        {order.delivery_zone ? `📍 ${order.delivery_zone} - ` : ''}
+                                                        {order.order_detail?.address || 'N/A'}
+                                                    </span>
                                                 </span>
                                             )}
                                         </td>
