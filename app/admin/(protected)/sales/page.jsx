@@ -66,6 +66,17 @@ function OrderDetail({ order, onClose, mutate }) {
                         <p className="text-sm text-gray-500">Address</p>
                         <p className="font-medium">{order.order_detail?.address || 'N/A'}</p>
                     </div>
+                    {order.delivery_method !== 'pickup' && (
+                        <div>
+                            <p className="text-sm text-gray-500">Delivery Town</p>
+                            <p className="font-medium">
+                                {order.delivery_zone
+                                    ? <span className="inline-flex items-center gap-1">📍 {order.delivery_zone}</span>
+                                    : <span className="text-gray-400 italic">Not specified</span>
+                                }
+                            </p>
+                        </div>
+                    )}
                     <div>
                         <p className="text-sm text-gray-500">Payment</p>
                         <p className="font-medium capitalize">{order.payment_method || 'N/A'}</p>
