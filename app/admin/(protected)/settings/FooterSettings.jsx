@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import useSWR, { mutate } from 'swr'
 import { fetcher, postRequest } from '@/app/lib/data'
 import Spinner from '@/app/UI/Spinner'
-import FileInput from '@/app/UI/FileInput'
 import Image from 'next/image'
 
 export default function FooterSettings() {
@@ -13,7 +12,6 @@ export default function FooterSettings() {
     const [menus, setMenus] = useState({ about: [], shop: [] })
     const [isSaving, setIsSaving] = useState(false)
     const [message, setMessage] = useState({ type: '', text: '' })
-    const [files, setFiles] = useState([])
 
     useEffect(() => {
         if (response?.data) {
@@ -50,18 +48,12 @@ export default function FooterSettings() {
                 formData.append(`settings[${key}]`, value)
             })
 
-            // Append consultant image if selected
-            if (files.length > 0) {
-                formData.append('settings[consultant_image]', files[0])
-            }
-
             formData.append('group', 'footer')
 
             const res = await postRequest('/admin/settings', formData)
 
             if (res.success) {
                 setMessage({ type: 'success', text: 'Footer settings updated successfully!' })
-                setFiles([])
                 mutate(['/settings', { group: 'footer' }])
             } else {
                 throw new Error(res.message || 'Failed to update settings')
@@ -214,84 +206,7 @@ export default function FooterSettings() {
                     </div>
                 </div>
 
-                {/* Consultant Spotlight */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border">
-                    <h3 className="text-xl font-black text-gray-800 mb-6 flex items-center gap-2">
-                        <span className="icon-[solar--medical-kit-bold-duotone] text-primary w-6 h-6" />
-                        Maternal & Childcare Consultant
-                    </h3>
-                    <div className="grid md:grid-cols-2 gap-8">
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Consultant Name</label>
-                                <input 
-                                    className="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
-                                    value={settings.consultant_name || ''}
-                                    onChange={(e) => updateSetting('consultant_name', e.target.value)}
-                                    placeholder="e.g. Dr. Jane Mutua"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Brief Profile</label>
-                                <textarea 
-                                    className="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 min-h-[120px]"
-                                    value={settings.consultant_profile || ''}
-                                    onChange={(e) => updateSetting('consultant_profile', e.target.value)}
-                                    placeholder="Brief background and expertise..."
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Phone</label>
-                                    <input 
-                                        className="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
-                                        value={settings.consultant_phone || ''}
-                                        onChange={(e) => updateSetting('consultant_phone', e.target.value)}
-                                        placeholder="0700 000 000"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Email</label>
-                                    <input 
-                                        className="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
-                                        value={settings.consultant_email || ''}
-                                        onChange={(e) => updateSetting('consultant_email', e.target.value)}
-                                        placeholder="jane@example.com"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">WhatsApp</label>
-                                    <input 
-                                        className="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20"
-                                        value={settings.consultant_whatsapp || ''}
-                                        onChange={(e) => updateSetting('consultant_whatsapp', e.target.value)}
-                                        placeholder="254..."
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="flex flex-col">
-                            <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Consultant Portrait</label>
-                            <div className="flex-1">
-                                <FileInput files={files} setFiles={setFiles} type="image" />
-                                {settings.consultant_image && (
-                                    <div className="mt-4 p-4 bg-gray-50 rounded-2xl border flex items-center gap-4">
-                                        <div className="w-16 h-16 rounded-full overflow-hidden relative border-2 border-white shadow-sm">
-                                            <Image 
-                                                src={settings.consultant_image.startsWith('http') ? settings.consultant_image : `${process.env.NEXT_PUBLIC_BASE_URL}${settings.consultant_image}`} 
-                                                alt="Current consultant"
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Currently Displayed</div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
 
                 {/* Menu Management */}
                 <MenuManager type="about" title="About Column Menu" icon="icon-[solar--notebook-bold-duotone]" />
