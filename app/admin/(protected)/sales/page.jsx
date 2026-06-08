@@ -248,7 +248,11 @@ export default function Page() {
     const handleExport = () => {
         getFile(`sales_report_${new Date().toISOString().split('T')[0]}.xlsx`, '/export/sales', { 
             date_from: dateFrom, 
-            date_to: dateTo 
+            date_to: dateTo,
+            status: statusFilter,
+            order_type: orderTypeFilter,
+            payment_status: paymentStatusFilter,
+            search: search
         })
     }
 
