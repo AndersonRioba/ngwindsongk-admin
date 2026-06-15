@@ -27,6 +27,7 @@ export default function useAuth() {
 
                     save('user', userData);
                     save('token', userToken);
+                    document.cookie = "admin_session=true; path=/; max-age=86400; SameSite=Lax";
 
                     resolve({ success: true, user: userData, token: userToken });
                 } else {
@@ -62,6 +63,7 @@ export default function useAuth() {
                         setToken(newToken);
                         save('user', userData);
                         save('token', newToken);
+                        document.cookie = "admin_session=true; path=/; max-age=86400; SameSite=Lax";
                         resolve({ success: true, user: userData, token: newToken });
                     } else {
                         resolve({ success: false, message: "Invalid token" });
@@ -81,6 +83,7 @@ export default function useAuth() {
         setToken(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        document.cookie = "admin_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         // Redirect to the admin login interface
         router.push('/login');
     };
