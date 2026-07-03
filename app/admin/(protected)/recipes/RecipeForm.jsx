@@ -85,6 +85,20 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
         }
     };
 
+    const moveDynamicField = (type, index, direction) => {
+        const newList = [...formData[type]];
+        if (direction === 'up' && index > 0) {
+            const temp = newList[index];
+            newList[index] = newList[index - 1];
+            newList[index - 1] = temp;
+        } else if (direction === 'down' && index < newList.length - 1) {
+            const temp = newList[index];
+            newList[index] = newList[index + 1];
+            newList[index + 1] = temp;
+        }
+        setFormData({ ...formData, [type]: newList });
+    };
+
     const handleProductToggle = (productId) => {
         setFormData(prev => {
             const ids = [...prev.product_ids];
@@ -246,13 +260,31 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
                                         className="flex-1 bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary transition-all"
                                         placeholder={`Ingredient ${index + 1}`}
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => removeDynamicField('ingredients', index)}
-                                        className="text-red-400 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        <span className="icon-[tdesign--delete] w-5 h-5" />
-                                    </button>
+                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            type="button"
+                                            disabled={index === 0}
+                                            onClick={() => moveDynamicField('ingredients', index, 'up')}
+                                            className={`p-1.5 rounded-lg ${index === 0 ? 'text-gray-300' : 'text-gray-400 hover:text-primary hover:bg-primary/10'}`}
+                                        >
+                                            <span className="icon-[solar--alt-arrow-up-bold] w-4 h-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            disabled={index === formData.ingredients.length - 1}
+                                            onClick={() => moveDynamicField('ingredients', index, 'down')}
+                                            className={`p-1.5 rounded-lg ${index === formData.ingredients.length - 1 ? 'text-gray-300' : 'text-gray-400 hover:text-primary hover:bg-primary/10'}`}
+                                        >
+                                            <span className="icon-[solar--alt-arrow-down-bold] w-4 h-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeDynamicField('ingredients', index)}
+                                            className="text-red-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg ml-1"
+                                        >
+                                            <span className="icon-[tdesign--delete] w-5 h-5" />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -282,13 +314,31 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
                                         className="flex-1 bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary transition-all min-h-[80px]"
                                         placeholder={`Describe step ${index + 1}...`}
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => removeDynamicField('instructions', index)}
-                                        className="text-red-400 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-opacity mt-2"
-                                    >
-                                        <span className="icon-[tdesign--delete] w-5 h-5" />
-                                    </button>
+                                    <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity mt-2">
+                                        <button
+                                            type="button"
+                                            disabled={index === 0}
+                                            onClick={() => moveDynamicField('instructions', index, 'up')}
+                                            className={`p-1.5 rounded-lg ${index === 0 ? 'text-gray-300' : 'text-gray-400 hover:text-primary hover:bg-primary/10'}`}
+                                        >
+                                            <span className="icon-[solar--alt-arrow-up-bold] w-4 h-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            disabled={index === formData.instructions.length - 1}
+                                            onClick={() => moveDynamicField('instructions', index, 'down')}
+                                            className={`p-1.5 rounded-lg ${index === formData.instructions.length - 1 ? 'text-gray-300' : 'text-gray-400 hover:text-primary hover:bg-primary/10'}`}
+                                        >
+                                            <span className="icon-[solar--alt-arrow-down-bold] w-4 h-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeDynamicField('instructions', index)}
+                                            className="text-red-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg"
+                                        >
+                                            <span className="icon-[tdesign--delete] w-5 h-5" />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
