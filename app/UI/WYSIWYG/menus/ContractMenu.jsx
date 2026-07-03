@@ -101,6 +101,7 @@ export const MenuBar = ({ editor }) => {
               key={index}
             >
               <button
+                type="button"
                 onClick={item.action}
                 className={`
                   px-2 py-1 rounded flex items-center gap-1.5

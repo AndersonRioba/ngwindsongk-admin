@@ -144,6 +144,7 @@ export const FileUploadButton = ({ editor }) => {
           className="hidden"
         />
         <button
+          type="button"
           onClick={() => fileInputRef.current?.click()}
           className="px-2 py-1 rounded icon-[heroicons--paper-clip] w-6 h-6 hover:text-primary transition-colors"
           title="Upload File"

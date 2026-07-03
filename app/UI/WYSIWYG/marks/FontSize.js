@@ -67,6 +67,7 @@ export const FontSizeDropdown = ({ editor }) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="px-2 py-1 rounded flex items-center gap-1.5 hover:bg-gray-100"
       >
@@ -77,6 +78,7 @@ export const FontSizeDropdown = ({ editor }) => {
           <div className="py-1" role="menu">
             {FONT_SIZES.map((size) => (
               <button
+                type="button"
                 key={size}
                 className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                 onClick={() => setFontSize(size)}

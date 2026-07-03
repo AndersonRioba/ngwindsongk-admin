@@ -1,7 +1,7 @@
 'use client'
 import { Suspense, useState, useEffect } from "react";
 import useAuth from "@/app/hooks/useAuth";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Logo from "@/app/UI/Logo";
 import Spinner from "@/app/UI/Spinner";
 import { getStoreUrl } from "@/app/lib/urls";
@@ -19,7 +19,6 @@ function LoginContent() {
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { login, loginWithToken, token, user, isAdmin, isLoading } = useAuth();
-    const router = useRouter();
     const searchParams = useSearchParams();
     const urlToken = searchParams.get('token');
 
@@ -40,13 +39,13 @@ function LoginContent() {
         console.log('Admin Login redirection check:', { isLoading, token, isAdmin });
         if (!isLoading && token && user) {
             if (isAdmin) {
-                router.push('/admin/dashboard');
+                window.location.href = '/admin/dashboard';
             } else {
                 console.log('Regular user on admin login, redirecting to shop');
                 window.location.href = `${getStoreUrl()}/login?token=${token}`;
             }
         }
-    }, [user, token, isAdmin, isLoading, router]);
+    }, [user, token, isAdmin, isLoading]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -67,7 +66,9 @@ function LoginContent() {
                 roles.includes('super_admin');
 
             if (isResultAdmin) {
-                router.push('/admin/dashboard');
+                // Use full page navigation so the admin_session cookie is
+                // included in the middleware's request on the very next request.
+                window.location.href = '/admin/dashboard';
             } else {
                 window.location.href = `${getStoreUrl()}/login?token=${result.token}`;
             }

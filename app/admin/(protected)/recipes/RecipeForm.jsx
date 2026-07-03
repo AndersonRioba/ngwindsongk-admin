@@ -10,6 +10,7 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
     const [previewImage, setPreviewImage] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -56,7 +57,7 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setFormData(prev => ({ ...prev, image: file }));
+            setSelectedFile(file);
             const reader = new FileReader();
             reader.onloadend = () => setPreviewImage(reader.result);
             reader.readAsDataURL(file);
@@ -116,15 +117,17 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
             } else if (key === 'product_ids') {
                 formData[key].forEach(id => data.append('product_ids[]', id));
             } else if (key === 'image') {
-                if (formData[key] instanceof File) {
-                    data.append('image', formData[key]);
-                } else if (!isEdit) {
-                    data.append('image', formData[key]);
-                }
+                return;
             } else {
                 data.append(key, formData[key]);
             }
         });
+
+        if (selectedFile) {
+            data.append('image', selectedFile);
+        } else if (!isEdit && formData.image) {
+            data.append('image', formData.image);
+        }
 
         if (isEdit) {
             data.append('_method', 'PUT');
@@ -443,9 +446,9 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
                                     <label
                                         key={p.id}
                                         data-name={p.name}
-                                        className="product-checkbox-item flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-all cursor-pointer group"
+                                        className="product-checkbox-item flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-all cursor-pointer group min-w-0 overflow-hidden"
                                     >
-                                        <div className="relative flex items-center">
+                                        <div className="relative flex items-center flex-shrink-0">
                                             <input
                                                 type="checkbox"
                                                 checked={formData.product_ids.includes(p.id)}
@@ -453,10 +456,10 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
                                                 className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary transition-all cursor-pointer"
                                             />
                                         </div>
-                                        <div className="w-8 h-8 bg-white rounded-lg flex-shrink-0 flex items-center justify-center p-1 border border-gray-100">
-                                            <Image src={p.product_images?.[0]?.url || p.image} width={32} height={32} className="w-full h-full object-contain" alt={p.name} unoptimized={true} />
+                                        <div className="w-8 h-8 bg-white rounded-lg flex-shrink-0 flex items-center justify-center p-1 border border-gray-100 overflow-hidden">
+                                            <Image src={p.product_images?.[0]?.url || p.image} width={32} height={32} className="w-full h-full object-contain" alt="product" unoptimized={true} />
                                         </div>
-                                        <span className={`text-xs font-medium line-clamp-1 transition-colors ${formData.product_ids.includes(p.id) ? 'text-primary font-bold' : 'text-gray-600 group-hover:text-gray-900'}`}>
+                                        <span className={`text-xs font-medium truncate min-w-0 flex-1 transition-colors ${formData.product_ids.includes(p.id) ? 'text-primary font-bold' : 'text-gray-600 group-hover:text-gray-900'}`}>
                                             {p.name}
                                         </span>
                                     </label>

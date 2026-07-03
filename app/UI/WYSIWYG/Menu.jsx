@@ -113,6 +113,7 @@ export const MenuBar = ({ editor, full }) => {
               key={index}
             >
               <button
+                type="button"
                 onClick={item.action}
                 className={`
                   px-2 py-1 rounded flex items-center gap-1.5
@@ -131,6 +132,7 @@ export const MenuBar = ({ editor, full }) => {
         })}
 
         <button 
+            type="button"
             onClick={toggleFullScreen}
             className={`md:absolute md:right-7 md:top-4 w-7 h-7 ${
                 isFullScreen

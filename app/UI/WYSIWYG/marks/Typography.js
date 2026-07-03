@@ -85,6 +85,7 @@ export const TypographyDropdown = ({ editor }) => {
     return (
       <div className="relative">
         <button
+          type="button"
           onClick={() => setIsOpen(!isOpen)}
           className="px-2 py-1 rounded flex items-center gap-1"
         >
@@ -95,6 +96,7 @@ export const TypographyDropdown = ({ editor }) => {
           <div className="absolute top-full left-0 mt-1 bg-white border rounded-lg shadow-lg py-1 min-w-[150px] z-50">
             {options.map((option, index) => (
               <button
+                type="button"
                 key={index}
                 onClick={() => {
                   option.action();

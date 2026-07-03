@@ -460,15 +460,15 @@ export default function BlogForm({ initialData = null, isEdit = false }) {
                                     return filteredProducts.map(p => (
                                         <label 
                                             key={p.id}
-                                            className={`flex items-center gap-3 p-3 rounded-xl transition-all cursor-pointer group ${formData.product_ids.includes(p.id) ? 'bg-primary/5' : 'hover:bg-gray-50'}`}
+                                            className={`flex items-center gap-3 p-3 rounded-xl transition-all cursor-pointer group min-w-0 overflow-hidden ${formData.product_ids.includes(p.id) ? 'bg-primary/5' : 'hover:bg-gray-50'}`}
                                         >
                                             <input 
                                                 type="checkbox"
                                                 checked={formData.product_ids.includes(p.id)}
                                                 onChange={() => handleProductToggle(p.id)}
-                                                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary flex-shrink-0"
                                             />
-                                            <span className="text-xs font-bold text-gray-600 group-hover:text-gray-900 line-clamp-1">{p.name}</span>
+                                            <span className="text-xs font-bold text-gray-600 group-hover:text-gray-900 truncate min-w-0 flex-1">{p.name}</span>
                                         </label>
                                     ));
                                 })()

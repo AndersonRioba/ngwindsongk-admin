@@ -83,6 +83,7 @@ export const XScriptDropdown = ({ editor }) => {
     return (
       <div className="relative" ref={dropdownRef}>
         <button
+          type="button"
           onClick={() => setIsOpen(!isOpen)}
           className="px-2 py-1 rounded flex items-center gap-1.5 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
@@ -92,6 +93,7 @@ export const XScriptDropdown = ({ editor }) => {
           <div className="absolute z-50 mt-2 w-32 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
             <div className="py-1" role="menu">
                 <button 
+                    type="button"
                     onClick={() => setXScript('superscript')}
                     className="flex items-center w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
@@ -99,6 +101,7 @@ export const XScriptDropdown = ({ editor }) => {
                     Superscript
                 </button>
                 <button 
+                    type="button"
                     onClick={() => setXScript('subscript')}
                     className="flex items-center w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                 >

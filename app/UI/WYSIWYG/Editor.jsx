@@ -32,7 +32,7 @@ export default function Editor({content, setContent, placeholder, className}){
         onClick={() => editor?.commands.focus()}
       >
         <MenuBar editor={editor} />
-        <div className="flex gap-2 p-4 bg-white dark:bg-background-dark truncate editor-container">
+        <div className="flex gap-2 p-4 bg-white dark:bg-background-dark editor-container">
           <EditorContent 
             editor={editor} 
             className={`flex-1 p-4 rounded-lg ${className}`} 
