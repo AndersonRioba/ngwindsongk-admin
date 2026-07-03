@@ -9,21 +9,22 @@ import BreadCrumbs from "@/app/UI/BreadCrumbs"
 
 export default function RecipesPage() {
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
     const [viewType, setViewType] = useState('grid');
     
-    const { data: recipesData, error, isLoading, mutate } = useSWR(['/admin/recipes', {}], fetcher, {
+    // Add page and search to the SWR key to fetch data dynamically from the server
+    const { data: recipesData, error, isLoading, mutate } = useSWR(['/admin/recipes', { page, search }], fetcher, {
         revalidateOnFocus: false,
         revalidateOnMount: true
     });
 
-    const filteredRecipes = useMemo(() => {
-        const recipes = recipesData?.data?.data || recipesData?.data || [];
-        if (!search) return recipes;
-        return recipes.filter(r => 
-            r.title.toLowerCase().includes(search.toLowerCase()) || 
-            (r.content && r.content.toLowerCase().includes(search.toLowerCase()))
-        );
-    }, [recipesData, search]);
+    // The backend handles pagination and search natively. 
+    // We just extract the current page's data and pagination metadata.
+    const filteredRecipes = recipesData?.data?.data || recipesData?.data || [];
+    const pagination = recipesData?.data?.last_page ? recipesData.data : null;
+
+    // Reset to page 1 when search changes
+    useMemo(() => { setPage(1); }, [search]);
 
     const handleDelete = async (id) => {
         if (confirm('Are you sure you want to delete this recipe?')) {
@@ -101,16 +102,51 @@ export default function RecipesPage() {
                         <p className="text-gray-400 text-sm">Create your first recipe to get started!</p>
                     </div>
                 ) : (
-                    <div className={`grid ${viewType === 'grid' ? 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1'} gap-6`}>
-                        {filteredRecipes.map((recipe) => (
-                            <RecipeListing 
-                                key={recipe.id} 
-                                data={recipe} 
-                                onDelete={handleDelete}
-                                viewType={viewType}
-                            />
-                        ))}
-                    </div>
+                    <>
+                        <div className={`grid ${viewType === 'grid' ? 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1'} gap-6`}>
+                            {filteredRecipes.map((recipe) => (
+                                <RecipeListing 
+                                    key={recipe.id} 
+                                    data={recipe} 
+                                    onDelete={handleDelete}
+                                    viewType={viewType}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Pagination Controls */}
+                        {pagination && pagination.last_page > 1 && (
+                            <div className="flex justify-center items-center mt-12 gap-2">
+                                <button 
+                                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                                    disabled={page === 1}
+                                    className="p-2 rounded-xl bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-primary disabled:opacity-50 transition-all shadow-sm"
+                                >
+                                    <span className="icon-[solar--alt-arrow-left-linear] w-5 h-5" />
+                                </button>
+                                
+                                <div className="flex items-center gap-1 bg-white border border-gray-100 rounded-xl px-2 py-1 shadow-sm">
+                                    {[...Array(pagination.last_page)].map((_, i) => (
+                                        <button
+                                            key={i + 1}
+                                            onClick={() => setPage(i + 1)}
+                                            className={`w-8 h-8 rounded-lg text-sm font-bold transition-all ${page === i + 1 ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-primary'}`}
+                                        >
+                                            {i + 1}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <button 
+                                    onClick={() => setPage(p => Math.min(pagination.last_page, p + 1))}
+                                    disabled={page === pagination.last_page}
+                                    className="p-2 rounded-xl bg-white border border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-primary disabled:opacity-50 transition-all shadow-sm"
+                                >
+                                    <span className="icon-[solar--alt-arrow-right-linear] w-5 h-5" />
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
             </section>
         </main>
