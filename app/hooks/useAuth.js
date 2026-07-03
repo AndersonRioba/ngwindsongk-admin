@@ -27,7 +27,8 @@ export default function useAuth() {
 
                     save('user', userData);
                     save('token', userToken);
-                    document.cookie = "admin_session=true; path=/; max-age=86400; SameSite=Lax; Secure";
+                    const secureFlag = window.location.protocol === 'https:' ? '; Secure' : '';
+                    document.cookie = `admin_session=true; path=/; max-age=86400; SameSite=Lax${secureFlag}`;
 
                     resolve({ success: true, user: userData, token: userToken });
                 } else {
@@ -63,7 +64,8 @@ export default function useAuth() {
                         setToken(newToken);
                         save('user', userData);
                         save('token', newToken);
-                        document.cookie = "admin_session=true; path=/; max-age=86400; SameSite=Lax; Secure";
+                        const secureFlag = window.location.protocol === 'https:' ? '; Secure' : '';
+                        document.cookie = `admin_session=true; path=/; max-age=86400; SameSite=Lax${secureFlag}`;
                         resolve({ success: true, user: userData, token: newToken });
                     } else {
                         resolve({ success: false, message: "Invalid token" });

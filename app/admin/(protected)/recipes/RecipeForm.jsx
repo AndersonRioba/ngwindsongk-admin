@@ -4,6 +4,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import useSWR from "swr"
 import { fetcher, postData, putData } from "@/app/lib/data"
+import { getImageUrl } from "@/app/lib/utils/image"
 
 export default function RecipeForm({ initialData = null, isEdit = false }) {
     const router = useRouter();
@@ -318,7 +319,7 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
                                 />
                                 {previewImage || (typeof formData.image === 'string' && formData.image) ? (
                                     <div className="relative aspect-video rounded-xl overflow-hidden">
-                                        <Image src={previewImage || formData.image} width={400} height={225} className="w-full h-full object-cover" alt="Preview" unoptimized={true} />
+                                        <Image src={previewImage || getImageUrl(formData.image)} width={400} height={225} className="w-full h-full object-cover" alt="Preview" unoptimized={true} />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                                             <span className="text-white text-xs font-bold bg-white/20 backdrop-blur px-3 py-1 rounded-full text-white">Change Image</span>
                                         </div>

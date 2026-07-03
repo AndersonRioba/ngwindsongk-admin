@@ -22,6 +22,9 @@ const nextConfig = {
         ],
     },
     async headers() {
+        const isDev = process.env.NODE_ENV !== 'production';
+        const cspDefaultSrc = `default-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} http://localhost:8000 http://127.0.0.1:8000 https://api.ngwindsongk.com;`;
+        
         return [
             {
                 source: '/(.*)',
@@ -44,7 +47,7 @@ const nextConfig = {
                     },
                     {
                         key: 'Content-Security-Policy',
-                        value: "default-src 'self' 'unsafe-inline' http://localhost:8000 http://127.0.0.1:8000 https://api.ngwindsongk.com; img-src 'self' data: blob: http://localhost:8000 http://127.0.0.1:8000 https://api.ngwindsongk.com https://encrypted-tbn0.gstatic.com https://images.unsplash.com https://unpkg.com; font-src 'self' data:;",
+                        value: `${cspDefaultSrc} img-src 'self' data: blob: http://localhost:8000 http://127.0.0.1:8000 https://api.ngwindsongk.com https://encrypted-tbn0.gstatic.com https://images.unsplash.com https://unpkg.com; font-src 'self' data:;`,
                     }
                 ],
             },
