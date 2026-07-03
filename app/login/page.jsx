@@ -29,7 +29,12 @@ function LoginContent() {
             // Only trigger if no token exists or if the URL token is different from the current session
             if (!token || cleanToken !== token) {
                 console.log('LoginWithToken from URL (forced refresh):', cleanToken);
-                loginWithToken(cleanToken);
+                loginWithToken(cleanToken).then(() => {
+                    // Strip the token from the URL so it's not kept in browser history or leaked
+                    window.history.replaceState({}, '', window.location.pathname);
+                });
+            } else {
+                window.history.replaceState({}, '', window.location.pathname);
             }
         }
     }, [urlToken, token, loginWithToken]);
