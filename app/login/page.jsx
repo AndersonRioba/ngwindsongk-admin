@@ -18,7 +18,7 @@ function LoginContent() {
     const [credentials, setCredentials] = useState({ phone: '', password: '' });
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { login, loginWithToken, token, user, isAdmin, isLoading } = useAuth();
+    const { login, loginWithToken, token, user, isAdmin, isLoading, isVerifyingToken } = useAuth();
     const searchParams = useSearchParams();
     const urlToken = searchParams.get('token');
 
@@ -41,8 +41,8 @@ function LoginContent() {
 
     // Redirect if already logged in
     useEffect(() => {
-        console.log('Admin Login redirection check:', { isLoading, token, isAdmin });
-        if (!isLoading && token && user) {
+        console.log('Admin Login redirection check:', { isLoading, isVerifyingToken, token, isAdmin });
+        if (!isLoading && !isVerifyingToken && token && user) {
             if (isAdmin) {
                 window.location.href = '/admin/dashboard';
             } else {
@@ -50,7 +50,16 @@ function LoginContent() {
                 window.location.href = `${getStoreUrl()}/login?token=${token}`;
             }
         }
-    }, [user, token, isAdmin, isLoading]);
+    }, [user, token, isAdmin, isLoading, isVerifyingToken]);
+
+    // Show a spinner while auth state is being determined to prevent form flicker
+    if (isLoading || isVerifyingToken) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <Spinner />
+            </div>
+        );
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
