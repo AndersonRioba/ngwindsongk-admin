@@ -10,6 +10,7 @@ import RunningBannerSettings from './RunningBannerSettings'
 import TrackingSettings from './TrackingSettings'
 import DeliverySettings from './DeliverySettings'
 import MaternalSettings from './MaternalSettings'
+import CacheSettings from './CacheSettings'
 
 
 export default function SettingsPage() {
@@ -25,6 +26,7 @@ export default function SettingsPage() {
         { id: 'footer', name: 'Footer', icon: 'icon-[fluent--layout-footer-24-regular]' },
         { id: 'contact', name: 'Contact Page', icon: 'icon-[fluent--contact-card-24-regular]' },
         { id: 'tracking', name: 'Tracking & Analytics', icon: 'icon-[fluent--data-usage-24-regular]' },
+        { id: 'cache', name: 'Cache Controls', icon: 'icon-[fluent--flash-24-regular]' },
     ]
 
 
@@ -65,9 +67,11 @@ export default function SettingsPage() {
                     {activeTab === 'footer' && <FooterSettings />}
                     { activeTab === 'contact' && <ContactSettings /> }
                     { activeTab === 'tracking' && <TrackingSettings /> }
+                    { activeTab === 'cache' && <CacheSettings /> }
 
                 </div>
             </div>
         </div>
     )
 }
+
