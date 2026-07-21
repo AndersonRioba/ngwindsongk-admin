@@ -329,42 +329,33 @@ export function TopMenu(){
 
     const handleQuickClearCache = async () => {
         setClearingCache(true);
-        popupE('Processing', 'Purging system caches...');
+        popupE('Processing', 'Purging system caches…');
         try {
             const authToken = load('adminToken') || load('token');
-            const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-            const storeUrl = (process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000').replace(/\/$/, '');
-            const revalidateSecret = process.env.NEXT_PUBLIC_REVALIDATE_SECRET || 'super_secure_revalidation_secret_token_2026';
+            const baseURL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/$/, '');
 
-            // Step 1: Clear Laravel cache
-            const laravelRes = await fetch(`${baseURL}/admin/clear-cache`, {
+            const res = await fetch(`${baseURL}/admin/clear-cache`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
                 },
-                credentials: 'include'
+                credentials: 'include',
             });
-            const laravelData = await laravelRes.json();
+            const data = await res.json();
 
-            // Step 2: Revalidate Next.js shop directly from browser
-            let frontendOk = false;
-            try {
-                const nextRes = await fetch(`${storeUrl}/api/revalidate?secret=${revalidateSecret}`, {
-                    method: 'POST'
-                });
-                frontendOk = nextRes.ok;
-            } catch (_) {
-                frontendOk = false;
-            }
-
-            if (laravelData.success && frontendOk) {
+            if (data.success) {
                 popupE('Success', 'All caches purged & store revalidated!');
-            } else if (laravelData.success) {
-                popupE('Success', 'Laravel cache cleared. Store revalidation skipped (shop may be offline).');
             } else {
-                popupE('Error', laravelData.message || 'Failed to clear cache');
+                // Partial success — at least show what happened
+                const laravelOk  = data.details?.laravel_cache_cleared;
+                const frontendOk = data.details?.frontend_revalidated;
+                if (laravelOk && !frontendOk) {
+                    popupE('Success', 'Laravel cache cleared. Next.js revalidation failed — check server logs.');
+                } else {
+                    popupE('Error', data.message || 'Failed to clear cache');
+                }
             }
         } catch (err) {
             popupE('Error', err.message || 'Network error');

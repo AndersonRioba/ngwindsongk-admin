@@ -3,32 +3,6 @@
 import { useState } from 'react'
 import { load } from '@/app/lib/storage'
 
-const REVALIDATE_SECRET = process.env.NEXT_PUBLIC_REVALIDATE_SECRET || 'super_secure_revalidation_secret_token_2026'
-
-async function clearLaravelCache(token) {
-    const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
-    const res = await fetch(`${baseURL}/admin/clear-cache`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-        },
-        credentials: 'include',
-    })
-    if (!res.ok) throw new Error(`Laravel returned HTTP ${res.status}`)
-    return res.json()
-}
-
-async function revalidateNextJs() {
-    const storeUrl = (process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000').replace(/\/$/, '')
-    const res = await fetch(`${storeUrl}/api/revalidate?secret=${REVALIDATE_SECRET}`, {
-        method: 'POST',
-    })
-    if (!res.ok) throw new Error(`Next.js returned HTTP ${res.status}`)
-    return res.json()
-}
-
 export default function CacheSettings() {
     const [isClearing, setIsClearing] = useState(false)
     const [result, setResult] = useState(null)
@@ -37,39 +11,39 @@ export default function CacheSettings() {
         setIsClearing(true)
         setResult(null)
 
-        const token = load('adminToken') || load('token')
-        let laravelCleared = false
-        let laravelError = null
-        let frontendRevalidated = false
-        let frontendError = null
-
-        // Step 1: Clear Laravel cache
         try {
-            const data = await clearLaravelCache(token)
-            laravelCleared = !!data.success
-            if (!laravelCleared) laravelError = data.message || 'Unknown error'
-        } catch (err) {
-            laravelError = err.message
-        }
+            const token = load('adminToken') || load('token')
+            const baseURL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/$/, '')
 
-        // Step 2: Revalidate Next.js shop directly from browser
-        try {
-            await revalidateNextJs()
-            frontendRevalidated = true
-        } catch (err) {
-            frontendError = err.message
-        }
+            const res = await fetch(`${baseURL}/admin/clear-cache`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                credentials: 'include',
+            })
 
-        setResult({ laravelCleared, laravelError, frontendRevalidated, frontendError })
-        setIsClearing(false)
+            const data = await res.json()
+            setResult(data)
+        } catch (err) {
+            setResult({ success: false, message: err.message || 'Network error — could not reach the API.' })
+        } finally {
+            setIsClearing(false)
+        }
     }
 
-    const allOk = result?.laravelCleared && result?.frontendRevalidated
-    const anyOk = result?.laravelCleared || result?.frontendRevalidated
+    const laravelOk   = result?.details?.laravel_cache_cleared
+    const frontendOk  = result?.details?.frontend_revalidated
+    const frontendErr = result?.details?.frontend_error
+    const hasDetails  = result?.details !== undefined
+    const allOk       = result?.success
 
     return (
         <div className="space-y-8 max-w-5xl">
             <div className="bg-white p-8 rounded-3xl shadow-sm border space-y-6">
+
                 {/* Header */}
                 <div className="border-b pb-6">
                     <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
@@ -77,75 +51,86 @@ export default function CacheSettings() {
                         System Cache Management
                     </h3>
                     <p className="text-sm text-gray-500 mt-1 max-w-2xl">
-                        Purge the server-side caches and force the store front-end to immediately reflect any
-                        price, product, or content changes you have made in the admin.
+                        Purges the server-side Laravel cache and forces the store front-end to immediately reflect
+                        any price, product, or content changes made in the admin.
                     </p>
                 </div>
 
                 {/* Result banner */}
                 {result && (
-                    <div className={`p-5 rounded-2xl border space-y-3 ${
+                    <div className={`p-5 rounded-2xl border space-y-4 ${
                         allOk
                             ? 'bg-emerald-50 border-emerald-200'
-                            : anyOk
-                                ? 'bg-amber-50 border-amber-200'
-                                : 'bg-red-50 border-red-200'
+                            : 'bg-amber-50 border-amber-200'
                     }`}>
+                        {/* Main status line */}
                         <div className={`flex items-center gap-2 font-bold text-base ${
-                            allOk ? 'text-emerald-800' : anyOk ? 'text-amber-800' : 'text-red-800'
+                            allOk ? 'text-emerald-800' : 'text-amber-800'
                         }`}>
-                            <span className={`w-5 h-5 ${
+                            <span className={`w-5 h-5 flex-shrink-0 ${
                                 allOk
                                     ? 'icon-[fluent--checkmark-circle-24-filled] text-emerald-600'
                                     : 'icon-[fluent--warning-24-filled] text-amber-500'
                             }`} />
-                            {allOk ? 'All caches cleared successfully!' : 'Completed with some issues'}
+                            {result.message}
                         </div>
 
-                        <div className="space-y-2 pl-7">
-                            {/* Laravel */}
-                            <div className="flex items-center gap-2 text-sm">
-                                <span className={`w-4 h-4 flex-shrink-0 ${
-                                    result.laravelCleared
-                                        ? 'icon-[fluent--checkmark-16-filled] text-emerald-500'
-                                        : 'icon-[fluent--dismiss-16-filled] text-red-400'
-                                }`} />
-                                <span className={result.laravelCleared ? 'text-emerald-800 font-semibold' : 'text-red-700'}>
-                                    Laravel Database Cache: {result.laravelCleared ? 'Cleared' : `Failed — ${result.laravelError}`}
-                                </span>
+                        {/* Per-step details */}
+                        {hasDetails && (
+                            <div className="space-y-2 pl-7">
+                                <div className="flex items-center gap-2 text-sm">
+                                    <span className={`w-4 h-4 flex-shrink-0 ${
+                                        laravelOk
+                                            ? 'icon-[fluent--checkmark-16-filled] text-emerald-500'
+                                            : 'icon-[fluent--dismiss-16-filled] text-red-400'
+                                    }`} />
+                                    <span className={laravelOk ? 'text-emerald-800 font-semibold' : 'text-red-700 font-semibold'}>
+                                        Laravel Database Cache: {laravelOk ? 'Cleared ✓' : 'Failed'}
+                                    </span>
+                                </div>
+                                <div className="flex items-start gap-2 text-sm">
+                                    <span className={`w-4 h-4 mt-0.5 flex-shrink-0 ${
+                                        frontendOk
+                                            ? 'icon-[fluent--checkmark-16-filled] text-emerald-500'
+                                            : 'icon-[fluent--dismiss-16-filled] text-red-400'
+                                    }`} />
+                                    <div>
+                                        <span className={frontendOk ? 'text-emerald-800 font-semibold' : 'text-red-700 font-semibold'}>
+                                            Next.js Store Pages: {frontendOk ? 'Revalidated ✓' : 'Failed'}
+                                        </span>
+                                        {!frontendOk && frontendErr && (
+                                            <p className="text-xs text-red-600 mt-1 font-normal break-all">{frontendErr}</p>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                            {/* Next.js */}
-                            <div className="flex items-center gap-2 text-sm">
-                                <span className={`w-4 h-4 flex-shrink-0 ${
-                                    result.frontendRevalidated
-                                        ? 'icon-[fluent--checkmark-16-filled] text-emerald-500'
-                                        : 'icon-[fluent--dismiss-16-filled] text-red-400'
-                                }`} />
-                                <span className={result.frontendRevalidated ? 'text-emerald-800 font-semibold' : 'text-red-700'}>
-                                    Next.js Store Pages: {result.frontendRevalidated ? 'Revalidated' : `Failed — ${result.frontendError}`}
-                                </span>
-                            </div>
-                        </div>
+                        )}
+
+                        {/* No details — raw error */}
+                        {!hasDetails && !result.success && (
+                            <p className="text-sm text-red-700 pl-7">{result.message}</p>
+                        )}
                     </div>
                 )}
 
                 {/* Info box */}
-                <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-3">
-                    <h4 className="font-bold text-gray-700 text-sm uppercase tracking-wider flex items-center gap-2">
-                        <span className="icon-[fluent--info-16-regular] w-4 h-4 text-blue-400" />
+                <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100 space-y-3">
+                    <h4 className="font-bold text-blue-800 text-sm flex items-center gap-2">
+                        <span className="icon-[fluent--info-16-regular] w-4 h-4" />
                         When to use this
                     </h4>
-                    <ul className="text-xs text-gray-600 space-y-1.5 list-disc pl-5 leading-relaxed">
-                        <li>After changing product pricing, discounts, or stock status.</li>
-                        <li>After updating categories, brand assignments, or descriptions.</li>
-                        <li>Whenever edits made in the backend are not showing on the public store.</li>
+                    <ul className="text-xs text-blue-700 space-y-1.5 list-disc pl-5 leading-relaxed">
+                        <li>After changing product pricing, discounts, or availability.</li>
+                        <li>After updating categories, brands, banners, or descriptions.</li>
+                        <li>Whenever edits made in the backend are not yet visible on the live store.</li>
                     </ul>
                 </div>
 
-                {/* Action */}
+                {/* Action button */}
                 <div className="pt-2 flex justify-end">
                     <button
                         type="button"
+                        id="btn-clear-all-caches"
                         onClick={handleClearCache}
                         disabled={isClearing}
                         className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-white font-bold text-sm transition-all duration-300 shadow-lg ${
@@ -155,7 +140,7 @@ export default function CacheSettings() {
                         }`}
                     >
                         <span className={`icon-[fluent--arrow-clockwise-24-regular] w-5 h-5 ${isClearing ? 'animate-spin' : ''}`} />
-                        {isClearing ? 'Clearing Caches...' : 'Purge & Clear All Caches'}
+                        {isClearing ? 'Clearing Caches…' : 'Purge & Clear All Caches'}
                     </button>
                 </div>
             </div>
