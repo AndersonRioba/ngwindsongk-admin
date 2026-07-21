@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import AboutSettings from './AboutSettings'
 import BannerSettings from './BannerSettings'
 import TestimonialSettings from './TestimonialSettings'
@@ -12,9 +13,16 @@ import DeliverySettings from './DeliverySettings'
 import MaternalSettings from './MaternalSettings'
 import CacheSettings from './CacheSettings'
 
+function SettingsContent() {
+    const searchParams = useSearchParams()
+    const tabParam = searchParams.get('tab')
+    const [activeTab, setActiveTab] = useState(tabParam || 'about')
 
-export default function SettingsPage() {
-    const [activeTab, setActiveTab] = useState('about')
+    useEffect(() => {
+        if (tabParam) {
+            setActiveTab(tabParam)
+        }
+    }, [tabParam])
 
     const tabs = [
         { id: 'about', name: 'About Us', icon: 'icon-[fluent--info-16-regular]' },
@@ -75,3 +83,10 @@ export default function SettingsPage() {
     )
 }
 
+export default function SettingsPage() {
+    return (
+        <Suspense fallback={<div className="p-6">Loading settings...</div>}>
+            <SettingsContent />
+        </Suspense>
+    )
+}

@@ -6,6 +6,8 @@ import Logo from "@/app/UI/Logo";
 import { hide, show, nowYouDont, nowYouSee} from "@/app/lib/controlls";
 import useAuth from "@/app/hooks/useAuth";
 import useSWR from "swr";
+import { popupE } from "@/app/lib/trigger";
+import { load } from "@/app/lib/storage";
 import { fetcher } from "@/app/lib/data";
 import { getStoreUrl } from "@/app/lib/urls";
 
@@ -295,6 +297,7 @@ export function DesktopSidebar(){
         { href: '/admin/access-control', icon: 'icon-[solar--shield-keyhole-bold-duotone]', label: 'Security & Roles' },
         { href: '/admin/inventory', icon: 'icon-[material-symbols--inventory-rounded]', label: 'Inventory Engine' },
         { href: '/admin/settings', icon: 'icon-[carbon--settings]', label: 'Core Settings' },
+        { href: '/admin/settings?tab=cache', icon: 'icon-[fluent--flash-24-regular]', label: 'Cache Controls' },
         { href: '/admin/monitoring/pulse', icon: 'icon-[solar--pulse-bold-duotone]', label: 'Terminal Pulse' },
     ];
 
@@ -322,6 +325,53 @@ export function DesktopSidebar(){
 export function TopMenu(){
     let pathname = usePathname();
     const {isLoading, user, logout, token } = useAuth();
+    const [clearingCache, setClearingCache] = useState(false);
+
+    const handleQuickClearCache = async () => {
+        setClearingCache(true);
+        popupE('Processing', 'Purging system caches...');
+        try {
+            const authToken = load('adminToken') || load('token');
+            const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+            const storeUrl = (process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000').replace(/\/$/, '');
+            const revalidateSecret = process.env.NEXT_PUBLIC_REVALIDATE_SECRET || 'super_secure_revalidation_secret_token_2026';
+
+            // Step 1: Clear Laravel cache
+            const laravelRes = await fetch(`${baseURL}/admin/clear-cache`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'include'
+            });
+            const laravelData = await laravelRes.json();
+
+            // Step 2: Revalidate Next.js shop directly from browser
+            let frontendOk = false;
+            try {
+                const nextRes = await fetch(`${storeUrl}/api/revalidate?secret=${revalidateSecret}`, {
+                    method: 'POST'
+                });
+                frontendOk = nextRes.ok;
+            } catch (_) {
+                frontendOk = false;
+            }
+
+            if (laravelData.success && frontendOk) {
+                popupE('Success', 'All caches purged & store revalidated!');
+            } else if (laravelData.success) {
+                popupE('Success', 'Laravel cache cleared. Store revalidation skipped (shop may be offline).');
+            } else {
+                popupE('Error', laravelData.message || 'Failed to clear cache');
+            }
+        } catch (err) {
+            popupE('Error', err.message || 'Network error');
+        } finally {
+            setClearingCache(false);
+        }
+    };
     
     return(
         <div className="hidden md:block bg-white/80 backdrop-blur-md z-50 py-4 px-8 fixed w-full top-0 border-b">
@@ -340,12 +390,22 @@ export function TopMenu(){
 
                 {
                     token && !isLoading ?
-                    <div className="flex items-center gap-6 bg-gray-50 p-1.5 pr-4 rounded-full border">
-                        <button className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors">
-                            <span className="icon-[octicon--bell-16] w-6 h-6 text-gray-600"></span>
-                            <div className="absolute top-2 right-2 flex items-center justify-center rounded-full bg-primary text-white w-4 h-4 text-[10px] font-bold border-2 border-white">0</div>
+                    <div className="flex items-center gap-4 bg-gray-50 p-1.5 pr-4 rounded-full border">
+                        <button 
+                            onClick={handleQuickClearCache}
+                            disabled={clearingCache}
+                            title="Clear All Caches"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold border border-amber-200/80 transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            <span className={`icon-[fluent--flash-24-regular] w-4 h-4 text-amber-600 ${clearingCache ? 'animate-spin' : ''}`} />
+                            <span>Clear Cache</span>
                         </button>
-                        <div className="h-8 w-[1px] bg-gray-200"></div>
+                        <div className="h-6 w-[1px] bg-gray-200"></div>
+                        <button className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors">
+                            <span className="icon-[octicon--bell-16] w-5 h-5 text-gray-600"></span>
+                            <div className="absolute top-1.5 right-1.5 flex items-center justify-center rounded-full bg-primary text-white w-3.5 h-3.5 text-[9px] font-bold border-2 border-white">0</div>
+                        </button>
+                        <div className="h-6 w-[1px] bg-gray-200"></div>
                         <div className="flex items-center gap-3">
                             <div className="flex flex-col items-end">
                                 <p className="text-sm font-bold text-gray-800">{user?.name}</p>
@@ -363,6 +423,7 @@ export function TopMenu(){
                 }
             </div>
         </div>
+
     )
 }
 
