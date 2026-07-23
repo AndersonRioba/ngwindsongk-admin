@@ -292,7 +292,7 @@ export default function DeliveryZonesSettings() {
                                     {zone.delivery_fee !== null ? (
                                         <span className="font-black text-primary text-base">{Number(zone.delivery_fee).toLocaleString()}</span>
                                     ) : (
-                                        <span className="text-gray-400 italic text-[10px] font-bold uppercase tracking-widest">Fallback (350)</span>
+                                        <span className="text-gray-400 italic text-[10px] font-bold uppercase tracking-widest">Fallback (0)</span>
                                     )}
                                 </td>
                                 <td className="px-8 py-5">
