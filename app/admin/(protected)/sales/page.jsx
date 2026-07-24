@@ -277,6 +277,22 @@ export default function Page() {
             <BreadCrumbs />
             <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center gap-6">
                 <h2 className="text-3xl font-black text-gray-800 tracking-tight lowercase capitalize">Sales Intelligence</h2>
+                <button
+                    title="One-time fix: makes old manual orders with a submitted receipt code visible on this dashboard"
+                    onClick={() => {
+                        if (confirm('This will find all old manual orders with a submitted receipt code but missing payment status, and mark them as Pending Verification so they appear here.\n\nProceed?')) {
+                            postData(
+                                (res) => alert(res?.message || 'Done! Refresh the page to see updated orders.'),
+                                {},
+                                '/admin/maintenance/fix-manual-orders'
+                            )
+                        }
+                    }}
+                    className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-orange-600 border-2 border-orange-200 bg-orange-50 hover:bg-orange-100 px-5 py-3 rounded-2xl transition-all whitespace-nowrap"
+                >
+                    <span className="icon-[mdi--wrench-outline] w-4 h-4" />
+                    Fix Legacy Orders
+                </button>
             </div>
 
             {/* Stats Cards */}
