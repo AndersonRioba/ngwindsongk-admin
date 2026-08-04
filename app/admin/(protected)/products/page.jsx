@@ -3,7 +3,7 @@ import Link from "next/link"
 import { useState, useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 import useSWR from "swr"
-import { fetcher, putData } from "@/app/lib/data"
+import { fetcher, putData, deleteData } from "@/app/lib/data"
 import { popupE } from "@/app/lib/trigger"
 import ProductListing, {ProductListingSkeleton, ProductListingRow} from "@/app/UI/ProductListing"
 import Search from "@/app/UI/Search"
@@ -23,7 +23,7 @@ export default function Page(){
     // Build API params — always request up to 500 so no products are hidden by pagination
     const apiParams = useMemo(() => {
         const p = { per_page: 500 };
-        if (search) p.search = search;
+        if (search.trim()) p.search = search.trim();
         if (activeBrand) p.brand = activeBrand;
         return p;
     }, [search, activeBrand]);
@@ -40,6 +40,25 @@ export default function Page(){
 
     const isLoading = productsLoading;
     const data = productsData;
+
+    const handleDeleteProduct = async (e, productId) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (confirm('Are you sure you want to delete this product? It will be removed from the store.')) {
+            try {
+                await deleteData(
+                    () => {
+                        mutateProducts();
+                        popupE('success', 'Product deleted successfully');
+                    },
+                    {},
+                    `/products/${productId}`
+                );
+            } catch (error) {
+                popupE('error', 'Failed to delete product');
+            }
+        }
+    };
 
     const handleUpdateBrand = async (brandId, newName) => {
         if (!newName.trim()) return;
@@ -226,8 +245,8 @@ export default function Page(){
                                     {
                                         group.products.map((product,j)=>(
                                         <div key={j} className="h-full">
-                                            {type=='grid' && <ProductListing data={product}/>}
-                                            {type=='table' && <ProductListingRow data={product}/>}
+                                            {type=='grid' && <ProductListing data={product} onDelete={handleDeleteProduct}/>}
+                                            {type=='table' && <ProductListingRow data={product} onDelete={handleDeleteProduct}/>}
                                         </div>))
                                     }
                                 </div>

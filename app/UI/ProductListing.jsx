@@ -60,7 +60,7 @@ export function ProductListingClient({data}){
     )
 }
 
-export default function ProductListing({data}){
+export default function ProductListing({data, onDelete}){
     const getDisplayPrice = () => {
         if (data.price) return `Ksh ${Number(data.price).toLocaleString()}`;
         const variations = data.product_variations || data.variations || [];
@@ -85,10 +85,20 @@ export default function ProductListing({data}){
     return(
         <Link
             href={`/admin/products/edit?id=${data.id}&name=${data.name}`}
-            className="group flex flex-col bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden h-full"
+            className="group flex flex-col bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden h-full relative"
         >
             {/* Fixed-height image container — keeps all images the same size */}
             <div className="relative w-full h-48 bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                {onDelete && (
+                    <button
+                        type="button"
+                        onClick={(e) => onDelete(e, data.id)}
+                        className="absolute top-2 left-2 z-10 bg-white/90 hover:bg-red-50 text-gray-500 hover:text-red-600 p-1.5 rounded-full shadow-sm transition-all"
+                        title="Delete product"
+                    >
+                        <span className="icon-[fluent--delete-16-regular] w-4 h-4 block" />
+                    </button>
+                )}
                 {data.image ? (
                     <Image
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -137,14 +147,22 @@ export default function ProductListing({data}){
                     <span className="text-xs text-gray-400">
                         {new Date(data.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}
                     </span>
-                    <span className="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded-full font-medium">Active</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${
+                        (data.status || 'active') === 'active'
+                            ? 'bg-green-50 text-green-700'
+                            : (data.status || 'active') === 'inactive'
+                            ? 'bg-red-50 text-red-700'
+                            : 'bg-yellow-50 text-yellow-700'
+                    }`}>
+                        {data.status || 'active'}
+                    </span>
                 </div>
             </div>
         </Link>
     )
 }
 
-export function ProductListingRow({data}){
+export function ProductListingRow({data, onDelete}){
     const getDisplayPrice = () => {
         if (data.price) return `Ksh ${Number(data.price).toLocaleString()}`;
         const variations = data.product_variations || data.variations || [];
@@ -171,7 +189,7 @@ export function ProductListingRow({data}){
             className="group flex gap-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden my-2"
         >
             {/* Thumbnail */}
-            <div className="w-24 h-20 flex-shrink-0 bg-gray-50 flex items-center justify-center overflow-hidden rounded-l-xl">
+            <div className="w-24 h-20 flex-shrink-0 bg-gray-50 flex items-center justify-center overflow-hidden rounded-l-xl relative">
                 {data.image ? (
                     <Image className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src={data.image} alt={data.name} width={100} height={80} unoptimized={true} />
                 ) : (
@@ -193,9 +211,28 @@ export function ProductListingRow({data}){
                 }`}>
                     {totalStock > 0 ? `${totalStock} in stock` : 'Out of stock'}
                 </div>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize whitespace-nowrap ${
+                    (data.status || 'active') === 'active'
+                        ? 'bg-green-50 text-green-700'
+                        : (data.status || 'active') === 'inactive'
+                        ? 'bg-red-50 text-red-700'
+                        : 'bg-yellow-50 text-yellow-700'
+                }`}>
+                    {data.status || 'active'}
+                </span>
                 <p className="text-xs text-gray-400 whitespace-nowrap hidden md:block">
                     {new Date(data.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}
                 </p>
+                {onDelete && (
+                    <button
+                        type="button"
+                        onClick={(e) => onDelete(e, data.id)}
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Delete product"
+                    >
+                        <span className="icon-[fluent--delete-16-regular] w-4 h-4 block" />
+                    </button>
+                )}
                 <span className="icon-[fluent--chevron-right-16-regular] w-4 h-4 text-gray-400 flex-shrink-0" />
             </div>
         </Link>

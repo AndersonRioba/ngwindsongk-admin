@@ -54,7 +54,23 @@ export default function Status(){
 
     const handleDiscard = () => {
         if (confirm('Are you sure you want to discard all changes? This action cannot be undone.')) {
-            router.push('/products')
+            router.push('/admin/products')
+        }
+    }
+
+    const handleDeleteProduct = () => {
+        if (id && confirm('Are you sure you want to delete this product? It will be removed from the store.')) {
+            setIsSaving(true)
+            deleteData(
+                () => {
+                    import("@/app/lib/trigger").then(({ popupE }) => {
+                        popupE('Success', 'Product deleted successfully');
+                        router.push('/admin/products');
+                    });
+                },
+                {},
+                `/products/${id}`
+            ).finally(() => setIsSaving(false))
         }
     }
 
@@ -209,23 +225,33 @@ export default function Status(){
                 </section>
                 :
                 <section className="space-y-3">
-                    <button
-                        onClick={handlePublish}
-                        disabled={!isFormValid || isSaving}
-                        className="flex-1 bg-primary text-white px-4 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                        {isSaving ? (
-                            <>
-                                <span className="icon-[fluent--spinner-ios-16-regular] w-4 h-4 animate-spin" />
-                                Saving...
-                            </>
-                        ) : (
-                            <>
-                                <span className="icon-[fluent--send-16-filled] w-4 h-4" />
-                                Publish
-                            </>
-                        )}
-                    </button>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={handleDeleteProduct}
+                            disabled={isSaving}
+                            className="bg-red-50 text-red-700 px-4 py-3 rounded-lg font-medium hover:bg-red-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                            <span className="icon-[fluent--delete-16-regular] w-4 h-4" />
+                            Delete
+                        </button>
+                        <button
+                            onClick={handlePublish}
+                            disabled={!isFormValid || isSaving}
+                            className="flex-1 bg-primary text-white px-4 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {isSaving ? (
+                                <>
+                                    <span className="icon-[fluent--spinner-ios-16-regular] w-4 h-4 animate-spin" />
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <span className="icon-[fluent--send-16-filled] w-4 h-4" />
+                                    Publish
+                                </>
+                            )}
+                        </button>
+                    </div>
                 </section>
             }
 
