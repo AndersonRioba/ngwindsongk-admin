@@ -25,6 +25,9 @@ export default function CreateProductProvider({ children }) {
     let Attributes = useState({}); // Store attribute objects: { [name]: { [value]: { price, stock, discount, image } } }
     let ProductVariations = useState([]); // Store final product variations with pricing
 
+    let StatusState = useState('active');
+    let ShowAdsState = useState(false);
+
     let DraftId = useState(null);
     let IsPublished = useState(false);
     let LoadedProduct = useState(null); // Track the currently loaded product to prevent redundant fetches
@@ -45,6 +48,8 @@ export default function CreateProductProvider({ children }) {
                 faq: FAQ[0],
                 attributes: Attributes[0],
                 productVariations: ProductVariations[0],
+                status: StatusState[0],
+                showAds: ShowAdsState[0],
             }
         };
 
@@ -56,7 +61,7 @@ export default function CreateProductProvider({ children }) {
                 return res;
             });
         }
-    }, [Product, Details, Category, Brand, Price, AlternatePrice, Description, Variations, Perks, FAQ, Attributes, ProductVariations, DraftId]);
+    }, [Product, Details, Category, Brand, Price, AlternatePrice, Description, Variations, Perks, FAQ, Attributes, ProductVariations, StatusState, ShowAdsState, DraftId]);
 
     const loadDraft = useCallback((id) => {
         return fetcher([`/drafts/${id}`, {}]).then((draft) => {
@@ -73,10 +78,12 @@ export default function CreateProductProvider({ children }) {
             if (d.faq !== undefined) FAQ[1](d.faq);
             if (d.attributes !== undefined) Attributes[1](d.attributes);
             if (d.productVariations !== undefined) ProductVariations[1](d.productVariations);
+            if (d.status !== undefined) StatusState[1](d.status);
+            if (d.showAds !== undefined) ShowAdsState[1](d.showAds);
             DraftId[1](draft.id);
             return draft;
         });
-    }, [Details, Category, Brand, Product, Price, AlternatePrice, Description, Variations, Perks, FAQ, Attributes, ProductVariations, DraftId]);
+    }, [Details, Category, Brand, Product, Price, AlternatePrice, Description, Variations, Perks, FAQ, Attributes, ProductVariations, StatusState, ShowAdsState, DraftId]);
 
     // Load an existing product by id (or name) and populate provider state.
     const loadProduct = useCallback(async (idOrName) => {
@@ -95,6 +102,8 @@ export default function CreateProductProvider({ children }) {
             if (d.discount !== undefined) AlternatePrice[1](d.discount);
             if (d.about !== undefined) Description[1](d.about);
             if (d.stock !== undefined) Stock[1](d.stock);
+            if (d.status !== undefined) StatusState[1](d.status || 'active');
+            if (d.is_promoted !== undefined) ShowAdsState[1](!!d.is_promoted);
 
             // Rich text details
             if (d.description && typeof d.description === 'object' && d.description.description) {
@@ -159,7 +168,7 @@ export default function CreateProductProvider({ children }) {
             console.error('Failed to load product', err);
             return null;
         }
-    }, [LoadedProduct, Category, Brand, Product, Details, Price, AlternatePrice, Description, Stock, Attributes, Variations, ProductVariations, FAQ, Perks, ExistingMedia]);
+    }, [LoadedProduct, Category, Brand, Product, Details, Price, AlternatePrice, Description, Stock, StatusState, ShowAdsState, Attributes, Variations, ProductVariations, FAQ, Perks, ExistingMedia]);
 
     return(
         <CreateProductContext.Provider value={{
@@ -173,6 +182,8 @@ export default function CreateProductProvider({ children }) {
             FAQ,
             Attributes,
             ProductVariations,
+            StatusState,
+            ShowAdsState,
             DraftId,
             IsPublished,
             saveDraft,

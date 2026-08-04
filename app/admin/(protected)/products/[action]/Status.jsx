@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useContext } from "react"
+import { useState, useContext, useEffect } from "react"
 import { CreateProductContext } from "@/app/lib/providers/CreateProductProvider"
 import { useRouter } from "next/navigation"
 import useSWR from "swr"
@@ -8,15 +8,27 @@ import { fetcher, deleteData, putData, postData, postFile } from "@/app/lib/data
 import { useParams, useSearchParams } from "next/navigation"
 
 export default function Status(){
-    const [status, setStatus] = useState('active')
-    const [showAds, setShowAds] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const router = useRouter()
-    const { Product, Category, Brand, Price, AlternatePrice, Description, Details, FAQ, Media, CarouselMedia, Attributes, Stock, saveDraft, loadDraft } = useContext(CreateProductContext)
+    const { Product, Category, Brand, Price, AlternatePrice, Description, Details, FAQ, Media, CarouselMedia, Attributes, Stock, StatusState, ShowAdsState, saveDraft, loadDraft, loadProduct } = useContext(CreateProductContext)
     const {action} = useParams()
     const searchParams = useSearchParams()
     const id = searchParams.get('id')
     const name = searchParams.get('name')
+
+    const status = StatusState ? StatusState[0] : 'active'
+    const setStatus = StatusState ? StatusState[1] : () => {}
+    const showAds = ShowAdsState ? ShowAdsState[0] : false
+    const setShowAds = ShowAdsState ? ShowAdsState[1] : () => {}
+
+    useEffect(() => {
+        if (action === 'edit') {
+            const ident = id || name;
+            if (ident && typeof loadProduct === 'function') {
+                loadProduct(ident).catch(e => console.error('loadProduct failed', e));
+            }
+        }
+    }, [action, id, name, loadProduct]);
 
     const { data: drafts, mutate } = useSWR(['/drafts', {}], fetcher, {
         revalidateOnFocus: false,
@@ -61,6 +73,8 @@ export default function Status(){
                 price: Price[0],
                 discount: AlternatePrice[0] ? parseFloat(AlternatePrice[0]) : 0.0,
                 stock: Stock[0] || 0,
+                status: status,
+                is_promoted: showAds,
             }
 
             const callback = (res) => {

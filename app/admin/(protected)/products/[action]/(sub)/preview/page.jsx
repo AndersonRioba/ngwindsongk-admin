@@ -59,7 +59,7 @@ export function Faqs() {
 }
 
 export default function PublishPage() {
-    const { Category, Brand, Product, Price, AlternatePrice, Perks, Description, Variations, FAQ, Media, Details, CarouselMedia, ExistingMedia, Attributes, Stock, IsPublished, ProductVariations } = useContext(CreateProductContext);
+    const { Category, Brand, Product, Price, AlternatePrice, Perks, Description, Variations, FAQ, Media, Details, CarouselMedia, ExistingMedia, Attributes, Stock, IsPublished, ProductVariations, StatusState, ShowAdsState } = useContext(CreateProductContext);
     const { action } = useParams();
     const searchParams = useSearchParams();
     const id = searchParams.get('id');
@@ -108,6 +108,8 @@ export default function PublishPage() {
                     price: Price[0],
                     discount: AlternatePrice[0] ? parseFloat(AlternatePrice[0]) : 0.0,
                     stock: Stock[0] || 0,
+                    status: StatusState ? StatusState[0] : 'active',
+                    is_promoted: ShowAdsState ? ShowAdsState[0] : false,
                 };
 
                 const callback = (res) => {
