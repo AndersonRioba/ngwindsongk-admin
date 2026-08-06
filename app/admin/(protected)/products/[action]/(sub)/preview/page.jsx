@@ -148,6 +148,8 @@ export default function PublishPage() {
                                     },
                                     '/product-images'
                                 );
+                                // Safety timeout: resolve after 30s to avoid hanging forever
+                                setTimeout(() => resMedia(), 30000);
                             }));
                         }
 

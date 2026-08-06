@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { useContext, useState, useEffect } from "react"
+import { useContext, useEffect } from "react"
 import Image from "next/image"
 import { CreateProductContext } from "@/app/lib/providers/CreateProductProvider"
 import FileInput from "@/app/UI/FileInput"
@@ -31,7 +31,6 @@ export default function Page(){
     let [description, setDescription] = Description;
     let [media, setMedia] = Media;
     let [existingMedia, setExistingMedia] = ExistingMedia;
-    let [files, setFiles] = useState([]);
     const { Attributes } = useContext(CreateProductContext);
     let [attributes, setAttributes] = Attributes;
     let [stock, setStock] = Stock;
@@ -60,9 +59,6 @@ export default function Page(){
         }
     }, [brand, brandsData, category, setCategory]);
 
-    useEffect(()=>{
-        setMedia(files);
-    }, [files, setMedia]);
 
     // If editing, load the product into the provider state (including media files)
     useEffect(()=>{
@@ -79,7 +75,7 @@ export default function Page(){
         
         const hasVariations = attributes && Object.keys(attributes).length > 0;
         const hasExistingImages = existingMedia && existingMedia.length > 0;
-        if (!category || !brand || !product || (!price && !hasVariations) || (files.length === 0 && !hasExistingImages)) {
+        if (!category || !brand || !product || (!price && !hasVariations) || (media.length === 0 && !hasExistingImages)) {
             alert("Please fill in all required basic information and upload at least one image.");
             return;
         }
@@ -220,7 +216,6 @@ export default function Page(){
                                     className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600" 
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        setFiles(files.filter((_, i) => i !== index));
                                         setMedia(media.filter((_, i) => i !== index));
                                     }}
                                 >
@@ -232,7 +227,7 @@ export default function Page(){
                 )}
                 
                 <div className="w-full max-w-md">
-                    <FileInput files={files} setFiles={setFiles} type={'image'}/>
+                    <FileInput files={media} setFiles={setMedia} type={'image'}/>
                 </div>
             </section>
 

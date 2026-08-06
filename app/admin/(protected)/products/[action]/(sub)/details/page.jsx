@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useParams, useSearchParams, useRouter } from "next/navigation"
-import { useContext, useState, useEffect } from "react"
+import { useContext, useEffect } from "react"
 import Image from "next/image"
 import { CreateProductContext } from "@/app/lib/providers/CreateProductProvider"
 import dynamic from 'next/dynamic'
@@ -16,7 +16,6 @@ export default function DetailsPage(){
     let [details, setDetails] = Details;
     let [media, setMedia] = CarouselMedia;
     let [existingMedia, setExistingMedia] = ExistingMedia;
-    let [files, setFiles] = useState([]);
     const searchParams = useSearchParams();
     const id = searchParams.get('id');
     const name = searchParams.get('name');
@@ -31,9 +30,6 @@ export default function DetailsPage(){
         }
     },[action,id,name,loadProduct])
 
-    useEffect(()=>{
-        setMedia(files);
-    }, [files, setMedia]);
 
     const submit = async (e) => {
         e.preventDefault();
@@ -106,7 +102,6 @@ export default function DetailsPage(){
                                     className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600" 
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        setFiles(files.filter((_, i) => i !== index));
                                         setMedia(media.filter((_, i) => i !== index));
                                     }}
                                 >
@@ -118,7 +113,7 @@ export default function DetailsPage(){
                 )}
                 
                 <div className="w-full max-w-md">
-                    <FileInput files={files} setFiles={setFiles} type={'image'}/>
+                    <FileInput files={media} setFiles={setMedia} type={'image'}/>
                 </div>
             </section>
 
