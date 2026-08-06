@@ -8,6 +8,7 @@ import { popupE } from "@/app/lib/trigger"
 import ProductListing, {ProductListingSkeleton, ProductListingRow} from "@/app/UI/ProductListing"
 import Search from "@/app/UI/Search"
 import BreadCrumbs from "@/app/UI/BreadCrumbs"
+import { getImageUrl } from "@/app/lib/utils/image"
 
 export default function Page(){
     const searchParams = useSearchParams();
@@ -112,11 +113,12 @@ export default function Page(){
             if (!groups[groupName]) {
                 groups[groupName] = { id: null, name: groupName, count: 0, stock: 0, products: [] };
             }
+            const primaryImg = product.product_images?.filter(img => img.is_primary)[0]?.url || product.product_images?.[0]?.url || "";
             const transformedProduct = {
                 ...product,
                 stock: product.stock,
                 variations: product.productVariations || [],
-                image: product.product_images?.filter(img => img.is_primary)[0]?.url || ""
+                image: primaryImg ? getImageUrl(primaryImg) : ""
             };
             groups[groupName].products.push(transformedProduct);
             groups[groupName].count += 1;

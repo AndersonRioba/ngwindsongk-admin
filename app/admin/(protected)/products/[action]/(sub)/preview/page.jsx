@@ -10,6 +10,7 @@ import { Question } from "../FAQs/page";
 import { postFile, postData, putData } from "@/app/lib/data";
 import { popupE } from "@/app/lib/trigger";
 import Overlay from "@/app/UI/Overlay";
+import { getImageUrl } from "@/app/lib/utils/image";
 
 export function DetailsSection() {
     const { Details, CarouselMedia, ExistingMedia } = useContext(CreateProductContext);
@@ -27,7 +28,7 @@ export function DetailsSection() {
                 </div>
                 <div className="flex flex-wrap gap-2 justify-center items-start">
                     {ExistingMedia?.[0]?.length > 0 && ExistingMedia[0].map((media, i) => (
-                        <Image key={`ext-${i}`} width={128} height={96} className="max-h-24 max-w-32 rounded-lg border border-primary/50 object-cover" src={media.url} alt="" unoptimized={true} />
+                        <Image key={`ext-${i}`} width={128} height={96} className="max-h-24 max-w-32 rounded-lg border border-primary/50 object-cover" src={getImageUrl(media.url)} alt="" unoptimized={true} />
                     ))}
                     {CarouselMedia[0].length > 0 && CarouselMedia[0].map((media, i) => (
                         <Image key={`new-${i}`} width={128} height={96} className="max-h-24 max-w-32 rounded-lg border border-green-500/50 object-cover" src={URL.createObjectURL(media)} alt="" unoptimized={true} />
@@ -200,7 +201,7 @@ export default function PublishPage() {
                                         >
                                             <Image
                                                 className="w-16 h-16 object-cover rounded"
-                                                src={media.url}
+                                                src={getImageUrl(media.url)}
                                                 alt=""
                                                 width={64}
                                                 height={64}
@@ -222,7 +223,7 @@ export default function PublishPage() {
                                                 height={64}
                                                 unoptimized={true}
                                             />
-                                        </button>
+                        </button>
                                     ))}
                                 </div>
                             )}
@@ -231,7 +232,7 @@ export default function PublishPage() {
                             <div className="flex-1 flex justify-center">
                                 {mainImage && (
                                     <Image
-                                        src={mainImage}
+                                        src={getImageUrl(mainImage)}
                                         width={600}
                                         height={400}
                                         className="max-w-full max-h-96 object-contain rounded-lg border"

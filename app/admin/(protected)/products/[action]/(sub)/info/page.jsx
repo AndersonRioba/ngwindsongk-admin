@@ -9,6 +9,7 @@ import FileInput from "@/app/UI/FileInput"
 import AttributeManager, { ProductVariations } from "../../AttributeManager"
 import { fetcher, postFetcher, postFileFetcher, blobFetcher } from "@/app/lib/data"
 import useSWR from "swr"
+import { getImageUrl } from "@/app/lib/utils/image"
 
 export default function Page(){
     const {action} = useParams();
@@ -175,7 +176,7 @@ export default function Page(){
                         {existingMedia.map((file, index) => (
                             <div key={file.id} className="relative group">
                                 <Image 
-                                    src={file.url} 
+                                    src={getImageUrl(file.url)} 
                                     alt="Existing" 
                                     width={400}
                                     height={200}

@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic'
 const Editor = dynamic(() => import("@/app/UI/WYSIWYG/Editor"), { ssr: false })
 import FileInput from "@/app/UI/FileInput";
 import { postFetcher, postFileFetcher, fetcher } from "@/app/lib/data";
+import { getImageUrl } from "@/app/lib/utils/image";
 
 export default function DetailsPage(){
     const {action} = useParams();
@@ -60,7 +61,7 @@ export default function DetailsPage(){
                         {existingMedia.map((file, index) => (
                             <div key={file.id} className="relative group">
                                 <Image 
-                                    src={file.url} 
+                                    src={getImageUrl(file.url)} 
                                     alt="Existing" 
                                     width={300}
                                     height={160}
