@@ -11,7 +11,7 @@ export default function Navigation(){
     const searchParams = useSearchParams();
     const id = searchParams.get('id');
     const name = searchParams.get('name');
-    const { Category, Brand, Product, Price, Media, Details, FAQ, IsPublished } = useContext(CreateProductContext);
+    const { Category, Brand, Product, Price, Media, ExistingMedia, Attributes, Details, FAQ, IsPublished } = useContext(CreateProductContext);
     const [isPublished, setIsPublished] = IsPublished || [false, () => {}];
     const [showBanner, setShowBanner] = useState(false);
 
@@ -29,7 +29,7 @@ export default function Navigation(){
             name: 'Basic Information',
             icon: 'icon-[fluent--info-16-regular]',
             activeIcon: 'icon-[fluent--info-16-filled]',
-            validate: () => Category[0] && Brand[0] && Product[0] && Price[0] && Media[0].length > 0
+            validate: () => Category[0] && Brand[0] && Product[0] && (Price[0] || (Attributes && Attributes[0] && Object.keys(Attributes[0]).length > 0)) && (Media[0].length > 0 || (ExistingMedia && ExistingMedia[0] && ExistingMedia[0].length > 0))
         },
         {
             link: '/details',

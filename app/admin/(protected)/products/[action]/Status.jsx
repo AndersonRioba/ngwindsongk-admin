@@ -74,7 +74,8 @@ export default function Status(){
         }
     }
 
-    const isFormValid = Product[0] && Category[0] && Brand[0] && Price[0]
+    const hasVariations = Attributes[0] && Object.keys(Attributes[0]).length > 0;
+    const isFormValid = Product[0] && Category[0] && Brand[0] && (Price[0] || hasVariations)
 
     const handlePublish = async () => {
         setIsSaving(true)
@@ -193,39 +194,27 @@ export default function Status(){
             </section>
 
             {/* Action Buttons */}
-            {
-                action=='create'?
-                <section className="space-y-3">
-                    <div className="flex gap-3">
-                        <button
-                            onClick={handleDiscard}
-                            className="flex-1 bg-red-50 text-red-700 px-4 py-3 rounded-lg font-medium hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
-                        >
-                            <span className="icon-[fluent--delete-16-regular] w-4 h-4" />
-                            Discard
-                        </button>
-                        <button
-                        onClick={handleSaveDraft}
-                            disabled={isSaving}
-                            className="w-full bg-primary text-white px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                        >
-                            {isSaving ? (
-                                <>
-                                    <span className="icon-[fluent--spinner-ios-16-regular] w-4 h-4 animate-spin" />
-                                    Saving...
-                                </>
-                            ) : (
-                                <>
-                                    <span className="icon-[fluent--save-16-regular] w-4 h-4" />
-                                    Save Draft
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </section>
-                :
-                <section className="space-y-3">
-                    <div className="flex gap-3">
+            <section className="space-y-3">
+                <div className="flex gap-3">
+                    {action === 'create' ? (
+                        <>
+                            <button
+                                onClick={handleDiscard}
+                                className="flex-1 bg-red-50 text-red-700 px-4 py-3 rounded-lg font-medium hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
+                            >
+                                <span className="icon-[fluent--delete-16-regular] w-4 h-4" />
+                                Discard
+                            </button>
+                            <button
+                                onClick={handleSaveDraft}
+                                disabled={isSaving}
+                                className="bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                <span className="icon-[fluent--save-16-regular] w-4 h-4" />
+                                Save Draft
+                            </button>
+                        </>
+                    ) : (
                         <button
                             onClick={handleDeleteProduct}
                             disabled={isSaving}
@@ -234,26 +223,26 @@ export default function Status(){
                             <span className="icon-[fluent--delete-16-regular] w-4 h-4" />
                             Delete
                         </button>
-                        <button
-                            onClick={handlePublish}
-                            disabled={!isFormValid || isSaving}
-                            className="flex-1 bg-primary text-white px-4 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                        >
-                            {isSaving ? (
-                                <>
-                                    <span className="icon-[fluent--spinner-ios-16-regular] w-4 h-4 animate-spin" />
-                                    Saving...
-                                </>
-                            ) : (
-                                <>
-                                    <span className="icon-[fluent--send-16-filled] w-4 h-4" />
-                                    Publish
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </section>
-            }
+                    )}
+                    <button
+                        onClick={handlePublish}
+                        disabled={!isFormValid || isSaving}
+                        className="flex-1 bg-primary text-white px-4 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                        {isSaving ? (
+                            <>
+                                <span className="icon-[fluent--spinner-ios-16-regular] w-4 h-4 animate-spin" />
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                <span className="icon-[fluent--send-16-filled] w-4 h-4" />
+                                Publish
+                            </>
+                        )}
+                    </button>
+                </div>
+            </section>
 
             {/* Drafts Section */}
             <section className="mt-8 pt-6 border-t border-gray-200">
