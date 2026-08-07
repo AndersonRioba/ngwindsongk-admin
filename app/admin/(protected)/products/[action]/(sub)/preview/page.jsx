@@ -230,7 +230,7 @@ export default function PublishPage() {
 
                             {/* Main Image */}
                             <div className="flex-1 flex justify-center">
-                                {mainImage && (
+                                {mainImage ? (
                                     <Image
                                         src={getImageUrl(mainImage)}
                                         width={600}
@@ -239,6 +239,11 @@ export default function PublishPage() {
                                         alt="Product preview"
                                         unoptimized={true}
                                     />
+                                ) : (
+                                    <div className="w-full h-80 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg text-gray-400 p-6 bg-gray-50">
+                                        <span className="icon-[solar--gallery-minimalistic-linear] w-16 h-16 mb-2 text-gray-300" />
+                                        <p className="text-sm font-medium">No image selected</p>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -253,7 +258,7 @@ export default function PublishPage() {
 
                         <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-bold text-primary">KSH {displayPrice}</span>
-                            {displayDiscount && displayDiscount > 0 && (
+                            {Number(displayDiscount) > 0 && (
                                 <span className="text-lg text-gray-400 line-through">KSH {Price[0]}</span>
                             )}
                         </div>

@@ -9,8 +9,8 @@
 export function getImageUrl(path, fallback = "/logo.png") {
     if (!path) return fallback;
 
-    // 1. Handle absolute URLs
-    if (path.startsWith('http')) {
+    // 1. Handle absolute, blob, or data URLs
+    if (path.startsWith('http') || path.startsWith('blob:') || path.startsWith('data:')) {
         return path;
     }
 
