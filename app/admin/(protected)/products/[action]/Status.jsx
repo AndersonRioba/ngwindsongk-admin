@@ -10,7 +10,7 @@ import { useParams, useSearchParams } from "next/navigation"
 export default function Status(){
     const [isSaving, setIsSaving] = useState(false)
     const router = useRouter()
-    const { Product, Category, Brand, Price, AlternatePrice, Description, Details, FAQ, Media, CarouselMedia, Attributes, Stock, StatusState, ShowAdsState, saveDraft, loadDraft, loadProduct } = useContext(CreateProductContext)
+    const { Product, Category, Brand, Price, AlternatePrice, Description, Details, FAQ, Media, CarouselMedia, ExistingMedia, Attributes, Stock, StatusState, ShowAdsState, saveDraft, loadDraft, loadProduct } = useContext(CreateProductContext)
     const {action} = useParams()
     const searchParams = useSearchParams()
     const id = searchParams.get('id')
@@ -94,32 +94,55 @@ export default function Status(){
                 is_promoted: showAds,
             }
 
+            // Capture productId from PUT/POST response synchronously
+            let capturedProductId = null;
             const callback = (res) => {
-                const productId = res.product ? res.product.id : res.id
-                if (productId) {
-                    if (Details[0]) {
-                        postData(() => {}, { product_id: productId, description: Details[0] }, '/descriptions')
-                    }
-                    let allMedia = [...(Media[0] || []), ...(CarouselMedia[0] || [])]
-                    if (allMedia.length > 0) {
-                        postFile(() => {}, allMedia, 'media', { product_id: productId }, '/product-images')
-                    }
-                    
-                    import("@/app/lib/trigger").then(({popupE}) => {
-                        popupE('Success', `Product ${action === 'edit' ? 'updated' : 'created'} successfully`);
-                        router.push('/admin/products');
-                    });
-                }
-                setIsSaving(false)
-            }
+                capturedProductId = res?.product ? res.product.id : res?.id;
+            };
 
             if (action === 'edit' && id) {
-                putData(callback, payload, `/products/${id}`)
+                await putData(callback, payload, `/products/${id}`);
             } else {
-                postData(callback, payload, `/products`)
+                await postData(callback, payload, `/products`);
             }
-        } catch {
-            setIsSaving(false)
+
+            const productId = capturedProductId;
+            if (!productId) {
+                setIsSaving(false);
+                return; // putData/postData already showed the error popup
+            }
+            if (Details[0]) {
+                await postData(() => {}, { product_id: productId, description: Details[0] }, '/descriptions');
+            }
+            let allMedia = [...(Media && Media[0] ? Media[0] : []), ...(CarouselMedia && CarouselMedia[0] ? CarouselMedia[0] : [])];
+            let keptMediaIds = (ExistingMedia && ExistingMedia[0] ? ExistingMedia[0] : []).map(m => m.id);
+            console.log('[Status] allMedia count:', allMedia.length, '| keptMediaIds:', keptMediaIds, '| action:', action);
+            // Only sync media if: new files are being uploaded, OR if we are editing and have existing media to preserve
+            const hasNewMedia = allMedia.length > 0;
+            const hasExistingMediaToPreserve = action === 'edit' && keptMediaIds.length > 0;
+            if (hasNewMedia || hasExistingMediaToPreserve) {
+                console.log('[Status] Uploading media files to /product-images...');
+                try {
+                    await postFile(() => {}, allMedia, 'media', { product_id: productId, kept_media_ids: JSON.stringify(keptMediaIds) }, '/product-images');
+                    console.log('[Status] Media upload complete.');
+                } catch (mediaErr) {
+                    console.error('[Status] Media upload failed:', mediaErr);
+                }
+            }
+            // Revalidate the shop's Next.js cache so image changes appear immediately
+            try {
+                const shopUrl = process.env.NEXT_PUBLIC_SHOP_URL || 'http://localhost:3000';
+                const revalSecret = process.env.NEXT_PUBLIC_REVALIDATE_SECRET || 'super_secure_revalidation_secret_token_2026';
+                await fetch(`${shopUrl}/api/revalidate?secret=${revalSecret}`, { method: 'POST' });
+            } catch (_) { /* non-critical */ }
+
+            const { popupE } = await import("@/app/lib/trigger");
+            popupE('Success', `Product ${action === 'edit' ? 'updated' : 'created'} successfully`);
+            router.push('/admin/products');
+            setIsSaving(false);
+        } catch (err) {
+            console.error("Failed to save product:", err);
+            setIsSaving(false);
         }
     }
 

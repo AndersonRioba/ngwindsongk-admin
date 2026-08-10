@@ -101,16 +101,18 @@ export function postFile(setData, files, key, data, endpoint, baseURL = process.
     if (Array.isArray(files)) {
         if (files.length > 0) {
             files.forEach((file) => {
-                formData.append(`${key}[]`, file);
+                if (typeof File !== 'undefined' && (file instanceof File || file instanceof Blob)) {
+                    formData.append(`${key}[]`, file);
+                }
             });
         }
-    } else if (files) {
+    } else if (files && typeof File !== 'undefined' && (files instanceof File || files instanceof Blob)) {
         formData.append(key, files);
     }
 
 
     const url = `${baseURL}${endpoint}`.trim().replace('api /', 'api/');
-    fetch(url, {
+    return fetch(url, {
         method: "POST",
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -165,7 +167,7 @@ export function postFile(setData, files, key, data, endpoint, baseURL = process.
 export async function postData(setData, data, endpoint, baseURL = process.env.NEXT_PUBLIC_API_URL, token = load('adminToken') || load('token')) {
     popupE('Processing', 'Please wait...')
     const url = `${baseURL}${endpoint}`.trim().replace('api /', 'api/');
-    fetch(url, {
+    return fetch(url, {
         method: "POST",
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -230,7 +232,7 @@ export async function postData(setData, data, endpoint, baseURL = process.env.NE
 export async function putData(setData, data, endpoint, baseURL = process.env.NEXT_PUBLIC_API_URL, token = load('adminToken') || load('token')) {
     popupE('Processing', 'Please wait...')
     const url = `${baseURL}${endpoint}`.trim().replace('api /', 'api/');
-    fetch(url, {
+    return fetch(url, {
         method: "PUT",
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -278,7 +280,7 @@ export async function putData(setData, data, endpoint, baseURL = process.env.NEX
 export async function deleteData(setData, data, endpoint, baseURL = process.env.NEXT_PUBLIC_API_URL, token = load('adminToken') || load('token')) {
     popupE('Processing', 'Please wait...')
     const url = `${baseURL}${endpoint}`.trim().replace('api /', 'api/');
-    fetch(url, {
+    return fetch(url, {
         method: "DELETE",
         headers: {
             'Authorization': `Bearer ${token}`,

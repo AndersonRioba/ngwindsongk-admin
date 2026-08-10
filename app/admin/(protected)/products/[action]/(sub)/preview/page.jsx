@@ -94,86 +94,72 @@ export default function PublishPage() {
     const submit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        console.log(Variations[0])
-        console.log(Price[0])
 
         try {
-            const response = await new Promise((resolve, reject) => {
-                const payload = {
-                    faqs: FAQ[0],
-                    attributes: Attributes[0],
-                    category: Category[0],
-                    brand: Brand[0],
-                    name: Product[0],
-                    about: Description[0],
-                    price: Price[0],
-                    discount: AlternatePrice[0] ? parseFloat(AlternatePrice[0]) : 0.0,
-                    stock: Stock[0] || 0,
-                    status: StatusState ? StatusState[0] : 'active',
-                    is_promoted: ShowAdsState ? ShowAdsState[0] : false,
-                };
+            const payload = {
+                faqs: FAQ[0],
+                attributes: Attributes[0],
+                category: Category[0],
+                brand: Brand[0],
+                name: Product[0],
+                about: Description[0],
+                price: Price[0],
+                discount: AlternatePrice[0] ? parseFloat(AlternatePrice[0]) : 0.0,
+                stock: Stock[0] || 0,
+                status: StatusState ? StatusState[0] : 'active',
+                is_promoted: ShowAdsState ? ShowAdsState[0] : false,
+            };
 
-                const callback = (res) => {
-                    const productId = res.product ? res.product.id : res.id;
-                    if (productId) {
-                        const promises = [];
+            // Step 1: Save the product (create or update), capture the productId synchronously
+            let capturedProductId = null;
+            const callback = (res) => {
+                capturedProductId = res?.product ? res.product.id : res?.id;
+            };
 
-                        // Upload description text
-                        if (Details && Details[0]) {
-                            promises.push(new Promise((resDesc) => {
-                                postData(
-                                    () => { resDesc() },
-                                    {
-                                        product_id: productId,
-                                        description: Details[0]
-                                    },
-                                    '/descriptions'
-                                );
-                            }));
-                        }
+            if (action === 'edit' && id) {
+                await putData(callback, payload, `/products/${id}`);
+            } else {
+                await postData(callback, payload, `/products`);
+            }
 
-                        // Upload media files
-                        let allMedia = [...(Media && Media[0] ? Media[0] : []), ...(CarouselMedia && CarouselMedia[0] ? CarouselMedia[0] : [])];
-                        let keptMediaIds = (ExistingMedia && ExistingMedia[0] ? ExistingMedia[0] : []).map(m => m.id);
+            const productId = capturedProductId;
+            if (!productId) {
+                // putData/postData already showed the error popup
+                return;
+            }
 
-                        // If editing, always sync media state so deletions apply. If creating, only run if there's real media to upload.
-                        if (allMedia.length > 0 || action === 'edit') {
-                            promises.push(new Promise((resMedia) => {
-                                postFile(
-                                    () => { resMedia() },
-                                    allMedia,
-                                    'media',
-                                    {
-                                        product_id: productId,
-                                        kept_media_ids: JSON.stringify(keptMediaIds)
-                                    },
-                                    '/product-images'
-                                );
-                                // Safety timeout: resolve after 30s to avoid hanging forever
-                                setTimeout(() => resMedia(), 30000);
-                            }));
-                        }
+            // Step 2: Upload description text
+            if (Details && Details[0]) {
+                await postData(() => {}, { product_id: productId, description: Details[0] }, '/descriptions');
+            }
 
-                        Promise.all(promises).then(() => {
-                            resolve(res);
-                        }).catch(e => {
-                            resolve(res); // Still resolve main product
-                        });
-                    } else {
-                        reject(new Error(res?.message || 'Failed to process product'));
-                    }
-                };
+            // Step 3: Upload media files
+            let allMedia = [...(Media && Media[0] ? Media[0] : []), ...(CarouselMedia && CarouselMedia[0] ? CarouselMedia[0] : [])];
+            let keptMediaIds = (ExistingMedia && ExistingMedia[0] ? ExistingMedia[0] : []).map(m => m.id);
+            console.log('[Preview] allMedia count:', allMedia.length, '| keptMediaIds:', keptMediaIds, '| action:', action);
 
-                if (action === 'edit' && id) {
-                    putData(callback, payload, `/products/${id}`);
-                } else {
-                    postData(callback, payload, `/products`);
+            const hasNewMedia = allMedia.length > 0;
+            const hasExistingMediaToPreserve = action === 'edit' && keptMediaIds.length > 0;
+            if (hasNewMedia || hasExistingMediaToPreserve) {
+                console.log('[Preview] Uploading media files...');
+                try {
+                    await postFile(() => {}, allMedia, 'media', { product_id: productId, kept_media_ids: JSON.stringify(keptMediaIds) }, '/product-images');
+                    console.log('[Preview] Media upload complete.');
+                } catch (mediaErr) {
+                    console.error('[Preview] Media upload failed:', mediaErr);
                 }
-            });
+            }
+
+            // Step 4: Revalidate the shop cache so image changes are immediately visible
+            try {
+                const shopUrl = process.env.NEXT_PUBLIC_SHOP_URL || 'http://localhost:3000';
+                const revalSecret = process.env.NEXT_PUBLIC_REVALIDATE_SECRET || 'super_secure_revalidation_secret_token_2026';
+                await fetch(`${shopUrl}/api/revalidate?secret=${revalSecret}`, { method: 'POST' });
+            } catch (_) { /* non-critical */ }
 
             setIsPublished(true);
             popupE('Hide', '');
-            setOverlay('success'); // Show the success modal
+            setOverlay('success');
         } catch (error) {
             popupE('Error', error?.message || 'Failed to publish product. Please try again.');
         } finally {

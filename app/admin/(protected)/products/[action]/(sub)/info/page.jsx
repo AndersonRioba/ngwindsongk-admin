@@ -2,12 +2,12 @@
 
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import Image from "next/image"
 import { CreateProductContext } from "@/app/lib/providers/CreateProductProvider"
 import FileInput from "@/app/UI/FileInput"
 import AttributeManager, { ProductVariations } from "../../AttributeManager"
-import { fetcher, postFetcher, postFileFetcher, blobFetcher } from "@/app/lib/data"
+import { fetcher, postFetcher, postFileFetcher, blobFetcher, postFile } from "@/app/lib/data"
 import useSWR from "swr"
 import { getImageUrl } from "@/app/lib/utils/image"
 
@@ -35,6 +35,8 @@ export default function Page(){
     const { Attributes } = useContext(CreateProductContext);
     let [attributes, setAttributes] = Attributes;
     let [stock, setStock] = Stock;
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState(null); // null | 'success' | 'error'
     
     const { data: categoriesData, isLoading: categoriesLoading } = useSWR(['/categories', {}], fetcher);
     const { data: brandsData, isLoading: brandsLoading } = useSWR(['/brands', {}], fetcher);
@@ -230,6 +232,60 @@ export default function Page(){
                 <div className="w-full max-w-md">
                     <FileInput files={media} setFiles={setMedia} type={'image'}/>
                 </div>
+
+                {/* Direct Upload Button (edit mode only) */}
+                {action === 'edit' && id && media.length > 0 && (
+                    <div className="mt-4 flex items-center gap-3">
+                        <button
+                            type="button"
+                            disabled={isUploading}
+                            onClick={async (e) => {
+                                e.preventDefault();
+                                setIsUploading(true);
+                                setUploadStatus(null);
+                                try {
+                                    const keptIds = (existingMedia || []).map(m => m.id);
+                                    await postFile(
+                                        (res) => {
+                                            if (res?.images?.length > 0) {
+                                                // Merge newly uploaded images into existingMedia state
+                                                setExistingMedia([...existingMedia, ...res.images]);
+                                                setMedia([]); // Clear pending new files
+                                                setUploadStatus('success');
+                                            }
+                                        },
+                                        media,
+                                        'media',
+                                        { product_id: id, kept_media_ids: JSON.stringify(keptIds) },
+                                        '/product-images'
+                                    );
+                                } catch (err) {
+                                    console.error('Direct upload failed:', err);
+                                    setUploadStatus('error');
+                                } finally {
+                                    setIsUploading(false);
+                                }
+                            }}
+                            className="bg-primary text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                            {isUploading ? (
+                                <><span className="icon-[fluent--spinner-ios-16-regular] w-4 h-4 animate-spin" /> Uploading...</>
+                            ) : (
+                                <><span className="icon-[fluent--cloud-arrow-up-16-filled] w-4 h-4" /> Upload Images Now</>
+                            )}
+                        </button>
+                        {uploadStatus === 'success' && (
+                            <span className="text-green-600 text-sm font-medium flex items-center gap-1">
+                                <span className="icon-[fluent--checkmark-circle-16-filled] w-4 h-4" /> Images uploaded successfully!
+                            </span>
+                        )}
+                        {uploadStatus === 'error' && (
+                            <span className="text-red-600 text-sm font-medium flex items-center gap-1">
+                                <span className="icon-[fluent--dismiss-circle-16-filled] w-4 h-4" /> Upload failed. Check console.
+                            </span>
+                        )}
+                    </div>
+                )}
             </section>
 
             {/* Product Attributes Section */}
