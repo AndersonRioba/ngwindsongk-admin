@@ -1,6 +1,6 @@
 'use client'
 import Link from "next/link"
-import { useState, useMemo } from "react"
+import { useState, useEffect } from "react"
 import useSWR from "swr"
 import { fetcher, postData } from "@/app/lib/data"
 import RecipeListing, { RecipeListingSkeleton } from "@/app/UI/RecipeListing"
@@ -24,7 +24,7 @@ export default function RecipesPage() {
     const pagination = recipesData?.data?.last_page ? recipesData.data : null;
 
     // Reset to page 1 when search changes
-    useMemo(() => { setPage(1); }, [search]);
+    useEffect(() => { setPage(1); }, [search]);
 
     const handleDelete = async (id) => {
         if (confirm('Are you sure you want to delete this recipe?')) {

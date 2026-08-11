@@ -40,6 +40,7 @@ export function MobileSideMenu({ menuOpen, setMenuOpen }){
     // Close menu on navigation
     useEffect(() => {
         setMenuOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pathname]);
 
     // Body scroll lock

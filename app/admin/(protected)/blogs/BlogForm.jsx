@@ -35,7 +35,7 @@ export default function BlogForm({ initialData = null, isEdit = false }) {
     // Fetch related data for multi-select
     const { data: recipesData, isLoading: recipesLoading } = useSWR(['/admin/recipes', {}], fetcher);
     const { data: brandsData, isLoading: brandsLoading } = useSWR(['/brands', {}], fetcher);
-    const { data: productsData, isLoading: productsLoading } = useSWR(['/products', {}], fetcher);
+    const { data: productsData, isLoading: productsLoading } = useSWR(['/products', { per_page: 1000, all_statuses: 1 }], fetcher);
 
     const recipes = recipesData?.data?.data || recipesData?.data || [];
     const brands = Array.isArray(brandsData) ? brandsData : (brandsData?.data || []);

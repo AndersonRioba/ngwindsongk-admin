@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import Image from "next/image";
 import useSWR, { mutate } from "swr";
@@ -7,6 +7,125 @@ import { fetcher, postData, postFile, putData, deleteData } from "@/app/lib/data
 import Spinner from "@/app/UI/Spinner";
 import Search from "@/app/UI/Search";
 import { toast } from "react-hot-toast";
+
+function SearchableProductSelect({ value, onChange, products }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [search, setSearch] = useState('');
+    const containerRef = useRef(null);
+    const inputRef = useRef(null);
+
+    const selectedProduct = products.find(p => String(p.id) === String(value));
+
+    const filteredProducts = products.filter(p =>
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        (p.brand?.name && p.brand.name.toLowerCase().includes(search.toLowerCase())) ||
+        (p.category?.name && p.category.name.toLowerCase().includes(search.toLowerCase()))
+    );
+
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        if (isOpen && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isOpen]);
+
+    return (
+        <div ref={containerRef} className="relative w-full">
+            <button
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-xs font-bold text-left flex items-center justify-between gap-2 focus:outline-primary hover:border-primary/50 transition-all shadow-sm"
+            >
+                <span className={`truncate ${selectedProduct ? 'text-gray-900 font-extrabold' : 'text-gray-400 font-semibold'}`}>
+                    {selectedProduct
+                        ? `${selectedProduct.name} (KES ${Number(selectedProduct.price || 0).toLocaleString()})`
+                        : '-- Select Product --'}
+                </span>
+                <span className="icon-[heroicons--chevron-down-20-solid] w-4 h-4 text-gray-400 shrink-0" />
+            </button>
+
+            {isOpen && (
+                <div className="absolute z-[120] top-full left-0 right-0 mt-1.5 bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden min-w-[260px]">
+                    <div className="p-2 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+                        <span className="icon-[solar--magnifer-bold] w-4 h-4 text-gray-400 shrink-0 ml-1" />
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            placeholder="Type product name..."
+                            className="w-full py-1.5 px-2 bg-transparent text-xs font-bold text-gray-900 outline-none placeholder:text-gray-400"
+                        />
+                        {search && (
+                            <button
+                                type="button"
+                                onClick={() => setSearch('')}
+                                className="text-gray-400 hover:text-gray-600 text-xs px-1 font-bold"
+                            >
+                                ✕
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="max-h-60 overflow-y-auto p-1 divide-y divide-gray-50 custom-scrollbar">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                onChange('');
+                                setIsOpen(false);
+                                setSearch('');
+                            }}
+                            className="w-full text-left px-3 py-2 text-xs font-semibold text-gray-400 hover:bg-gray-50 rounded-xl"
+                        >
+                            -- Select Product --
+                        </button>
+                        {filteredProducts.length === 0 ? (
+                            <div className="px-3 py-4 text-xs font-semibold text-center text-gray-400">
+                                No products found matching &quot;{search}&quot;
+                            </div>
+                        ) : (
+                            filteredProducts.map(p => (
+                                <button
+                                    key={p.id}
+                                    type="button"
+                                    onClick={() => {
+                                        onChange(p.id);
+                                        setIsOpen(false);
+                                        setSearch('');
+                                    }}
+                                    className={`w-full text-left px-3 py-2.5 text-xs font-bold rounded-xl flex items-center justify-between gap-2 transition-colors ${
+                                        String(p.id) === String(value)
+                                            ? 'bg-primary/10 text-primary'
+                                            : 'text-gray-800 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    <span className="truncate">{p.name}</span>
+                                    <span className="shrink-0 text-[11px] font-bold text-gray-500">
+                                        KES {Number(p.price || 0).toLocaleString()}
+                                    </span>
+                                </button>
+                            ))
+                        )}
+                    </div>
+                    {filteredProducts.length > 0 && (
+                        <div className="px-3 py-1.5 bg-gray-50 text-[10px] font-bold text-gray-400 border-t border-gray-100 text-right">
+                            Showing {filteredProducts.length} of {products.length} products
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
 
 const OfferStats = ({ offers }) => {
     const active = offers.filter(o => o.is_active).length;
@@ -57,7 +176,7 @@ export default function OffersPage() {
         revalidateIfStale: false,
         dedupingInterval: 60000,
     });
-    const { data: productsData } = useSWR(['/products', {}], fetcher, {
+    const { data: productsData } = useSWR(['/products', { per_page: 1000, all_statuses: 1 }], fetcher, {
         revalidateOnFocus: false,
         revalidateIfStale: false,
         dedupingInterval: 60000,
@@ -509,16 +628,11 @@ function OfferFormModal({ offer, products, onClose, onSaved }) {
                             {items.map((item, idx) => (
                                 <div key={idx} className="flex items-center gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-200/80">
                                     <div className="flex-1">
-                                        <select
+                                        <SearchableProductSelect
                                             value={item.product_id}
-                                            onChange={e => handleItemChange(idx, 'product_id', e.target.value)}
-                                            className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-xs font-bold focus:outline-primary cursor-pointer"
-                                        >
-                                            <option value="">-- Select Product --</option>
-                                            {products.map(p => (
-                                                <option key={p.id} value={p.id}>{p.name} (KES {Number(p.price || 0).toLocaleString()})</option>
-                                            ))}
-                                        </select>
+                                            onChange={val => handleItemChange(idx, 'product_id', val)}
+                                            products={products}
+                                        />
                                     </div>
                                     <div className="w-44">
                                         <select

@@ -31,7 +31,7 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
     });
 
     // Fetch products for multi-select
-    const { data: productsData, isLoading: productsLoading } = useSWR(['/products', {}], fetcher);
+    const { data: productsData, isLoading: productsLoading } = useSWR(['/products', { per_page: 1000, all_statuses: 1 }], fetcher);
     const products = productsData?.data?.data || productsData?.data || [];
 
     useEffect(() => {
