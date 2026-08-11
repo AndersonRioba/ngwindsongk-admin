@@ -117,6 +117,8 @@ export function MobileSideMenu({ menuOpen, setMenuOpen }){
                         <SidebarItem href="/admin/delivery-zones" icon="icon-[fluent--vehicle-truck-24-regular]" label="Logistics Zones" pathname={pathname} />
                         <SidebarItem href="/admin/mpesa-payments" icon="icon-[solar--wallet-money-linear]" label="Payment Records" pathname={pathname} />
                         <SidebarItem href="/admin/vouchers" icon="icon-[solar--ticket-sale-bold-duotone]" label="Discount Ciphers" pathname={pathname} />
+                        <SidebarItem href="/admin/offers" icon="icon-[solar--gallery-wide-bold-duotone]" label="Offer Slideshows" pathname={pathname} />
+
                     </div>
 
                     <div className="pt-4 pb-2">
@@ -285,7 +287,9 @@ export function DesktopSidebar(){
         { href: '/admin/partners', icon: 'icon-[solar--users-group-two-rounded-bold-duotone]', label: 'Partners Hub' },
         { href: '/admin/brands', icon: 'icon-[fluent--tag-24-regular]', label: 'Brands Engine' },
         { href: '/admin/vouchers', icon: 'icon-[solar--ticket-sale-bold-duotone]', label: 'Discount Ciphers' },
+        { href: '/admin/offers', icon: 'icon-[solar--gallery-wide-bold-duotone]', label: 'Offer Slideshows' },
         { href: '/admin/navigation', icon: 'icon-[material-symbols--map-outline]', label: 'Navigation' },
+
         { href: '/admin/delivery-zones', icon: 'icon-[fluent--vehicle-truck-24-regular]', label: 'Logistics Zones' },
         { href: '/admin/mpesa-payments', icon: 'icon-[solar--wallet-money-linear]', label: 'Payment Records' },
         { href: '/admin/sales-settings', icon: 'icon-[fluent--shopping-bag-24-regular]', label: 'Sales Settings' },

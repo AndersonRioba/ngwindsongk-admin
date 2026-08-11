@@ -88,15 +88,17 @@ export function downloadFile(url) {
 export function postFile(setData, files, key, data, endpoint, baseURL = process.env.NEXT_PUBLIC_API_URL, token = load('adminToken') || load('token')) {
     popupE('Processing', 'Please wait...')
     const formData = new FormData();
-    Object.keys(data).forEach(key => {
-        if (Array.isArray(data[key])) {
-            data[key].forEach(item => formData.append(`${key}[]`, item));
-        } else {
-            if (data[key] !== null && data[key] !== undefined) {
-                formData.append(key, data[key]);
+    if (data) {
+        Object.keys(data).forEach(k => {
+            if (Array.isArray(data[k])) {
+                data[k].forEach(item => formData.append(`${k}[]`, item));
+            } else {
+                if (data[k] !== null && data[k] !== undefined) {
+                    formData.append(k, data[k]);
+                }
             }
-        }
-    });
+        });
+    }
 
     if (Array.isArray(files)) {
         if (files.length > 0) {
@@ -141,7 +143,10 @@ export function postFile(setData, files, key, data, endpoint, baseURL = process.
         })
         .then((data) => {
             if (data.error) popupE('Error', data.error)
-            if (data.message && data.success) popupE('Success', data.message)
+            else if (data.message && data.success) popupE('Success', data.message)
+            else if (data.success) popupE('Success', 'Uploaded successfully')
+            else if (data.success === false) popupE('Error', data.message || 'Upload failed')
+            else popupE('Hide', '')
             try {
                 setData(data);
             } catch (err) {
@@ -205,8 +210,10 @@ export async function postData(setData, data, endpoint, baseURL = process.env.NE
         .then((data) => {
             if (!data) return;
             console.log(`From ${endpoint}`, data)
-            if (data.success === false) popupE('Error', data.message)
-            if (data?.success && data?.message) popupE('Success', data.message)
+            if (data.success === false) popupE('Error', data.message || 'Error occurred')
+            else if (data?.success && data?.message) popupE('Success', data.message)
+            else if (data?.success) popupE('Success', 'Completed successfully')
+            else popupE('Hide', '')
             try {
                 setData(data);
             } catch (err) {
@@ -253,8 +260,10 @@ export async function putData(setData, data, endpoint, baseURL = process.env.NEX
         })
         .then((data) => {
             console.log(`From ${endpoint}`, data)
-            if (data.success === false) popupE('Error', data.message)
-            if (data?.success && data?.message) popupE('Success', data.message)
+            if (data.success === false) popupE('Error', data.message || 'Error occurred')
+            else if (data?.success && data?.message) popupE('Success', data.message)
+            else if (data?.success) popupE('Success', 'Updated successfully')
+            else popupE('Hide', '')
             try {
                 setData(data);
             } catch (err) {
@@ -301,8 +310,10 @@ export async function deleteData(setData, data, endpoint, baseURL = process.env.
         })
         .then((data) => {
             console.log(`From ${endpoint}`, data)
-            if (data.success === false) popupE('Error', data.message)
-            if (data?.success && data?.message) popupE('Success', data.message)
+            if (data.success === false) popupE('Error', data.message || 'Error occurred')
+            else if (data?.success && data?.message) popupE('Success', data.message)
+            else if (data?.success) popupE('Success', 'Deleted successfully')
+            else popupE('Hide', '')
             setData(data);
         })
         .catch(err => {
