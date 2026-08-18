@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import useSWR from "swr"
 import { fetcher, postData, putData } from "@/app/lib/data"
 import { getImageUrl } from "@/app/lib/utils/image"
+import SeoPanel from "@/app/UI/SeoPanel"
 
 export default function RecipeForm({ initialData = null, isEdit = false }) {
     const router = useRouter();
@@ -27,7 +28,13 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
         video_url: '',
         ingredients: [{ text: '' }],
         instructions: [{ text: '' }],
-        product_ids: []
+        product_ids: [],
+        // SEO fields
+        seo_title: '',
+        seo_description: '',
+        seo_keywords: '',
+        canonical_url: '',
+        noindex: false,
     });
 
     // Fetch products for multi-select
@@ -343,6 +350,23 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
                             ))}
                         </div>
                     </div>
+
+                    {/* Yoast-Style SEO Panel */}
+                    <SeoPanel
+                        contentType="recipe"
+                        slug={formData.slug}
+                        title={formData.title}
+                        excerpt={formData.content}
+                        featuredImage={previewImage || (typeof formData.image === 'string' ? getImageUrl(formData.image) : '')}
+                        seoData={{
+                            seo_title: formData.seo_title,
+                            seo_description: formData.seo_description,
+                            seo_keywords: formData.seo_keywords,
+                            canonical_url: formData.canonical_url,
+                            noindex: formData.noindex,
+                        }}
+                        onChange={(field, val) => setFormData(prev => ({ ...prev, [field]: val }))}
+                    />
                 </div>
 
                 {/* Sidebar Column */}

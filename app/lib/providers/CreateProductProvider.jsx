@@ -27,6 +27,13 @@ export default function CreateProductProvider({ children }) {
 
     let StatusState = useState('active');
     let ShowAdsState = useState(false);
+    let SeoState = useState({
+        seo_title: '',
+        seo_description: '',
+        seo_keywords: '',
+        canonical_url: '',
+        noindex: false,
+    });
 
     let DraftId = useState(null);
     let IsPublished = useState(false);
@@ -50,6 +57,7 @@ export default function CreateProductProvider({ children }) {
                 productVariations: ProductVariations[0],
                 status: StatusState[0],
                 showAds: ShowAdsState[0],
+                seo: SeoState[0],
             }
         };
 
@@ -61,7 +69,7 @@ export default function CreateProductProvider({ children }) {
                 return res;
             });
         }
-    }, [Product, Details, Category, Brand, Price, AlternatePrice, Description, Variations, Perks, FAQ, Attributes, ProductVariations, StatusState, ShowAdsState, DraftId]);
+    }, [Product, Details, Category, Brand, Price, AlternatePrice, Description, Variations, Perks, FAQ, Attributes, ProductVariations, StatusState, ShowAdsState, SeoState, DraftId]);
 
     const loadDraft = useCallback((id) => {
         return fetcher([`/drafts/${id}`, {}]).then((draft) => {
@@ -80,10 +88,11 @@ export default function CreateProductProvider({ children }) {
             if (d.productVariations !== undefined) ProductVariations[1](d.productVariations);
             if (d.status !== undefined) StatusState[1](d.status);
             if (d.showAds !== undefined) ShowAdsState[1](d.showAds);
+            if (d.seo !== undefined) SeoState[1](d.seo);
             DraftId[1](draft.id);
             return draft;
         });
-    }, [Details, Category, Brand, Product, Price, AlternatePrice, Description, Variations, Perks, FAQ, Attributes, ProductVariations, StatusState, ShowAdsState, DraftId]);
+    }, [Details, Category, Brand, Product, Price, AlternatePrice, Description, Variations, Perks, FAQ, Attributes, ProductVariations, StatusState, ShowAdsState, SeoState, DraftId]);
 
     // Load an existing product by id (or name) and populate provider state.
     const loadProduct = useCallback(async (idOrName) => {
@@ -104,6 +113,15 @@ export default function CreateProductProvider({ children }) {
             if (d.stock !== undefined) Stock[1](d.stock);
             if (d.status !== undefined) StatusState[1](d.status || 'active');
             if (d.is_promoted !== undefined) ShowAdsState[1](!!d.is_promoted);
+
+            // SEO fields
+            SeoState[1]({
+                seo_title: d.seo_title || '',
+                seo_description: d.seo_description || '',
+                seo_keywords: d.seo_keywords || '',
+                canonical_url: d.canonical_url || '',
+                noindex: !!d.noindex,
+            });
 
             // Rich text details
             if (d.description && typeof d.description === 'object' && d.description.description) {
@@ -168,7 +186,7 @@ export default function CreateProductProvider({ children }) {
             console.error('Failed to load product', err);
             return null;
         }
-    }, [LoadedProduct, Category, Brand, Product, Details, Price, AlternatePrice, Description, Stock, StatusState, ShowAdsState, Attributes, Variations, ProductVariations, FAQ, Perks, ExistingMedia]);
+    }, [LoadedProduct, Category, Brand, Product, Details, Price, AlternatePrice, Description, Stock, StatusState, ShowAdsState, Attributes, Variations, ProductVariations, FAQ, Perks, ExistingMedia, SeoState]);
 
     return(
         <CreateProductContext.Provider value={{
@@ -184,6 +202,7 @@ export default function CreateProductProvider({ children }) {
             ProductVariations,
             StatusState,
             ShowAdsState,
+            SeoState,
             DraftId,
             IsPublished,
             saveDraft,

@@ -78,7 +78,7 @@ export default function FAQsPage(){
     };
 
     const submit = async () => {
-        router.push(`/admin/products/${action}/preview${id ? `?id=${id}${name ? `&name=${name}` : ''}` : ''}`);
+        router.push(`/admin/products/${action}/seo${id ? `?id=${id}${name ? `&name=${name}` : ''}` : ''}`);
     };
    
     
@@ -156,7 +156,7 @@ export default function FAQsPage(){
                     onClick={submit}
                     className="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
                 >
-                    Continue to Publishing
+                    Continue to SEO
                     <span className="icon-[fluent--arrow-right-16-filled] w-4 h-4" />
                 </button>
             </div>

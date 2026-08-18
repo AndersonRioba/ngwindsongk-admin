@@ -6,6 +6,7 @@ import useSWR from "swr"
 import { fetcher } from "@/app/lib/data"
 import dynamic from 'next/dynamic'
 const Editor = dynamic(() => import("@/app/UI/WYSIWYG/Editor"), { ssr: false })
+import SeoPanel from "@/app/UI/SeoPanel"
 
 export default function BlogForm({ initialData = null, isEdit = false }) {
     const router = useRouter();
@@ -25,7 +26,13 @@ export default function BlogForm({ initialData = null, isEdit = false }) {
         allow_comments: true,
         recipe_ids: [],
         brand_ids: [],
-        product_ids: []
+        product_ids: [],
+        // SEO fields
+        seo_title: '',
+        seo_description: '',
+        seo_keywords: '',
+        canonical_url: '',
+        noindex: false,
     });
 
     const [selectedFile, setSelectedFile] = useState(null);
@@ -254,6 +261,23 @@ export default function BlogForm({ initialData = null, isEdit = false }) {
                             </div>
                         </div>
                     </div>
+
+                    {/* Yoast-Style SEO Panel */}
+                    <SeoPanel
+                        contentType="blog"
+                        slug={formData.slug}
+                        title={formData.title}
+                        excerpt={formData.excerpt}
+                        featuredImage={previewUrl}
+                        seoData={{
+                            seo_title: formData.seo_title,
+                            seo_description: formData.seo_description,
+                            seo_keywords: formData.seo_keywords,
+                            canonical_url: formData.canonical_url,
+                            noindex: formData.noindex,
+                        }}
+                        onChange={(field, val) => setFormData(prev => ({ ...prev, [field]: val }))}
+                    />
                 </div>
 
                 {/* Sidebar Column */}

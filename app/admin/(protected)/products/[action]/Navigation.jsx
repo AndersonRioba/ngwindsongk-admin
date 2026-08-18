@@ -46,6 +46,13 @@ export default function Navigation(){
             validate: () => FAQ[0] && FAQ[0].length > 0
         },
         {
+            link: '/seo',
+            name: 'SEO & Social',
+            icon: 'icon-[fluent--search-16-regular]',
+            activeIcon: 'icon-[fluent--search-16-filled]',
+            validate: () => true // Optional/ready by default
+        },
+        {
             link: '/preview',
             name: 'Publishing',
             icon: 'icon-[fluent--send-16-regular]',

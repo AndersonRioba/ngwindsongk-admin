@@ -59,13 +59,123 @@ export function Faqs() {
     )
 }
 
+export function SeoSection() {
+    const { Product, Description, ExistingMedia, Media, SeoState } = useContext(CreateProductContext);
+    const [seoData] = SeoState || [{
+        seo_title: '',
+        seo_description: '',
+        seo_keywords: '',
+        canonical_url: '',
+        noindex: false
+    }];
+
+    const productTitle = Product[0] || 'Untitled Product';
+    const productDesc = Description[0] || 'No product description provided.';
+    const displayTitle = seoData.seo_title?.trim() || productTitle;
+    const displayDesc = seoData.seo_description?.trim() || productDesc;
+    const displaySlug = productTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    const previewUrl = `ngwindsongk.com › products › ${displaySlug || 'product-slug'}`;
+
+    const featuredImg = (ExistingMedia && ExistingMedia[0] && ExistingMedia[0][0])
+        ? getImageUrl(ExistingMedia[0][0].url)
+        : (Media && Media[0] && Media[0][0])
+        ? URL.createObjectURL(Media[0][0])
+        : '';
+
+    return (
+        <section id="seo" className="bg-white p-6 rounded-lg shadow-sm border space-y-6">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 font-bold text-base">
+                        🔍
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-semibold text-gray-800">Search Engine & Social Preview</h3>
+                        <p className="text-xs text-gray-500">Live preview of how this product will appear on Google and social media</p>
+                    </div>
+                </div>
+                {seoData.noindex && (
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                        ⚠️ Noindex Enabled
+                    </span>
+                )}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Google Search Card Preview */}
+                <div className="space-y-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-400 block">Google Search Result</span>
+                    <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 font-sans text-left space-y-1">
+                        <div className="flex items-center gap-2 text-xs text-slate-600 mb-1">
+                            <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">N</span>
+                            <span className="truncate">{previewUrl}</span>
+                        </div>
+                        <h5 className="text-[#1a0dab] hover:underline text-lg font-medium leading-snug cursor-pointer line-clamp-1">
+                            {displayTitle}
+                        </h5>
+                        <p className="text-xs text-[#4d5156] line-clamp-2 leading-relaxed">
+                            {displayDesc}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Social Card Preview */}
+                <div className="space-y-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-400 block">Social Share Card</span>
+                    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm max-w-md">
+                        <div className="h-36 bg-gray-100 relative flex items-center justify-center overflow-hidden">
+                            {featuredImg ? (
+                                <Image
+                                    src={featuredImg}
+                                    alt="OG Preview"
+                                    fill
+                                    unoptimized
+                                    className="object-cover"
+                                />
+                            ) : (
+                                <span className="text-xs text-gray-400">No Image Uploaded</span>
+                            )}
+                        </div>
+                        <div className="p-3 bg-gray-50 border-t border-gray-100 space-y-0.5">
+                            <span className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">NGWINDSONGK.COM</span>
+                            <h6 className="font-bold text-gray-900 text-xs line-clamp-1 leading-snug">{displayTitle}</h6>
+                            <p className="text-[11px] text-gray-500 line-clamp-1">{displayDesc}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Keyword tags and canonical metadata */}
+            <div className="pt-3 border-t border-gray-100 flex flex-wrap gap-4 text-xs text-gray-600">
+                <div>
+                    <span className="font-semibold text-gray-700">Keywords: </span>
+                    <span>{seoData.seo_keywords || <span className="text-gray-400 italic">None specified</span>}</span>
+                </div>
+                {seoData.canonical_url && (
+                    <div>
+                        <span className="font-semibold text-gray-700">Canonical URL: </span>
+                        <span className="font-mono text-purple-700">{seoData.canonical_url}</span>
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+}
+
 export default function PublishPage() {
-    const { Category, Brand, Product, Price, AlternatePrice, Perks, Description, Variations, FAQ, Media, Details, CarouselMedia, ExistingMedia, Attributes, Stock, IsPublished, ProductVariations, StatusState, ShowAdsState } = useContext(CreateProductContext);
+    const { Category, Brand, Product, Price, AlternatePrice, Perks, Description, Variations, FAQ, Media, Details, CarouselMedia, ExistingMedia, Attributes, Stock, IsPublished, ProductVariations, StatusState, ShowAdsState, SeoState } = useContext(CreateProductContext);
     const { action } = useParams();
     const searchParams = useSearchParams();
     const id = searchParams.get('id');
     const name = searchParams.get('name');
     const [isPublished, setIsPublished] = IsPublished || [false, () => { }];
+    const [seoData] = SeoState || [{
+        seo_title: '',
+        seo_description: '',
+        seo_keywords: '',
+        canonical_url: '',
+        noindex: false
+    }];
     const [mainImage, setMainImage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [overlay, setOverlay] = useState(''); // State for modal
@@ -108,6 +218,12 @@ export default function PublishPage() {
                 stock: Stock[0] || 0,
                 status: StatusState ? StatusState[0] : 'active',
                 is_promoted: ShowAdsState ? ShowAdsState[0] : false,
+                // SEO fields
+                seo_title: seoData.seo_title || null,
+                seo_description: seoData.seo_description || null,
+                seo_keywords: seoData.seo_keywords || null,
+                canonical_url: seoData.canonical_url || null,
+                noindex: !!seoData.noindex,
             };
 
             // Step 1: Save the product (create or update), capture the productId synchronously
@@ -311,17 +427,25 @@ export default function PublishPage() {
                     >
                         FAQs
                     </a>
+                    <a
+                        href="#seo"
+                        className="px-6 py-3 text-gray-600 hover:text-primary font-medium flex items-center gap-1.5"
+                    >
+                        <span>SEO & Social</span>
+                        <span className="w-2 h-2 rounded-full bg-purple-500" />
+                    </a>
                 </div>
                 <div className="p-6 space-y-6">
                     <DetailsSection />
                     <Faqs />
+                    <SeoSection />
                 </div>
             </div>
 
             {/* Action Buttons */}
             <div className="flex justify-between pt-6">
                 <Link
-                    href={`/admin/products/${action}/FAQs${id ? `?id=${id}${name ? `&name=${name}` : ''}` : ''}`}
+                    href={`/admin/products/${action}/seo${id ? `?id=${id}${name ? `&name=${name}` : ''}` : ''}`}
                     className="bg-gray-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors flex items-center gap-2"
                 >
                     <span className="icon-[fluent--arrow-left-16-filled] w-4 h-4" />

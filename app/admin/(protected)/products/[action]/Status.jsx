@@ -7,11 +7,11 @@ import useSWR from "swr"
 import { fetcher, deleteData, putData, postData, postFile } from "@/app/lib/data"
 import { useParams, useSearchParams } from "next/navigation"
 
-export default function Status(){
+export default function Status({ isOpen = true, onToggle }) {
     const [isSaving, setIsSaving] = useState(false)
     const router = useRouter()
-    const { Product, Category, Brand, Price, AlternatePrice, Description, Details, FAQ, Media, CarouselMedia, ExistingMedia, Attributes, Stock, StatusState, ShowAdsState, saveDraft, loadDraft, loadProduct } = useContext(CreateProductContext)
-    const {action} = useParams()
+    const { Product, Category, Brand, Price, AlternatePrice, Description, Details, FAQ, Media, CarouselMedia, ExistingMedia, Attributes, Stock, StatusState, ShowAdsState, SeoState, saveDraft, loadDraft, loadProduct } = useContext(CreateProductContext)
+    const { action } = useParams()
     const searchParams = useSearchParams()
     const id = searchParams.get('id')
     const name = searchParams.get('name')
@@ -20,6 +20,13 @@ export default function Status(){
     const setStatus = StatusState ? StatusState[1] : () => {}
     const showAds = ShowAdsState ? ShowAdsState[0] : false
     const setShowAds = ShowAdsState ? ShowAdsState[1] : () => {}
+    const [seoData] = SeoState || [{
+        seo_title: '',
+        seo_description: '',
+        seo_keywords: '',
+        canonical_url: '',
+        noindex: false
+    }]
 
     useEffect(() => {
         if (action === 'edit') {
@@ -92,6 +99,12 @@ export default function Status(){
                 stock: Stock[0] || 0,
                 status: status,
                 is_promoted: showAds,
+                // SEO fields
+                seo_title: seoData.seo_title || null,
+                seo_description: seoData.seo_description || null,
+                seo_keywords: seoData.seo_keywords || null,
+                canonical_url: seoData.canonical_url || null,
+                noindex: !!seoData.noindex,
             }
 
             // Capture productId from PUT/POST response synchronously
@@ -148,12 +161,61 @@ export default function Status(){
 
     const draftList = Array.isArray(drafts) ? drafts : []
 
-    return(
-        <div className="bg-white rounded-lg shadow-sm border p-6 h-fit">
+    // If sidebar is collapsed, show a sleek mini control strip
+    if (!isOpen) {
+        return (
+            <div className="w-14 flex flex-col items-center py-4 bg-white rounded-xl border shadow-sm transition-all duration-300 gap-4 self-start">
+                <button
+                    type="button"
+                    onClick={onToggle}
+                    className="p-2 text-gray-500 hover:text-primary hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Expand Status Sidebar"
+                >
+                    <span className="icon-[fluent--panel-right-expand-16-filled] w-5 h-5 text-primary" />
+                </button>
+
+                <div className="w-8 h-[1px] bg-gray-200" />
+
+                {/* Status Indicator Dot */}
+                <div
+                    className={`w-4 h-4 rounded-full ${
+                        status === 'active' ? 'bg-green-500 ring-4 ring-green-100' : status === 'inactive' ? 'bg-red-500 ring-4 ring-red-100' : 'bg-yellow-500 ring-4 ring-yellow-100'
+                    }`}
+                    title={`Status: ${status}`}
+                />
+
+                {/* Quick Save button */}
+                <button
+                    type="button"
+                    onClick={handlePublish}
+                    disabled={!isFormValid || isSaving}
+                    className="p-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-40 transition-colors shadow-sm"
+                    title="Publish / Save Changes"
+                >
+                    <span className="icon-[fluent--save-16-filled] w-4 h-4" />
+                </button>
+            </div>
+        )
+    }
+
+    return (
+        <div className="w-80 min-w-[300px] max-w-[340px] bg-white rounded-lg shadow-sm border p-6 h-fit transition-all duration-300">
             {/* Header */}
-            <div className="mb-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">Product Status</h3>
-                <p className="text-sm text-gray-600">Manage your product&apos;s visibility and settings</p>
+            <div className="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
+                <div>
+                    <h3 className="text-xl font-semibold text-gray-800">Product Status</h3>
+                    <p className="text-xs text-gray-500">Visibility & quick actions</p>
+                </div>
+                {onToggle && (
+                    <button
+                        type="button"
+                        onClick={onToggle}
+                        className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                        title="Collapse Sidebar"
+                    >
+                        <span className="icon-[fluent--chevron-right-16-regular] w-4 h-4" />
+                    </button>
+                )}
             </div>
 
             {/* Status Section */}
@@ -162,7 +224,7 @@ export default function Status(){
                 <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-sm"
                 >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -177,10 +239,10 @@ export default function Status(){
                         : 'bg-yellow-50 border border-yellow-200'
                 }`}>
                     <div className="flex items-center gap-2">
-                        <span className={`w-3 h-3 rounded-full ${
+                        <span className={`w-3 h-3 rounded-full shrink-0 ${
                             status === 'active' ? 'bg-green-500' : status === 'inactive' ? 'bg-red-500' : 'bg-yellow-500'
                         }`} />
-                        <p className={`text-sm font-medium ${
+                        <p className={`text-xs font-medium ${
                             status === 'active' ? 'text-green-800' : status === 'inactive' ? 'text-red-800' : 'text-yellow-800'
                         }`}>
                             {status === 'active'
@@ -196,7 +258,7 @@ export default function Status(){
 
             {/* Advertising Section */}
             <section className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">Advertising</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Advertising</label>
                 <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                     <input
                         type="checkbox"
@@ -205,12 +267,12 @@ export default function Status(){
                         onChange={(e) => setShowAds(e.target.checked)}
                         className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
                     />
-                    <label htmlFor="showAds" className="text-sm text-blue-800 font-medium">
+                    <label htmlFor="showAds" className="text-xs text-blue-800 font-medium cursor-pointer">
                         Promote this product in advertisements
                     </label>
                 </div>
                 {showAds && (
-                    <p className="text-xs text-blue-600 mt-2">
+                    <p className="text-[11px] text-blue-600 mt-1.5">
                         This product will be featured in promotional campaigns and recommendations.
                     </p>
                 )}
@@ -218,12 +280,12 @@ export default function Status(){
 
             {/* Action Buttons */}
             <section className="space-y-3">
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                     {action === 'create' ? (
                         <>
                             <button
                                 onClick={handleDiscard}
-                                className="flex-1 bg-red-50 text-red-700 px-4 py-3 rounded-lg font-medium hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
+                                className="flex-1 bg-red-50 text-red-700 px-3 py-2.5 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors flex items-center justify-center gap-1.5"
                             >
                                 <span className="icon-[fluent--delete-16-regular] w-4 h-4" />
                                 Discard
@@ -231,17 +293,17 @@ export default function Status(){
                             <button
                                 onClick={handleSaveDraft}
                                 disabled={isSaving}
-                                className="bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="bg-gray-100 text-gray-700 px-3 py-2.5 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
                             >
                                 <span className="icon-[fluent--save-16-regular] w-4 h-4" />
-                                Save Draft
+                                Draft
                             </button>
                         </>
                     ) : (
                         <button
                             onClick={handleDeleteProduct}
                             disabled={isSaving}
-                            className="bg-red-50 text-red-700 px-4 py-3 rounded-lg font-medium hover:bg-red-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="bg-red-50 text-red-700 px-3 py-2.5 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
                         >
                             <span className="icon-[fluent--delete-16-regular] w-4 h-4" />
                             Delete
@@ -250,7 +312,7 @@ export default function Status(){
                     <button
                         onClick={handlePublish}
                         disabled={!isFormValid || isSaving}
-                        className="flex-1 bg-primary text-white px-4 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="flex-1 bg-primary text-white px-3 py-2.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shadow-sm"
                     >
                         {isSaving ? (
                             <>
@@ -260,7 +322,7 @@ export default function Status(){
                         ) : (
                             <>
                                 <span className="icon-[fluent--send-16-filled] w-4 h-4" />
-                                Publish
+                                Save & Publish
                             </>
                         )}
                     </button>
@@ -268,45 +330,44 @@ export default function Status(){
             </section>
 
             {/* Drafts Section */}
-            <section className="mt-8 pt-6 border-t border-gray-200">
-                <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-semibold text-gray-800">Recent Drafts</h4>
-                    <button className="text-primary text-sm font-medium hover:text-primary/80 transition-colors">
+            <section className="mt-6 pt-5 border-t border-gray-200">
+                <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-semibold text-gray-800">Recent Drafts</h4>
+                    <button className="text-primary text-xs font-medium hover:text-primary/80 transition-colors">
                         View All
                     </button>
                 </div>
 
-                <div className="space-y-3">
-                    {draftList.length > 0 ? draftList.slice(0, 5).map((draft) => (
-                        <div key={draft.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="space-y-2">
+                    {draftList.length > 0 ? draftList.slice(0, 4).map((draft) => (
+                        <div key={draft.id} className="p-2.5 bg-gray-50 rounded-lg border border-gray-200 text-xs">
                             <div className="flex items-center justify-between">
-                                <div className="cursor-pointer" onClick={() => handleLoadDraft(draft)}>
-                                    <p className="font-medium text-gray-800">{draft.name || 'Untitled Draft'}</p>
-                                    <p className="text-sm text-gray-600">
-                                        Last edited {new Date(draft.updated_at).toLocaleDateString()}
+                                <div className="cursor-pointer truncate mr-2" onClick={() => handleLoadDraft(draft)}>
+                                    <p className="font-medium text-gray-800 truncate">{draft.name || 'Untitled Draft'}</p>
+                                    <p className="text-[10px] text-gray-500">
+                                        {new Date(draft.updated_at).toLocaleDateString()}
                                     </p>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1 shrink-0">
                                     <button
                                         onClick={() => handleLoadDraft(draft)}
-                                        className="text-primary hover:text-primary/80 transition-colors"
+                                        className="text-primary hover:text-primary/80 p-1 transition-colors"
                                     >
-                                        <span className="icon-[fluent--edit-16-regular] w-4 h-4" />
+                                        <span className="icon-[fluent--edit-16-regular] w-3.5 h-3.5" />
                                     </button>
                                     <button
                                         onClick={() => handleDeleteDraft(draft.id)}
-                                        className="text-red-500 hover:text-red-700 transition-colors"
+                                        className="text-red-500 hover:text-red-700 p-1 transition-colors"
                                     >
-                                        <span className="icon-[fluent--delete-16-regular] w-4 h-4" />
+                                        <span className="icon-[fluent--delete-16-regular] w-3.5 h-3.5" />
                                     </button>
                                 </div>
                             </div>
                         </div>
                     )) : (
-                        <div className="text-center py-8 text-gray-500">
-                            <span className="icon-[fluent--document-24-regular] w-12 h-12 mx-auto mb-3 block" />
+                        <div className="text-center py-4 text-gray-400 text-xs">
+                            <span className="icon-[fluent--document-24-regular] w-8 h-8 mx-auto mb-1 block opacity-60" />
                             <p>No drafts found</p>
-                            <p className="text-sm">Your saved drafts will appear here</p>
                         </div>
                     )}
                 </div>
@@ -345,39 +406,39 @@ function QuickStats({ draftCount }) {
     const brandRows = Object.entries(brandMap).sort((a, b) => a[0].localeCompare(b[0]))
 
     return (
-        <section className="mt-6 pt-6 border-t border-gray-200">
-            <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Stats</h4>
+        <section className="mt-5 pt-5 border-t border-gray-200">
+            <h4 className="text-xs font-semibold text-gray-700 mb-2.5">Quick Stats</h4>
 
             {/* Summary tiles */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
-                <div className="text-center p-3 bg-green-50 rounded-lg">
-                    <p className="text-2xl font-bold text-green-600">
-                        {isLoading ? <span className="inline-block w-6 h-6 border-2 border-green-300 border-t-green-600 rounded-full animate-spin" /> : totalActive}
+            <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="text-center p-2 bg-green-50 rounded-lg">
+                    <p className="text-lg font-bold text-green-600">
+                        {isLoading ? <span className="inline-block w-4 h-4 border-2 border-green-300 border-t-green-600 rounded-full animate-spin" /> : totalActive}
                     </p>
-                    <p className="text-xs text-green-700 mt-0.5">Active</p>
+                    <p className="text-[10px] text-green-700">Active</p>
                 </div>
-                <div className="text-center p-3 bg-red-50 rounded-lg">
-                    <p className="text-2xl font-bold text-red-500">
-                        {isLoading ? <span className="inline-block w-6 h-6 border-2 border-red-200 border-t-red-500 rounded-full animate-spin" /> : totalInactive}
+                <div className="text-center p-2 bg-red-50 rounded-lg">
+                    <p className="text-lg font-bold text-red-500">
+                        {isLoading ? <span className="inline-block w-4 h-4 border-2 border-red-200 border-t-red-500 rounded-full animate-spin" /> : totalInactive}
                     </p>
-                    <p className="text-xs text-red-600 mt-0.5">Inactive</p>
+                    <p className="text-[10px] text-red-600">Inactive</p>
                 </div>
-                <div className="text-center p-3 bg-blue-50 rounded-lg">
-                    <p className="text-2xl font-bold text-blue-600">{draftCount}</p>
-                    <p className="text-xs text-blue-700 mt-0.5">Drafts</p>
+                <div className="text-center p-2 bg-blue-50 rounded-lg">
+                    <p className="text-lg font-bold text-blue-600">{draftCount}</p>
+                    <p className="text-[10px] text-blue-700">Drafts</p>
                 </div>
             </div>
 
             {/* Per-brand breakdown */}
             {!isLoading && brandRows.length > 0 && (
-                <div className="rounded-lg border border-gray-100 overflow-hidden">
-                    <div className="grid grid-cols-3 bg-gray-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                <div className="rounded-lg border border-gray-100 overflow-hidden max-h-40 overflow-y-auto">
+                    <div className="grid grid-cols-3 bg-gray-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-gray-400 sticky top-0">
                         <span>Brand</span>
-                        <span className="text-center text-green-600">Active</span>
-                        <span className="text-center text-red-500">Inactive</span>
+                        <span className="text-center text-green-600">Act</span>
+                        <span className="text-center text-red-500">Inact</span>
                     </div>
                     {brandRows.map(([brand, counts]) => (
-                        <div key={brand} className="grid grid-cols-3 px-3 py-2 text-xs border-t border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <div key={brand} className="grid grid-cols-3 px-2.5 py-1.5 text-[11px] border-t border-gray-50 hover:bg-gray-50/50 transition-colors">
                             <span className="font-semibold text-gray-700 truncate">{brand}</span>
                             <span className="text-center font-bold text-green-600 flex items-center justify-center gap-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" />
