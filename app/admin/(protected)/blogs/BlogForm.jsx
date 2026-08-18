@@ -53,6 +53,7 @@ export default function BlogForm({ initialData = null, isEdit = false }) {
             setFormData(prev => ({
                 ...prev,
                 ...initialData,
+                noindex: Boolean(initialData.noindex),
                 recipe_ids: initialData.recipes?.map(r => r.id) || initialData.recipe_ids || [],
                 brand_ids: initialData.brands?.map(b => b.id) || initialData.brand_ids || [],
                 product_ids: initialData.products?.map(p => p.id) || initialData.product_ids || []
@@ -171,10 +172,12 @@ export default function BlogForm({ initialData = null, isEdit = false }) {
             // Append basic fields
             Object.keys(formData).forEach(key => {
                 if (key === 'featured_image') return; // Handled separately
-                if (Array.isArray(formData[key])) {
+                if (key === 'noindex') {
+                    payload.append('noindex', formData.noindex ? '1' : '0');
+                } else if (Array.isArray(formData[key])) {
                     payload.append(key, JSON.stringify(formData[key]));
                 } else {
-                    payload.append(key, formData[key]);
+                    payload.append(key, formData[key] ?? '');
                 }
             });
 

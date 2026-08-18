@@ -46,6 +46,7 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
             setFormData(prev => ({
                 ...prev,
                 ...initialData,
+                noindex: Boolean(initialData.noindex),
                 product_ids: initialData.products?.map(p => p.id) || initialData.product_ids || []
             }));
         }
@@ -140,8 +141,10 @@ export default function RecipeForm({ initialData = null, isEdit = false }) {
                 formData[key].forEach(id => data.append('product_ids[]', id));
             } else if (key === 'image') {
                 return;
+            } else if (key === 'noindex') {
+                data.append('noindex', formData.noindex ? '1' : '0');
             } else {
-                data.append(key, formData[key]);
+                data.append(key, formData[key] ?? '');
             }
         });
 
