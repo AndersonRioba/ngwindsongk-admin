@@ -24,15 +24,22 @@ export default function DeliveryZonesSettings() {
     const [search, setSearch] = useState('')
     const fileInputRef = useRef(null)
 
+    // Fetch all counties using the dedicated counties endpoint
+    const { data: countiesData } = useSWR(['/locations/counties', {}], fetcher)
+    // Fetch filtered zones for the table
     const { data, mutate } = useSWR(['/admin/locations', { search }], fetcher)
+
+    useEffect(() => {
+        if (countiesData?.data && Array.isArray(countiesData.data)) {
+            setCounties(countiesData.data)
+        } else if (Array.isArray(countiesData)) {
+            setCounties(countiesData)
+        }
+    }, [countiesData])
 
     useEffect(() => {
         if (data && Array.isArray(data)) {
             setLocations(data)
-            // Extract counties (locations whose parent_id is 1 - Kenya)
-            const c = data.filter(loc => loc.parent_id === 1).sort((a, b) => a.name.localeCompare(b.name))
-            setCounties(c)
-            
             // Extract delivery zones (locations that belong to a county)
             const z = data.filter(loc => loc.parent_id !== 1 && loc.parent_id !== null)
             setZones(z)
