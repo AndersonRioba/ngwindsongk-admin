@@ -78,16 +78,31 @@ function OrderDetail({ order, onClose, mutate }) {
                             </p>
                         </div>
                     ) : (
-                        <div>
-                            <p className="text-sm text-gray-500">Delivery Town</p>
-                            <p className="font-medium">
-                                {order.delivery_zone ? (
-                                    <span className="inline-flex items-center gap-1">📍 {order.delivery_zone}</span>
-                                ) : (
-                                    <span className="text-gray-400 italic">Not specified</span>
-                                )}
-                            </p>
-                        </div>
+                        <>
+                            <div>
+                                <p className="text-sm text-gray-500">Delivery Location</p>
+                                <p className="font-medium">
+                                    {order.delivery_zone ? (
+                                        <span className="inline-flex items-center gap-1">📍 {order.delivery_zone} {order.delivery_county ? `(${order.delivery_county})` : ''}</span>
+                                    ) : (
+                                        <span className="text-gray-400 italic">Not specified</span>
+                                    )}
+                                </p>
+                            </div>
+                            {order.carrier_type && (
+                                <div>
+                                    <p className="text-sm text-gray-500">Carrier Option</p>
+                                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold mt-0.5 ${
+                                        order.carrier_type === 'rider'
+                                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                            : 'bg-indigo-100 text-indigo-800 border border-indigo-300'
+                                    }`}>
+                                        {order.carrier_type === 'rider' ? '🛵 Bike Rider' : '🚐 Matatu SACCO'}
+                                        {order.carrier_name ? ` (${order.carrier_name})` : ''}
+                                    </span>
+                                </div>
+                            )}
+                        </>
                     )}
                     <div>
                         <p className="text-sm text-gray-500">Payment</p>

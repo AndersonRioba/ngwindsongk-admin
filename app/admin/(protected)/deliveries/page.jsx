@@ -169,13 +169,25 @@ export default function DeliveriesPage() {
                                                     {order.pickup_station || 'N/A'}
                                                 </span>
                                             ) : (
-                                                <span className="text-gray-600 flex items-center gap-2">
-                                                    <span className="icon-[mdi--home-map-marker] w-5 h-5" />
-                                                    <span className="line-clamp-1 max-w-[200px]">
-                                                        {order.delivery_zone ? `📍 ${order.delivery_zone} - ` : ''}
-                                                        {order.order_detail?.address || 'N/A'}
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-gray-600 flex items-center gap-2">
+                                                        <span className="icon-[mdi--home-map-marker] w-5 h-5 shrink-0" />
+                                                        <span className="line-clamp-1 max-w-[200px]">
+                                                            {order.delivery_zone ? `📍 ${order.delivery_zone} - ` : ''}
+                                                            {order.order_detail?.address || 'N/A'}
+                                                        </span>
                                                     </span>
-                                                </span>
+                                                    {order.carrier_type && (
+                                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold w-fit ${
+                                                            order.carrier_type === 'rider'
+                                                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                                                : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                                        }`}>
+                                                            {order.carrier_type === 'rider' ? '🛵 Rider' : '🚐 SACCO'}
+                                                            {order.carrier_name ? `: ${order.carrier_name}` : ''}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             )}
                                         </td>
                                         <td className="px-5 py-5 text-center">
