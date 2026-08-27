@@ -23,6 +23,7 @@ export default function DeliveryZonesSettings() {
     })
     const [search, setSearch] = useState('')
     const fileInputRef = useRef(null)
+    const formRef = useRef(null)
 
     // Fetch all counties using the dedicated counties endpoint
     const { data: countiesData } = useSWR(['/locations/counties', {}], fetcher)
@@ -170,6 +171,11 @@ export default function DeliveryZonesSettings() {
             sacco_name: zone.sacco_name || '',
         })
         setIsEditing(true)
+        setTimeout(() => {
+            if (formRef.current) {
+                formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+        }, 50)
     }
 
     const cancelEdit = () => {
@@ -226,9 +232,9 @@ export default function DeliveryZonesSettings() {
             </div>
 
             {isEditing && (
-                <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-6">
+                <div ref={formRef} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-6 shadow-sm">
                     <div className="flex items-center justify-between border-b pb-3">
-                        <h3 className="font-bold text-gray-800 text-base">{currentZone.id ? 'Edit Delivery Zone' : 'Add New Delivery Zone'}</h3>
+                        <h3 className="font-bold text-gray-800 text-base">{currentZone.id ? `Edit Delivery Zone: ${currentZone.name || ''}` : 'Add New Delivery Zone'}</h3>
                         {isNairobi && (
                             <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                                 📍 Nairobi County (Separate Rider & Sacco Rates Active)
