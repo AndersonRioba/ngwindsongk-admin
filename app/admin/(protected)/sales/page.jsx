@@ -41,6 +41,9 @@ function OrderDetail({ order, onClose, mutate }) {
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-semibold flex items-center gap-2">
                         Order #{order.id}
+                        <span className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded border">
+                            {order.slug}
+                        </span>
                         {order.order_type === 'b2b' && (
                             <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-md font-bold uppercase tracking-wider">B2B Wholesale</span>
                         )}
@@ -54,6 +57,12 @@ function OrderDetail({ order, onClose, mutate }) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <p className="text-sm text-gray-500">Order ID / Ref</p>
+                        <p className="font-mono font-bold text-gray-900">
+                            #{order.id} <span className="text-primary font-black">({order.slug})</span>
+                        </p>
+                    </div>
                     <div>
                         <p className="text-sm text-gray-500">Customer</p>
                         <p className="font-medium">{order.order_detail?.full_name || 'N/A'}</p>
@@ -82,8 +91,11 @@ function OrderDetail({ order, onClose, mutate }) {
                             <div>
                                 <p className="text-sm text-gray-500">Delivery Location</p>
                                 <p className="font-medium">
-                                    {order.delivery_zone ? (
-                                        <span className="inline-flex items-center gap-1">📍 {order.delivery_zone} {order.delivery_county ? `(${order.delivery_county})` : ''}</span>
+                                    {order.delivery_zone || order.delivery_county ? (
+                                        <span className="inline-flex items-center gap-1">
+                                            📍 {order.delivery_zone ? `${order.delivery_zone} ` : ''}
+                                            {order.delivery_county ? (order.delivery_zone ? `(${order.delivery_county})` : order.delivery_county) : ''}
+                                        </span>
                                     ) : (
                                         <span className="text-gray-400 italic">Not specified</span>
                                     )}
@@ -201,15 +213,25 @@ function OrderDetail({ order, onClose, mutate }) {
                     </button>
                 }
 
-                <div className="mt-4 pt-4 border-t flex flex-col gap-4">
-                    <div className="flex justify-between items-center">
-                        <span className="text-gray-500 font-medium">Total</span>
+                <div className="mt-4 pt-4 border-t flex flex-col gap-2">
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-500 font-medium">Items Subtotal</span>
+                        <span className="font-semibold text-gray-800">KES {(Number(order.total) - Number(order.shipping || 0)).toLocaleString()}</span>
+                    </div>
+                    {Number(order.shipping) > 0 && (
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-500 font-medium">Shipping {order.delivery_county ? `(${order.delivery_county})` : ''}</span>
+                            <span className="font-semibold text-gray-800">KES {Number(order.shipping).toLocaleString()}</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between items-center pt-2 border-t mt-1">
+                        <span className="text-gray-700 font-bold">Total</span>
                         <span className="text-xl font-bold text-primary">KES {Number(order.total).toLocaleString()}</span>
                     </div>
                     
                     <button 
                         onClick={() => getFile(`Invoice-${order.slug}.pdf`, `/orders/${order.slug}/invoice`, {})}
-                        className="flex items-center justify-center gap-2 w-full py-3 border-2 border-primary text-primary hover:bg-primary hover:text-white rounded-xl font-semibold transition-all"
+                        className="flex items-center justify-center gap-2 w-full py-3 border-2 border-primary text-primary hover:bg-primary hover:text-white rounded-xl font-semibold transition-all mt-2"
                     >
                         <span className="icon-[mdi--file-pdf-box] w-5 h-5" />
                         Download Invoice PDF
