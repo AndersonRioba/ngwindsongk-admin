@@ -12,6 +12,8 @@ const statusColors = {
     success: 'bg-green-100 text-green-800',
     cancelled: 'bg-red-100 text-red-800',
     processing: 'bg-blue-100 text-blue-800',
+    pending_verification: 'bg-amber-100 text-amber-800',
+    failed: 'bg-red-100 text-red-800',
 }
 
 function SaleRowSkeleton() {
@@ -122,8 +124,18 @@ function OrderDetail({ order, onClose, mutate }) {
                     </div>
                     <div>
                         <p className="text-sm text-gray-500">Payment Status</p>
-                        <span className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${order.payment_status === 'pending' && order.payment_reference ? 'bg-orange-100 text-orange-800 animate-pulse' : statusColors[order.payment_status] || statusColors.pending}`}>
-                            {order.payment_status === 'pending' && order.payment_reference ? 'Awaiting Verification' : (order.payment_status || 'pending')}
+                        <span className={`capitalize px-2 py-1 rounded-full text-xs font-medium ${
+                            order.payment_status === 'pending_verification'
+                                ? 'bg-amber-100 text-amber-800 animate-pulse'
+                                : order.payment_status === 'pending' && order.payment_reference
+                                    ? 'bg-orange-100 text-orange-800 animate-pulse'
+                                    : statusColors[order.payment_status] || statusColors.pending
+                        }`}>
+                            {order.payment_status === 'pending_verification'
+                                ? '⚠️ Underpayment — Pending Review'
+                                : order.payment_status === 'pending' && order.payment_reference
+                                    ? 'Awaiting Verification'
+                                    : (order.payment_status || 'pending')}
                         </span>
                     </div>
                     {order.payment_reference && (
@@ -202,8 +214,42 @@ function OrderDetail({ order, onClose, mutate }) {
                     )} className="block px-5 py-2 text-primary border-primary border-2 rounded-full hover:text-white hover:bg-primary my-7 text-sm">Mark Completed</button>
                 }
                 
-                {
-                    order.payment_status !== 'success' && order.payment_reference &&
+                {/* Underpayment alert — shown only when payment_status = pending_verification */}
+                {order.payment_status === 'pending_verification' && order.amount_paid != null && (
+                    <div className="my-4 border border-amber-300 bg-amber-50 rounded-xl p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="text-amber-600 text-lg">⚠️</span>
+                            <h4 className="font-bold text-amber-800 text-sm">Underpayment Detected</h4>
+                        </div>
+                        <div className="grid grid-cols-2 gap-y-1 text-sm mb-3">
+                            <span className="text-gray-500">Amount Paid:</span>
+                            <span className="font-semibold text-gray-800">KES {Number(order.amount_paid).toLocaleString()}</span>
+                            <span className="text-gray-500">Amount Expected:</span>
+                            <span className="font-semibold text-gray-800">KES {Number(order.total).toLocaleString()}</span>
+                            <span className="text-gray-500">Shortfall:</span>
+                            <span className="font-bold text-red-600">KES {(Number(order.total) - Number(order.amount_paid)).toLocaleString()}</span>
+                            {order.payment_reference && <>
+                                <span className="text-gray-500">M-Pesa Ref:</span>
+                                <span className="font-mono text-xs text-gray-700">{order.payment_reference}</span>
+                            </>}
+                        </div>
+                        {order.payment_notes && (
+                            <p className="text-xs text-amber-700 bg-amber-100 rounded p-2 mb-3 italic">{order.payment_notes}</p>
+                        )}
+                        <button
+                            onClick={e => postData(
+                                () => { mutate(); onClose(); },
+                                {},
+                                `/admin/orders/${order.id}/verify-payment`
+                            )}
+                            className="w-full py-2 text-sm font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-lg transition-all shadow shadow-amber-400/30"
+                        >
+                            ✓ Approve as Fully Paid (Admin Override)
+                        </button>
+                    </div>
+                )}
+
+                {order.payment_status !== 'success' && order.payment_status !== 'pending_verification' && order.payment_reference &&
                     <button onClick={e => postData(
                         () => { mutate(); onClose(); },
                         {},
@@ -382,6 +428,7 @@ export default function Page() {
                                 <option value="">All Payments</option>
                                 <option value="success">Paid / Success</option>
                                 <option value="pending">Pending Verification</option>
+                                <option value="pending_verification">⚠️ Underpayment (Needs Review)</option>
                                 <option value="failed">Failed</option>
                             </select>
                         </div>
