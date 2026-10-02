@@ -127,6 +127,7 @@ export function MobileSideMenu({ menuOpen, setMenuOpen }){
                         <SidebarItem href="/admin/recipes" icon="icon-[arcticons--reciper]" label="Recipe Lab" pathname={pathname} />
                         <SidebarItem href="/admin/blogs" icon="icon-[mdi--post-outline]" label="Editorial Blogs" pathname={pathname} />
                         <SidebarItem href="/admin/reviews" icon="icon-[solar--chat-dots-bold-duotone]" label="Client Testimonials" pathname={pathname} />
+                        <SidebarItem href="/admin/messages" icon="icon-[solar--letter-bold-duotone]" label="Contact Messages" pathname={pathname} />
                     </div>
 
                     <div className="pt-4 pb-2 border-t border-gray-50 mt-4">
@@ -298,6 +299,7 @@ export function DesktopSidebar(){
         { href: '/admin/blogs', icon: 'icon-[mdi--post-outline]', label: 'Editorial Blogs' },
         { href: '/admin/comments', icon: 'icon-[mdi--comment-outline]', label: 'Comments' },
         { href: '/admin/reviews', icon: 'icon-[solar--chat-dots-bold-duotone]', label: 'Client Testimonials' },
+        { href: '/admin/messages', icon: 'icon-[solar--letter-bold-duotone]', label: 'Contact Messages' },
         { href: '/admin/users', icon: 'icon-[heroicons--users-16-solid]', label: 'User Accounts' },
         { href: '/admin/access-control', icon: 'icon-[solar--shield-keyhole-bold-duotone]', label: 'Security & Roles' },
         { href: '/admin/inventory', icon: 'icon-[material-symbols--inventory-rounded]', label: 'Inventory Engine' },
