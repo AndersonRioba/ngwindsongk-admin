@@ -16,7 +16,9 @@ export function getData(setData, endpoint, parameters, baseURL = process.env.NEX
     })
         .then((res) => {
             if (res.status === 401) {
-                window.location.href = '/login';
+                if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                }
                 return;
             }
             if (res.status === 404) {
@@ -183,8 +185,10 @@ export async function postData(setData, data, endpoint, baseURL = process.env.NE
         body: JSON.stringify(data)
     })
         .then((res) => {
-            if (res.status === 401) {
-                window.location.href = '/login';
+            if (res.status === 401 && endpoint !== '/login' && endpoint !== '/register' && endpoint !== '/signup') {
+                if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                }
                 return;
             }
             if (res.status === 404) {
@@ -351,7 +355,9 @@ export async function fetcher([endpoint, parameters, baseURL = process.env.NEXT_
         .then((res) => {
             if (res.status === 401) {
                 console.error(`[Circuit Diagnostic] ACCESS DENIED (401) at ${url}`);
-                window.location.href = '/login';
+                if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                }
                 return;
             }
             if (res.status === 404) {
@@ -490,7 +496,9 @@ export async function postRequest(endpoint, data, baseURL = process.env.NEXT_PUB
     });
 
     if (res.status === 401) {
-        window.location.href = '/login';
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+            window.location.href = '/login';
+        }
         return;
     }
 
@@ -509,7 +517,9 @@ export async function deleteRequest(endpoint, baseURL = process.env.NEXT_PUBLIC_
     });
 
     if (res.status === 401) {
-        window.location.href = '/login';
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+            window.location.href = '/login';
+        }
         return;
     }
 

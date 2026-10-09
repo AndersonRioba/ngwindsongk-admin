@@ -307,6 +307,97 @@ function OrderDetail({ order, onClose, mutate }) {
 
 import BeautifulDatePicker from "@/app/UI/BeautifulDatePicker";
 
+const DATE_PRESETS = [
+    { key: 'all_time', label: 'All Time' },
+    { key: 'today', label: 'Today' },
+    { key: 'yesterday', label: 'Yesterday' },
+    { key: 'this_week', label: 'This Week' },
+    { key: 'last_week', label: 'Last Week' },
+    { key: 'this_month', label: 'This Month' },
+    { key: 'last_month', label: 'Last Month' },
+    { key: 'last_3_months', label: 'Last 3 Months' },
+    { key: 'last_6_months', label: 'Last 6 Months' },
+    { key: 'this_quarter', label: 'This Quarter' },
+    { key: 'last_quarter', label: 'Last Quarter' },
+    { key: 'this_year', label: 'This Year' },
+    { key: 'custom', label: 'Custom Range' },
+];
+
+function calculatePresetDates(presetKey) {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth();
+    const d = now.getDate();
+
+    const pad = (n) => String(n).padStart(2, '0');
+    const toYMD = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+
+    switch (presetKey) {
+        case 'today': {
+            const todayStr = toYMD(now);
+            return { from: todayStr, to: todayStr };
+        }
+        case 'yesterday': {
+            const yest = new Date(y, m, d - 1);
+            const yestStr = toYMD(yest);
+            return { from: yestStr, to: yestStr };
+        }
+        case 'this_week': {
+            const day = now.getDay();
+            const diffToMonday = (day + 6) % 7;
+            const monday = new Date(y, m, d - diffToMonday);
+            return { from: toYMD(monday), to: toYMD(now) };
+        }
+        case 'last_week': {
+            const day = now.getDay();
+            const diffToMonday = (day + 6) % 7;
+            const thisMonday = new Date(y, m, d - diffToMonday);
+            const lastMonday = new Date(thisMonday);
+            lastMonday.setDate(lastMonday.getDate() - 7);
+            const lastSunday = new Date(lastMonday);
+            lastSunday.setDate(lastMonday.getDate() + 6);
+            return { from: toYMD(lastMonday), to: toYMD(lastSunday) };
+        }
+        case 'this_month': {
+            const firstDay = new Date(y, m, 1);
+            return { from: toYMD(firstDay), to: toYMD(now) };
+        }
+        case 'last_month': {
+            const firstDayLastMonth = new Date(y, m - 1, 1);
+            const lastDayLastMonth = new Date(y, m, 0);
+            return { from: toYMD(firstDayLastMonth), to: toYMD(lastDayLastMonth) };
+        }
+        case 'last_3_months': {
+            const start = new Date(y, m - 2, 1);
+            return { from: toYMD(start), to: toYMD(now) };
+        }
+        case 'last_6_months': {
+            const start = new Date(y, m - 5, 1);
+            return { from: toYMD(start), to: toYMD(now) };
+        }
+        case 'this_quarter': {
+            const q = Math.floor(m / 3);
+            const start = new Date(y, q * 3, 1);
+            return { from: toYMD(start), to: toYMD(now) };
+        }
+        case 'last_quarter': {
+            const currentQ = Math.floor(m / 3);
+            const lastQ = currentQ === 0 ? 3 : currentQ - 1;
+            const lastQYear = currentQ === 0 ? y - 1 : y;
+            const start = new Date(lastQYear, lastQ * 3, 1);
+            const end = new Date(lastQYear, lastQ * 3 + 3, 0);
+            return { from: toYMD(start), to: toYMD(end) };
+        }
+        case 'this_year': {
+            const start = new Date(y, 0, 1);
+            return { from: toYMD(start), to: toYMD(now) };
+        }
+        case 'all_time':
+        default:
+            return { from: '', to: '' };
+    }
+}
+
 export default function Page() {
     let [search, setSearch] = useState('')
     let [statusFilter, setStatusFilter] = useState('')
@@ -315,28 +406,64 @@ export default function Page() {
     let [sort, setSort] = useState('newest')
     let [selectedOrder, setSelectedOrder] = useState(null)
     let [page, setPage] = useState(1)
+    let [isExporting, setIsExporting] = useState(false)
 
-    // Export States
+    // Date Range Intelligence States
+    let [datePreset, setDatePreset] = useState('all_time')
     let [dateFrom, setDateFrom] = useState('')
     let [dateTo, setDateTo] = useState('')
+
+    const handleSelectPreset = (key) => {
+        setDatePreset(key);
+        setPage(1);
+        if (key === 'custom') {
+            return;
+        }
+        const range = calculatePresetDates(key);
+        setDateFrom(range.from);
+        setDateTo(range.to);
+    }
+
+    const handleResetFilters = () => {
+        setSearch('')
+        setStatusFilter('')
+        setOrderTypeFilter('')
+        setPaymentStatusFilter('')
+        setDatePreset('all_time')
+        setDateFrom('')
+        setDateTo('')
+        setPage(1)
+    }
 
     const params = { page, sort }
     if (statusFilter) params.status = statusFilter
     if (orderTypeFilter) params.order_type = orderTypeFilter
     if (paymentStatusFilter) params.payment_status = paymentStatusFilter
     if (search) params.search = search
+    if (dateFrom) params.date_from = dateFrom
+    if (dateTo) params.date_to = dateTo
 
     let { data, isLoading, error, mutate } = useSWR(['/sales', params], fetcher)
 
     const handleExport = () => {
-        getFile(`sales_report_${new Date().toISOString().split('T')[0]}.xlsx`, '/export/sales', { 
-            date_from: dateFrom, 
-            date_to: dateTo,
-            status: statusFilter,
-            order_type: orderTypeFilter,
-            payment_status: paymentStatusFilter,
-            search: search
-        })
+        setIsExporting(true)
+        const currentPresetObj = DATE_PRESETS.find(p => p.key === datePreset)
+        const presetName = currentPresetObj ? currentPresetObj.label : 'Custom'
+
+        getFile(
+            `sales_intelligence_${presetName.replace(/\s+/g, '_').toLowerCase()}_${new Date().toISOString().split('T')[0]}.xlsx`,
+            '/export/sales',
+            { 
+                date_from: dateFrom, 
+                date_to: dateTo,
+                status: statusFilter,
+                order_type: orderTypeFilter,
+                payment_status: paymentStatusFilter,
+                search: search,
+                preset: presetName
+            }
+        )
+        setTimeout(() => setIsExporting(false), 2500)
     }
 
     const { orders, pagination } = useMemo(() => {
@@ -346,115 +473,230 @@ export default function Page() {
     }, [data])
 
     const stats = useMemo(() => {
-        if (!orders.length) return { total: 0, revenue: 0, pending: 0, completed: 0 }
+        // True server-compiled preselection totals across all matching records
+        if (data?.summary) {
+            return {
+                total: data.summary.total,
+                revenue: data.summary.revenue,
+                gross_revenue: data.summary.gross_revenue,
+                pending: data.summary.pending,
+                completed: data.summary.completed,
+                processing: data.summary.processing,
+                cancelled: data.summary.cancelled,
+                pending_verification: data.summary.pending_verification,
+                total_items: data.summary.total_items,
+                avg_order_value: data.summary.avg_order_value,
+            }
+        }
+        if (!orders.length) return { total: 0, revenue: 0, gross_revenue: 0, pending: 0, completed: 0, total_items: 0, avg_order_value: 0 }
         return {
             total: pagination?.total || orders.length,
-            revenue: orders.filter(o => o.payment_status == 'success').reduce((sum, o) => sum + Number(o.total), 0),
+            revenue: orders.filter(o => o.payment_status === 'success').reduce((sum, o) => sum + Number(o.total), 0),
+            gross_revenue: orders.reduce((sum, o) => sum + Number(o.total), 0),
             pending: orders.filter(o => (o.status || 'pending') === 'pending').length,
             completed: orders.filter(o => o.status === 'completed').length,
+            total_items: orders.reduce((sum, o) => sum + (o.sales?.reduce((s, sale) => s + Number(sale.quantity || 0), 0) || 0), 0),
+            avg_order_value: orders.length ? (orders.reduce((sum, o) => sum + Number(o.total), 0) / orders.length) : 0,
         }
-    }, [orders, pagination])
+    }, [data, orders, pagination])
+
+    const currentPresetLabel = DATE_PRESETS.find(p => p.key === datePreset)?.label || 'Custom Range'
+    const hasActiveFilters = Boolean(search || statusFilter || orderTypeFilter || paymentStatusFilter || dateFrom || dateTo || datePreset !== 'all_time')
 
     return (
         <main className="mx-4 lg:mx-10 2xl:mx-20 pb-20">
             <BreadCrumbs />
             <div className="flex flex-col md:flex-row mt-8 justify-between items-start md:items-center gap-6">
-                <h2 className="text-3xl font-black text-gray-800 tracking-tight lowercase capitalize">Sales Intelligence</h2>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 my-8">
-                <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 luxe-reveal">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Successful Orders</p>
-                    <p className="text-3xl font-black mt-2 text-gray-900 italic tracking-tighter">{stats.total}</p>
+                <div>
+                    <h2 className="text-3xl font-black text-gray-800 tracking-tight lowercase capitalize">Sales Intelligence</h2>
+                    <p className="text-xs text-gray-400 font-bold tracking-wider uppercase mt-1">
+                        Executive Reporting &middot; Compiled Totals &middot; Date Presets
+                    </p>
                 </div>
-                <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 luxe-reveal delay-75">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Net Revenue</p>
-                    <p className="text-3xl font-black mt-2 text-primary italic tracking-tighter">KES {stats.revenue.toLocaleString()}</p>
-                </div>
-                <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 luxe-reveal delay-150">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Awaiting Fulfillment</p>
-                    <p className="text-3xl font-black mt-2 text-Warning italic tracking-tighter">{stats.pending}</p>
-                </div>
-                <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 luxe-reveal delay-300">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Successful Shipments</p>
-                    <p className="text-3xl font-black mt-2 text-Success italic tracking-tighter">{stats.completed}</p>
-                </div>
-            </div>
-
-            {/* Filters & Export */}
-            <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm mb-10 luxe-reveal">
-                <div className="flex flex-col xl:flex-row gap-8 items-end">
-                    
-                    {/* Search & Sort */}
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Search Database</label>
-                            <Search search={search} setSearch={(v) => { setSearch(v); setPage(1) }} placeholder="Query invoice or customer..." />
-                        </div>
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Order Status</label>
-                            <select
-                                value={statusFilter}
-                                onChange={e => { setStatusFilter(e.target.value); setPage(1) }}
-                                className="w-full bg-gray-50 hover:bg-gray-100 focus:bg-white border-none rounded-2xl py-4 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 cursor-pointer"
-                            >
-                                <option value="">All Transactions</option>
-                                <option value="pending">Pending Approval</option>
-                                <option value="processing">Processing</option>
-                                <option value="completed">Completed & Shipped</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Order Type</label>
-                            <select
-                                value={orderTypeFilter}
-                                onChange={e => { setOrderTypeFilter(e.target.value); setPage(1) }}
-                                className="w-full bg-gray-50 hover:bg-gray-100 focus:bg-white border-none rounded-2xl py-4 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 cursor-pointer"
-                            >
-                                <option value="">All Orders</option>
-                                <option value="b2c">Retail (B2C)</option>
-                                <option value="b2b">Wholesale (B2B)</option>
-                            </select>
-                        </div>
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Payment Status</label>
-                            <select
-                                value={paymentStatusFilter}
-                                onChange={e => { setPaymentStatusFilter(e.target.value); setPage(1) }}
-                                className="w-full bg-gray-50 hover:bg-gray-100 focus:bg-white border-none rounded-2xl py-4 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 cursor-pointer"
-                            >
-                                <option value="">All Payments</option>
-                                <option value="success">Paid / Success</option>
-                                <option value="pending">Pending Verification</option>
-                                <option value="pending_verification">⚠️ Underpayment (Needs Review)</option>
-                                <option value="failed">Failed</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Date Intelligence */}
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                        <BeautifulDatePicker 
-                            label="Commencement"
-                            value={dateFrom}
-                            onChange={setDateFrom}
-                        />
-                        <BeautifulDatePicker 
-                            label="Termination"
-                            value={dateTo}
-                            onChange={setDateTo}
-                        />
-                    </div>
-
-                    {/* Export Action */}
+                <div className="flex items-center gap-3">
+                    {hasActiveFilters && (
+                        <button
+                            onClick={handleResetFilters}
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs py-3 px-5 rounded-2xl transition-all flex items-center gap-2 active:scale-95"
+                            title="Reset all filters to default"
+                        >
+                            <span className="icon-[solar--restart-bold] w-4 h-4" />
+                            Reset Filters
+                        </button>
+                    )}
                     <button 
                         onClick={handleExport}
-                        className="bg-green-600 hover:bg-green-700 text-white font-black uppercase tracking-[0.2em] text-[11px] h-14 px-8 rounded-2xl transition-all shadow-xl shadow-green-600/20 flex items-center justify-center gap-3 active:scale-95 whitespace-nowrap"
+                        disabled={isExporting}
+                        className="bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white font-black uppercase tracking-[0.2em] text-[11px] h-12 px-6 rounded-2xl transition-all shadow-xl shadow-green-600/20 flex items-center justify-center gap-3 active:scale-95 whitespace-nowrap"
                     >
-                        <span className="icon-[solar--folder-export-bold-duotone] w-6 h-6" />
-                        Export to Excel
+                        {isExporting ? (
+                            <>
+                                <span className="icon-[solar--refresh-bold] w-5 h-5 animate-spin" />
+                                Compiling Excel...
+                            </>
+                        ) : (
+                            <>
+                                <span className="icon-[solar--folder-export-bold-duotone] w-5 h-5" />
+                                Export Excel Report
+                            </>
+                        )}
+                    </button>
+                </div>
+            </div>
+
+            {/* Stats Cards - Live Compiled Preselection Totals */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 my-8">
+                <div className="bg-white rounded-[2rem] p-5 shadow-sm border border-gray-100 luxe-reveal">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Preselected Orders</p>
+                    <p className="text-2xl font-black mt-2 text-gray-900 italic tracking-tighter">{stats.total}</p>
+                    <p className="text-[10px] text-gray-400 font-medium mt-1">{currentPresetLabel}</p>
+                </div>
+                <div className="bg-white rounded-[2rem] p-5 shadow-sm border border-gray-100 luxe-reveal delay-75">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Net Paid Revenue</p>
+                    <p className="text-2xl font-black mt-2 text-primary italic tracking-tighter">KES {Number(stats.revenue || 0).toLocaleString()}</p>
+                    <p className="text-[10px] text-emerald-600 font-bold mt-1">Verified Funds</p>
+                </div>
+                <div className="bg-white rounded-[2rem] p-5 shadow-sm border border-gray-100 luxe-reveal delay-100">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Units Sold (Volume)</p>
+                    <p className="text-2xl font-black mt-2 text-indigo-600 italic tracking-tighter">{stats.total_items}</p>
+                    <p className="text-[10px] text-gray-400 font-medium mt-1">Total Items</p>
+                </div>
+                <div className="bg-white rounded-[2rem] p-5 shadow-sm border border-gray-100 luxe-reveal delay-150">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Avg Order Value</p>
+                    <p className="text-2xl font-black mt-2 text-violet-600 italic tracking-tighter">KES {Number(stats.avg_order_value || 0).toLocaleString()}</p>
+                    <p className="text-[10px] text-gray-400 font-medium mt-1">Per Transaction</p>
+                </div>
+                <div className="bg-white rounded-[2rem] p-5 shadow-sm border border-gray-100 luxe-reveal delay-200">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Awaiting Fulfillment</p>
+                    <p className="text-2xl font-black mt-2 text-Warning italic tracking-tighter">{stats.pending}</p>
+                    <p className="text-[10px] text-amber-600 font-medium mt-1">Pending Approval</p>
+                </div>
+                <div className="bg-white rounded-[2rem] p-5 shadow-sm border border-gray-100 luxe-reveal delay-300">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Successful Shipments</p>
+                    <p className="text-2xl font-black mt-2 text-Success italic tracking-tighter">{stats.completed}</p>
+                    <p className="text-[10px] text-emerald-600 font-medium mt-1">Dispatched</p>
+                </div>
+            </div>
+
+            {/* Filters & Export Panel */}
+            <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-gray-100 shadow-sm mb-10 luxe-reveal space-y-6">
+                
+                {/* Date Intelligence Presets Bar */}
+                <div>
+                    <div className="flex items-center justify-between mb-3">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                            Date Intelligence &middot; Quick Filter Presets
+                        </label>
+                        {dateFrom && dateTo && (
+                            <span className="text-xs font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                                {dateFrom} &rarr; {dateTo}
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {DATE_PRESETS.map((p) => {
+                            const isActive = datePreset === p.key;
+                            return (
+                                <button
+                                    key={p.key}
+                                    type="button"
+                                    onClick={() => handleSelectPreset(p.key)}
+                                    className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+                                        isActive
+                                            ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-[1.02]'
+                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200/60'
+                                    }`}
+                                >
+                                    {p.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Custom Date Pickers (Shown always if custom, or accessible anytime) */}
+                {(datePreset === 'custom' || dateFrom || dateTo) && (
+                    <div className="p-4 bg-gray-50/80 rounded-2xl border border-gray-200/60 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <BeautifulDatePicker 
+                            label="Commencement Date"
+                            value={dateFrom}
+                            onChange={(val) => { setDateFrom(val); setDatePreset('custom'); setPage(1); }}
+                        />
+                        <BeautifulDatePicker 
+                            label="Termination Date"
+                            value={dateTo}
+                            onChange={(val) => { setDateTo(val); setDatePreset('custom'); setPage(1); }}
+                        />
+                    </div>
+                )}
+
+                {/* Additional Dimension Filters */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Search Database</label>
+                        <Search search={search} setSearch={(v) => { setSearch(v); setPage(1) }} placeholder="Invoice #, customer, phone..." />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Order Status</label>
+                        <select
+                            value={statusFilter}
+                            onChange={e => { setStatusFilter(e.target.value); setPage(1) }}
+                            className="w-full bg-gray-50 hover:bg-gray-100 focus:bg-white border-none rounded-2xl py-3.5 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 cursor-pointer text-sm"
+                        >
+                            <option value="">All Transactions</option>
+                            <option value="pending">Pending Approval</option>
+                            <option value="processing">Processing</option>
+                            <option value="completed">Completed & Shipped</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Order Type</label>
+                        <select
+                            value={orderTypeFilter}
+                            onChange={e => { setOrderTypeFilter(e.target.value); setPage(1) }}
+                            className="w-full bg-gray-50 hover:bg-gray-100 focus:bg-white border-none rounded-2xl py-3.5 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 cursor-pointer text-sm"
+                        >
+                            <option value="">All Types (B2C & B2B)</option>
+                            <option value="b2c">Retail (B2C)</option>
+                            <option value="b2b">Wholesale (B2B)</option>
+                        </select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Payment Status</label>
+                        <select
+                            value={paymentStatusFilter}
+                            onChange={e => { setPaymentStatusFilter(e.target.value); setPage(1) }}
+                            className="w-full bg-gray-50 hover:bg-gray-100 focus:bg-white border-none rounded-2xl py-3.5 px-4 focus:ring-2 focus:ring-primary/20 transition-all font-bold text-gray-900 cursor-pointer text-sm"
+                        >
+                            <option value="">All Payments</option>
+                            <option value="success">Paid / Success</option>
+                            <option value="pending">Pending Verification</option>
+                            <option value="pending_verification">⚠️ Underpayment (Needs Review)</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
+                </div>
+
+                {/* Preselection Banner */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-gray-100 text-xs">
+                    <div className="flex items-center gap-2 text-gray-600 font-medium flex-wrap">
+                        <span className="font-bold text-gray-900">Preselection Active:</span>
+                        <span className="bg-primary/10 text-primary font-bold px-2.5 py-0.5 rounded-full">{currentPresetLabel}</span>
+                        <span>&middot;</span>
+                        <span>Showing <strong className="text-gray-900">{stats.total}</strong> orders</span>
+                        <span>&middot;</span>
+                        <span>Total Items: <strong className="text-gray-900">{stats.total_items}</strong></span>
+                        <span>&middot;</span>
+                        <span>Net Paid: <strong className="text-primary">KES {Number(stats.revenue || 0).toLocaleString()}</strong></span>
+                    </div>
+                    <button
+                        onClick={handleExport}
+                        disabled={isExporting}
+                        className="inline-flex items-center gap-2 text-green-700 hover:text-green-800 font-black uppercase tracking-wider text-[11px] underline underline-offset-4 cursor-pointer"
+                    >
+                        <span className="icon-[solar--download-square-bold] w-4 h-4" />
+                        Download Filtered Excel
                     </button>
                 </div>
             </div>
@@ -576,6 +818,31 @@ export default function Page() {
                             ))
                         )}
                     </tbody>
+                    {orders.length > 0 && (
+                        <tfoot className="bg-gray-50/90 border-t-2 border-gray-200 text-gray-800 text-xs font-black">
+                            <tr>
+                                <td colSpan={4} className="px-8 py-4 uppercase tracking-widest text-[10px] text-gray-500">
+                                    Preselection Totals ({stats.total} Orders Total)
+                                </td>
+                                <td className="px-8 py-4">
+                                    <span className="bg-primary text-white px-3 py-1 rounded-full text-[10px] uppercase tracking-widest">
+                                        {stats.total_items} Items
+                                    </span>
+                                </td>
+                                <td className="px-8 py-4 text-base font-black text-primary whitespace-nowrap">
+                                    KES {Number(stats.revenue || 0).toLocaleString()}
+                                    {stats.gross_revenue > stats.revenue && (
+                                        <span className="block text-[9px] text-gray-400 font-semibold uppercase tracking-wider">
+                                            Gross: KES {Number(stats.gross_revenue || 0).toLocaleString()}
+                                        </span>
+                                    )}
+                                </td>
+                                <td colSpan={3} className="px-8 py-4 text-right text-gray-500 text-[10px] uppercase tracking-wider">
+                                    {currentPresetLabel}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    )}
                 </table>
                 </div>
             </section>

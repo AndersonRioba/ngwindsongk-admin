@@ -32,6 +32,8 @@ export default function AuthProvider({ children }) {
                     setUser(userData);
                     // Update storage with fresh data (including Spatie roles)
                     localStorage.setItem('user', JSON.stringify(userData));
+                    const secureFlag = window.location.protocol === 'https:' ? '; Secure' : '';
+                    document.cookie = `admin_session=true; path=/; max-age=86400; SameSite=Lax${secureFlag}`;
                 } else {
                     // Token invalid
                     setUser(null);
@@ -44,7 +46,11 @@ export default function AuthProvider({ children }) {
             .catch(err => {
                 console.error('Initial verification failed:', err);
                 // On network error, we trust the storedUser temporarily but it might be stale
-                if (storedUser) setUser(storedUser);
+                if (storedUser) {
+                    setUser(storedUser);
+                    const secureFlag = window.location.protocol === 'https:' ? '; Secure' : '';
+                    document.cookie = `admin_session=true; path=/; max-age=86400; SameSite=Lax${secureFlag}`;
+                }
             })
             .finally(() => {
                 setIsVerifyingToken(false);

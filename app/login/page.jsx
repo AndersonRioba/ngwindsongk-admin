@@ -44,6 +44,8 @@ function LoginContent() {
         console.log('Admin Login redirection check:', { isLoading, isVerifyingToken, token, isAdmin });
         if (!isLoading && !isVerifyingToken && token && user) {
             if (isAdmin) {
+                const secureFlag = window.location.protocol === 'https:' ? '; Secure' : '';
+                document.cookie = `admin_session=true; path=/; max-age=86400; SameSite=Lax${secureFlag}`;
                 window.location.href = '/admin/dashboard';
             } else {
                 console.log('Regular user on admin login, redirecting to shop');
@@ -63,10 +65,10 @@ function LoginContent() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true); // Changed from isSubmitting to isLoggingIn in instruction, but keeping original variable name for consistency with declaration
+        setIsSubmitting(true);
         setError('');
 
-        const result = await login(credentials.phone, credentials.password); // Changed from credentials.phone, credentials.password to phone, password in instruction, but keeping original variable names for consistency with declaration
+        const result = await login(credentials.phone, credentials.password);
         
         setIsSubmitting(false);
         if (result.success) {
@@ -80,6 +82,8 @@ function LoginContent() {
                 roles.includes('super_admin');
 
             if (isResultAdmin) {
+                const secureFlag = window.location.protocol === 'https:' ? '; Secure' : '';
+                document.cookie = `admin_session=true; path=/; max-age=86400; SameSite=Lax${secureFlag}`;
                 // Use full page navigation so the admin_session cookie is
                 // included in the middleware's request on the very next request.
                 window.location.href = '/admin/dashboard';
